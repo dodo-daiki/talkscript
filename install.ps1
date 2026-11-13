@@ -7,7 +7,7 @@
     1. uv（Python とパッケージの管理。https://docs.astral.sh/uv/）
     2. Python（uv が入れる。PC にすでにある Python には手を付けない）
     3. talkscript 本体（uv tool install。コマンド talkscript が使えるようになる）
-    4. talkscript setup: VOICEVOX（利用規約への同意を求めてから）、PC ごとの設定、作業フォルダ
+    4. talkscript setup: VOICEVOX（利用規約への同意を求めてから）、PC ごとの設定、作業フォルダ、画面を開くショートカット
   管理者の権限は要らない（すべて利用者のフォルダに入れる）。
 
 .EXAMPLE
@@ -22,7 +22,7 @@ param(
     [string]$WorkspaceDir = ""    # 作業フォルダの場所（既定: ホームの talkscript-work）
 )
 $ErrorActionPreference = "Stop"
-$TalkscriptVersion = "0.1.2"
+$TalkscriptVersion = "0.2.0"
 $UvVersion = "0.13.0"
 $PythonVersion = "3.12"
 if (-not $Source) { $Source = "https://github.com/dodo-daiki/talkscript/releases/download/v$TalkscriptVersion/talkscript-$TalkscriptVersion-py3-none-any.whl" }
@@ -95,6 +95,7 @@ if ($WorkspaceDir) { $setupArgs += @("--workspace-dir", $WorkspaceDir) }
 & $ts @setupArgs
 $code = $LASTEXITCODE
 Write-Host ""
+Write-Host "talkscript の画面を開くには: スタートメニューの talkscript か、端末で talkscript（引数なし）"
 Write-Host "talkscript のコマンド: $ts"
 if ($code -ne 0) { Write-Host "足りないものが残っている（上の NG）。talkscript doctor で確かめられる" -ForegroundColor Yellow }
 exit $code

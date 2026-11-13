@@ -1,0 +1,1655 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>talkscript</title>
+<style>
+:root {
+  --bg: #f2f4f7;
+  --panel: #ffffff;
+  --ink: #18212f;
+  --muted: #5a6577;
+  --line: #d8dde6;
+  --grid: #e9edf2;
+  --navy: #1f3a5f;
+  --navy-soft: #e2e9f2;
+  --speech: #a8670f;
+  --speech-soft: #f5e9d6;
+  --speech-soft2: #efe0c6;
+  --danger: #c0392b;
+  --danger-soft: rgba(192, 57, 43, 0.13);
+  --warn: #9a6a00;
+  --warn-soft: rgba(196, 140, 0, 0.14);
+  --ok: #2e7d4f;
+  --head: #18798b;
+  --larm: #3555d1;
+  --rarm: #8a3fae;
+  --waist: #7a6a1a;
+  --body-fill: #1f3a5f;
+  --belly: #f4f6f9;
+  --kf-fill: #ffffff;
+  --font: "Yu Gothic UI", "Meiryo", "Hiragino Sans", "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "Consolas", "DejaVu Sans Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10151d; --panel: #171f2a; --ink: #e5e9f0; --muted: #98a3b4; --line: #2a3443; --grid: #1f2835;
+    --navy: #8fb3e0; --navy-soft: #20304a; --speech: #e0a24a; --speech-soft: #382c1a; --speech-soft2: #45351c;
+    --danger: #ee6a5a; --danger-soft: rgba(238, 106, 90, 0.18); --warn: #e3b448; --warn-soft: rgba(227, 180, 72, 0.16); --ok: #5cc287;
+    --head: #4bb6c8; --larm: #7d96ff; --rarm: #c58ae0; --waist: #c8b65a;
+    --body-fill: #3d5f8f; --belly: #dfe6ef; --kf-fill: #171f2a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10151d; --panel: #171f2a; --ink: #e5e9f0; --muted: #98a3b4; --line: #2a3443; --grid: #1f2835;
+  --navy: #8fb3e0; --navy-soft: #20304a; --speech: #e0a24a; --speech-soft: #382c1a; --speech-soft2: #45351c;
+  --danger: #ee6a5a; --danger-soft: rgba(238, 106, 90, 0.18); --warn: #e3b448; --warn-soft: rgba(227, 180, 72, 0.16); --ok: #5cc287;
+  --head: #4bb6c8; --larm: #7d96ff; --rarm: #c58ae0; --waist: #c8b65a;
+  --body-fill: #3d5f8f; --belly: #dfe6ef; --kf-fill: #171f2a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 32px;
+}
+.wrap { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+header.top h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: 0.01em; text-wrap: balance; }
+header.top .sub { color: var(--muted); font-size: 12.5px; }
+.spacer { flex: 1 1 auto; }
+
+.bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+}
+.group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lbl { font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em; }
+button, select, input[type="number"], textarea {
+  font: inherit; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; min-height: 32px;
+}
+textarea { resize: vertical; line-height: 1.5; }
+button { cursor: pointer; }
+button:hover { border-color: var(--navy); }
+button:disabled { opacity: 0.45; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, .tl-scroll:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+button.primary { background: var(--navy); color: var(--panel); border-color: var(--navy); font-weight: 600; min-width: 84px; }
+button.primary:hover { filter: brightness(1.08); }
+button.small { min-height: 28px; padding: 2px 8px; font-size: 12.5px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; min-height: 30px; }
+.seg button[aria-pressed="true"] { background: var(--navy-soft); color: var(--navy); font-weight: 600; }
+.time { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; min-width: 112px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); white-space: nowrap; }
+.chip.bad { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
+.chip.warn { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+.chip.good { color: var(--ok); border-color: var(--ok); }
+input[type="range"] { accent-color: var(--navy); width: 100%; min-width: 0; }
+label.tog { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+label.tog input { accent-color: var(--navy); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.panel h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); margin: 0; padding: 10px 12px 6px; }
+.panel .head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 10px; flex-wrap: wrap; }
+
+/* 台詞と声 */
+.speech-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 900px) { .speech-grid { grid-template-columns: minmax(0, 1fr); } }
+.lines { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px; }
+.lcard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
+.lcard.sel { border-color: var(--navy); box-shadow: inset 3px 0 0 var(--navy); }
+.lid { font: 600 12.5px var(--mono); color: var(--speech); padding-top: 6px; }
+.lcard textarea { width: 100%; min-height: 36px; }
+.lmeta { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12.5px; color: var(--muted); }
+.lmeta input[type="number"] { width: 84px; min-height: 28px; padding: 2px 6px; }
+.lmeta .grow { flex: 1 1 auto; }
+.voice { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; }
+.vrow { display: grid; grid-template-columns: 96px minmax(0, 1fr) 64px; align-items: center; gap: 8px; font-size: 13px; }
+.vrow .val { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; font-size: 12.5px; }
+.vrow.over .name::after { content: " ●"; color: var(--speech); }
+.vnote { font-size: 12px; color: var(--muted); margin: 0; }
+.scope { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.workspace { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 12px; }
+@media (max-width: 900px) { .workspace { grid-template-columns: minmax(0, 1fr); } }
+.preview canvas { display: block; width: 100%; height: 280px; touch-action: none; cursor: grab; }
+.preview .note { font-size: 12px; color: var(--muted); padding: 4px 12px 10px; }
+.preview .readout { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 0 12px 12px; font-size: 12.5px; }
+.preview .readout span:nth-child(even) { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+.tl { display: flex; min-width: 0; }
+.tl-labels { flex: 0 0 118px; border-right: 1px solid var(--line); }
+.tl-labels .row { display: flex; flex-direction: column; justify-content: center; padding: 0 8px 0 10px; border-bottom: 1px solid var(--grid); }
+.tl-labels .row.head { font-size: 11.5px; color: var(--muted); letter-spacing: 0.04em; }
+.tl-labels .row .name { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+.tl-labels .row .meta { display: flex; justify-content: space-between; gap: 6px; font-size: 11px; color: var(--muted); }
+.tl-labels .row .meta b { font-family: var(--mono); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; display: inline-block; }
+.tl-scroll { flex: 1 1 auto; overflow-x: auto; min-width: 0; }
+.tl-scroll svg { display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+svg .g-minor { stroke: var(--grid); stroke-width: 1; }
+svg .g-major { stroke: var(--line); stroke-width: 1; }
+svg .rlab { font: 10.5px var(--mono); fill: var(--muted); }
+svg .phrase-bg { fill: var(--speech-soft); }
+svg .phrase-bg.alt { fill: var(--speech-soft2); }
+svg .phrase-line { stroke: var(--speech); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.45; }
+svg .phrase-text { font: 500 13px var(--font); fill: var(--ink); }
+svg .line-tag { font: 600 10.5px var(--mono); fill: var(--speech); }
+svg .line-start { stroke: var(--speech); stroke-width: 1.5; opacity: 0.8; }
+svg .wave { fill: var(--speech); opacity: 0.85; }
+svg .mora { font: 10.5px var(--font); fill: var(--muted); }
+svg .mora.est { font-style: italic; }
+svg .mora-tick { stroke: var(--speech); stroke-width: 1; opacity: 0.35; }
+svg .lane-bg { fill: transparent; cursor: crosshair; }
+svg .lane-sep { stroke: var(--grid); stroke-width: 1; }
+svg .zero { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; }
+svg .curve { fill: none; stroke-width: 2; }
+svg .viol { fill: var(--danger-soft); }
+svg .viol-curve { fill: none; stroke: var(--danger); stroke-width: 2.5; }
+svg .kf { cursor: grab; }
+svg .kf .hit { fill: transparent; }
+svg .kf .gem { stroke-width: 1.8; }
+svg .kf.sel .gem { stroke-width: 2.6; }
+svg .kf .ring { fill: none; stroke: var(--navy); stroke-width: 1.5; opacity: 0; }
+svg .kf.sel .ring { opacity: 1; }
+svg .pin { stroke: var(--speech); stroke-width: 1.4; }
+svg .ph-line { stroke: var(--navy); stroke-width: 1.6; }
+svg .ph-head { fill: var(--navy); }
+svg .snap-line { stroke: var(--speech); stroke-width: 2; }
+svg .snap-text { font: 600 11px var(--font); fill: var(--speech); }
+svg .ruler-hit { fill: transparent; cursor: ew-resize; }
+
+.below { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; }
+@media (max-width: 1100px) { .below { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .below .file { grid-column: 1 / -1; } }
+@media (max-width: 680px) { .below { grid-template-columns: minmax(0, 1fr); } }
+.inspector .body, .check .body { padding: 0 12px 12px; font-size: 13px; }
+.hint { color: var(--muted); font-size: 12.5px; margin: 0; padding-left: 1.1em; }
+.hint li + li { margin-top: 3px; }
+.fields { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; align-items: center; }
+.fields label { font-size: 12px; color: var(--muted); }
+.fields input, .fields select { width: 100%; min-width: 0; }
+.fields .ro { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+button.danger { color: var(--danger); border-color: var(--danger); }
+.check ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.check li { border-left: 3px solid var(--danger); background: var(--danger-soft); padding: 6px 8px; border-radius: 0 6px 6px 0; cursor: pointer; }
+.check li.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.check li.info { border-left-color: var(--line); background: transparent; cursor: default; color: var(--muted); }
+.check li .what { font-weight: 600; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.file pre { margin: 0 12px 12px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px;
+  font: 12px/1.5 var(--mono); max-height: 320px; overflow: auto; white-space: pre; }
+.foot { color: var(--muted); font-size: 12px; max-width: 86ch; margin: 0; }
+.toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--panel); padding: 8px 14px; border-radius: 6px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 70vw; }
+.toast.show { opacity: 1; }
+.sample { font-size: 11.5px; color: var(--speech); border: 1px solid var(--speech); border-radius: 999px; padding: 1px 9px; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+
+/* ---- 実物の画面で足したもの ---- */
+[hidden] { display: none !important; }
+header.top .ws { font: 12px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 34ch; }
+header.top select { min-width: 150px; }
+.state { font-size: 12px; color: var(--muted); }
+.state.unsaved { color: var(--warn); font-weight: 600; }
+.blocks { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.blocks .seg button { min-width: 48px; font-family: var(--mono); }
+.bmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 0 12px 8px; font-size: 12.5px; color: var(--muted); }
+.bmeta select, .bmeta input[type="number"] { min-height: 28px; padding: 2px 6px; }
+.bmeta input[type="number"] { width: 84px; }
+.lmeta .rd { font-size: 12px; color: var(--speech); }
+.busy { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--navy); }
+.busy::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--navy); border-right-color: transparent; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .busy::before { animation: none; } }
+.run-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 1000px) { .run-grid { grid-template-columns: minmax(0, 1fr); } }
+.run .body, .records .body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+.run .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.run .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 10px; }
+.run .notes label { display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; color: var(--muted); }
+.run .notes input { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; min-height: 30px; }
+.run pre, .records pre { margin: 0; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px;
+  font: 12px/1.5 var(--mono); max-height: 240px; min-height: 80px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+.prompt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--speech); background: var(--speech-soft); }
+.records table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.records th, .records td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+.records th { color: var(--muted); font-weight: 500; font-size: 11.5px; }
+.records tr[data-run] { cursor: pointer; }
+.records tr[data-run]:hover td { background: var(--navy-soft); }
+.records .res-ok { color: var(--ok); }
+.records .res-bad { color: var(--danger); }
+.recwrap { max-height: 220px; overflow: auto; }
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); padding: 0; width: min(720px, calc(100vw - 32px)); }
+dialog::backdrop { background: rgba(10, 15, 25, 0.45); }
+dialog .dh { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 6px; }
+dialog .dh h3 { margin: 0; font-size: 15px; }
+dialog .db { padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+dialog .doc { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+dialog .doc li { display: grid; grid-template-columns: 52px 150px minmax(0, 1fr); gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--grid); }
+dialog .doc .m-ok { color: var(--ok); font-weight: 600; } dialog .doc .m-ng { color: var(--danger); font-weight: 600; } dialog .doc .m-wa { color: var(--warn); font-weight: 600; }
+dialog .doc .d { color: var(--muted); word-break: break-all; }
+dialog .fieldrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+dialog .fieldrow input[type="text"] { flex: 1 1 260px; font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-height: 32px; }
+dialog .fieldrow select { flex: 1 1 260px; }
+.empty { color: var(--muted); font-size: 13px; padding: 4px 0; }
+a { color: var(--navy); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>talkscript</h1>
+    <span class="ws" id="wsLbl" title=""></span>
+    <span class="lbl">台本</span>
+    <select id="scriptSel" aria-label="台本"></select>
+    <button type="button" id="newScriptBtn" class="small">＋ 新しい台本</button>
+    <span class="blocks"><span class="lbl">ブロック</span><span class="seg" id="blockSeg" role="group" aria-label="ブロック"></span>
+      <button type="button" id="addBlockBtn" class="small" aria-label="ブロックを追加">＋</button></span>
+    <span class="spacer"></span>
+    <span id="busy" class="busy" hidden></span>
+    <span id="saveState" class="state"></span>
+    <button type="button" id="saveBtn">保存</button>
+    <button type="button" id="synthBtn">合成</button>
+    <button type="button" id="freezeBtn">固定</button>
+    <span id="checkChip" class="chip"></span>
+    <button type="button" id="envBtn" class="small">環境</button>
+  </header>
+
+  <div class="speech-grid">
+    <section class="panel" aria-label="台詞">
+      <div class="head">
+        <h2 id="linesTitle">台詞</h2>
+        <span>
+          <button type="button" id="delBlockBtn" class="small danger">このブロックを削除</button>
+          <button type="button" id="addLineBtn" class="small">＋ 台詞を追加</button>
+        </span>
+      </div>
+      <div class="bmeta" id="bmeta"></div>
+      <div class="lines" id="lines"></div>
+    </section>
+    <section class="panel" aria-label="声">
+      <div class="head"><h2>声（VOICEVOX）</h2></div>
+      <div class="voice" id="voice"></div>
+    </section>
+  </div>
+
+  <div class="bar" role="toolbar" aria-label="再生と編集">
+    <div class="group">
+      <button id="playBtn" class="primary" type="button">▶ 再生</button>
+      <button id="toStartBtn" type="button" aria-label="先頭へ">⏮</button>
+      <span class="time" id="timeLbl">0.000 s</span>
+    </div>
+    <div class="group">
+      <span class="lbl">ロボット</span>
+      <div class="seg" role="group" aria-label="ロボット" id="robotSeg"></div>
+    </div>
+    <div class="group">
+      <label class="tog"><input type="checkbox" id="snapChk" checked> 句・モーラに吸着</label>
+      <label class="tog"><input type="checkbox" id="soundChk" checked> 音声</label>
+    </div>
+    <div class="group">
+      <span class="lbl">動作のひな形</span>
+      <select id="gestSel" aria-label="動作のひな形"></select>
+      <label class="lbl" for="gAmp">大きさ</label><input type="number" id="gAmp" step="0.1" style="width:64px">
+      <label class="lbl" for="gSpd">速さ</label><input type="number" id="gSpd" step="0.1" style="width:64px">
+      <button type="button" id="insertBtn">再生位置に挿入</button>
+    </div>
+    <div class="group">
+      <span class="lbl">拡大</span>
+      <input type="range" id="zoomRng" min="60" max="360" step="10" value="150" aria-label="時間軸の拡大" style="width:110px">
+      <button type="button" id="undoBtn">元に戻す</button>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <section class="panel preview" aria-label="姿勢の確認">
+      <h2>姿勢（再生位置）</h2>
+      <canvas id="view" aria-label="ロボットの姿勢の図。ドラッグで視点を回す"></canvas>
+      <div class="note" id="viewNote">ドラッグで視点を回せます。</div>
+      <div class="readout" id="readout"></div>
+    </section>
+    <section class="panel" aria-label="タイムライン">
+      <div class="tl">
+        <div class="tl-labels" id="labels"></div>
+        <div class="tl-scroll" id="scroller" tabindex="0" aria-label="タイムライン。横にスクロールできます">
+          <svg id="tl" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="below">
+    <section class="panel inspector" aria-label="選んだキーフレーム">
+      <h2>選んだキーフレーム</h2>
+      <div class="body" id="insp"></div>
+    </section>
+    <section class="panel check" aria-label="検査">
+      <h2>検査</h2>
+      <div class="body" id="checkList"></div>
+    </section>
+    <section class="panel file" aria-label="台本ファイル">
+      <div class="head"><h2>台本ファイル（YAML、保存すると書かれる内容）</h2><button type="button" id="copyBtn" class="small">コピー</button></div>
+      <pre id="yaml" tabindex="0"></pre>
+    </section>
+  </div>
+
+  <div class="run-grid">
+    <section class="panel run" aria-label="実機で再生">
+      <h2>実機で再生</h2>
+      <div class="body">
+        <div class="row">
+          <span class="lbl">ロボット</span><span id="runRobots" class="row"></span>
+          <label class="lbl" for="runMode">モード</label>
+          <select id="runMode">
+            <option value="speech_motion">発話と動作</option>
+            <option value="motion">動作だけ</option>
+            <option value="speech_hold">発話だけ（ロボットは休止姿勢を保持）</option>
+            <option value="speech_relax">発話だけ（ロボットにつながない）</option>
+            <option value="dry">検査だけ（空運転）</option>
+          </select>
+        </div>
+        <div class="notes">
+          <label>条件<input id="nCondition" autocomplete="off"></label>
+          <label>被験者<input id="nSubject" autocomplete="off"></label>
+          <label>距離<input id="nDistance" autocomplete="off"></label>
+          <label>受聴位置の音圧 [dB(A)]<input id="nSpl" autocomplete="off"></label>
+          <label>メモ<input id="nNote" autocomplete="off"></label>
+        </div>
+        <div class="row">
+          <button type="button" id="runBtn" class="primary">▶ 実行</button>
+          <button type="button" id="stopBtn" disabled>■ 止める（休止姿勢へ）</button>
+          <button type="button" id="stopNowBtn" class="danger" disabled>すぐ止める（トルクを切る）</button>
+          <button type="button" id="netBtn" class="small">接続を確かめる</button>
+          <span id="runState" class="state"></span>
+        </div>
+        <div class="prompt" id="opPrompt" hidden><span id="opText"></span><button type="button" id="opGo" class="primary">開始</button></div>
+        <pre id="runLog" aria-live="polite"></pre>
+      </div>
+    </section>
+    <section class="panel records" aria-label="実行の記録">
+      <div class="head"><h2>実行の記録</h2><button type="button" id="recReload" class="small">更新</button></div>
+      <div class="body">
+        <div class="recwrap"><table><thead><tr><th>実行</th><th>モード</th><th>結果</th></tr></thead><tbody id="recBody"></tbody></table></div>
+        <pre id="recSummary">行を押すと、要約（summary.md）を表示します。</pre>
+      </div>
+    </section>
+  </div>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<dialog id="envDlg" aria-labelledby="envTitle">
+  <div class="dh"><h3 id="envTitle">環境</h3><button type="button" class="small" data-close>閉じる</button></div>
+  <div class="db">
+    <ul class="doc" id="docList"><li class="empty">確かめています…</li></ul>
+    <div class="fieldrow"><button type="button" id="docAgain" class="small">もう一度確かめる</button>
+      <button type="button" id="docNet" class="small">自作機の agent への接続も確かめる</button></div>
+    <div><div class="lbl">音声の出力機器（この PC の設定）</div>
+      <div class="fieldrow"><select id="devSel"></select><button type="button" id="devSave" class="small">設定する</button></div></div>
+    <div><div class="lbl">作業フォルダ</div>
+      <div class="fieldrow"><input type="text" id="wsPath2"><button type="button" id="wsOpen2" class="small">開く</button></div></div>
+    <p class="vnote" id="envNote"></p>
+    <div class="fieldrow"><button type="button" id="quitBtn" class="danger">talkscript を終了する</button></div>
+  </div>
+</dialog>
+
+<dialog id="wsDlg" aria-labelledby="wsTitle">
+  <div class="dh"><h3 id="wsTitle">作業フォルダ</h3></div>
+  <div class="db">
+    <p style="margin:0">台本・ロボットの設定・実行の記録を置くフォルダを選びます。まだなければ作ります（例の台本とロボットの設定が入ります）。</p>
+    <div class="fieldrow"><input type="text" id="wsPath"></div>
+    <div class="fieldrow"><button type="button" id="wsCreate" class="primary">このフォルダを使う（なければ作る）</button></div>
+    <p class="vnote" id="wsErr"></p>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+  const TOKEN = location.hash.slice(1);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  async function api(method, path, body) {
+    const r = await fetch("/api/" + path, { method, headers: { "X-Token": TOKEN, "Content-Type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body) });
+    const ct = r.headers.get("content-type") || "";
+    const j = ct.includes("json") ? await r.json() : null;
+    if (!r.ok) { const e = new Error((j && j.error) || `${r.status} ${r.statusText}`); e.status = r.status; throw e; }
+    return j;
+  }
+
+  // ---------- 状態 ----------
+  const DEF_VOICE = { speaker: { name: "TBD", style: "ノーマル" }, speed: 1, pitch: 0, intonation: 1, volume: 1, pre_silence_s: 0.1, post_silence_s: 0.1, sampling_rate: 24000 };
+  const VPARAMS = [
+    { key: "speed", label: "話速", min: 0.5, max: 2.0, step: 0.05, fmt: v => `×${v.toFixed(2)}` },
+    { key: "pitch", label: "音高", min: -0.15, max: 0.15, step: 0.01, fmt: v => (v >= 0 ? "+" : "") + v.toFixed(2) },
+    { key: "intonation", label: "抑揚", min: 0, max: 2, step: 0.05, fmt: v => `×${v.toFixed(2)}` },
+    { key: "volume", label: "音量", min: 0, max: 2, step: 0.05, fmt: v => `×${v.toFixed(2)}` },
+    { key: "pre_silence_s", label: "開始前の無音", min: 0, max: 1.5, step: 0.05, fmt: v => `${v.toFixed(2)} s` },
+    { key: "post_silence_s", label: "終了後の無音", min: 0, max: 1.5, step: 0.05, fmt: v => `${v.toFixed(2)} s` },
+  ];
+  const PART_CSS = { head: "head", waist: "waist", left_arm: "larm", right_arm: "rarm" };
+  const PART_ORDER = { waist: 0, head: 1, left_arm: 2, right_arm: 3 };
+
+  let ST = null;             // /api/state
+  let SID = null;            // 開いている台本
+  let SHA = null;            // 開いたときのファイルの sha256
+  let META = null;           // 台本の blocks 以外
+  let BLOCKS = [];           // [{id, start, lead_in_ms, tail_ms, groups, lines, kf, extra}]
+  let BLD = { manifest: {}, lines: {} };
+  let synthKeys = {};        // 行 → 合成したときの [文, 声, 読み]
+  let bi = 0;                // 開いているブロック
+  let robot = null;
+  let sel = null, selLine = null, voiceScope = "all";
+  let pps = 150, curT = 0, snapOn = true, soundOn = true;
+  let nextId = 1;
+  let warnings = [];
+  let history = [];
+  let unsaved = false;
+  let VOICES = null, voicesErr = null;
+  let serverIssues = [], serverYaml = "";
+  let TM = { lines: [], audioEnd: 0 };
+  let DUR = 5;
+
+  const blk = () => BLOCKS[bi];
+  const lanesOf = r => {
+    const R = ST.robots[r]; if (!R || !R.joints) return [];
+    return Object.entries(R.joints).map(([key, j]) => ({
+      key, label: j.label, part: PART_CSS[j.part] || "head", order: PART_ORDER[j.part] ?? 9,
+      min: j.range ? j.range[0] : -90, max: j.range ? j.range[1] : 90, rangeKnown: !!j.range,
+      vmax: j.vmax, amax: j.amax, rest: (R.rest || {})[key] ?? 0, tbd: j.tbd || [],
+    })).sort((a, b) => a.order - b.order);
+  };
+  const laneOf = (r, key) => lanesOf(r).find(L => L.key === key);
+
+  // ---------- 台本 ⇄ 画面のデータ ----------
+  function kfFrom(k) {
+    const o = { id: nextId++, t: (k.t_ms || 0) / 1000, a: null, off: (k.offset_ms || 0) / 1000, v: +k.deg, group: k.group || null };
+    if (k.at) {
+      const at = k.at;
+      const type = "phrase" in at ? "p" : "mora" in at ? "m" : "t";
+      o.a = { line: at.line, type, i: type === "p" ? at.phrase : type === "m" ? at.mora : null, text: at.text ?? null,
+        occ: at.occurrence || 1, edge: at.edge || "start", txt: null };
+    }
+    return o;
+  }
+  function fromScript(s) {
+    nextId = 1;
+    META = clone(s); delete META.blocks;
+    BLOCKS = (s.blocks || []).map(b => {
+      const extra = clone(b); for (const k of ["id", "lines", "tracks", "groups", "start", "lead_in_ms", "tail_ms"]) delete extra[k];
+      const kf = {};
+      for (const r of META.robots || []) {
+        kf[r] = {};
+        const tr = (b.tracks || {})[r] || {};
+        for (const j of Object.keys(tr)) kf[r][j] = (tr[j] || []).map(kfFrom);
+      }
+      return { id: b.id, start: b.start || "auto", lead_in_ms: b.lead_in_ms, tail_ms: b.tail_ms, groups: clone(b.groups || {}),
+        lines: clone(b.lines || []), kf, extra };
+    });
+  }
+  function atOut(a) {
+    const at = { line: a.line };
+    if (a.type === "p") at.phrase = a.i; else if (a.type === "m") at.mora = a.i;
+    else { at.text = a.text; if ((a.occ || 1) > 1) at.occurrence = a.occ; }
+    at.edge = a.edge;
+    return at;
+  }
+  function toScript() {
+    const s = clone(META);
+    s.blocks = BLOCKS.map((b, i) => {
+      const o = { id: b.id };
+      if (b.start && b.start !== "auto") o.start = b.start;
+      if (b.lead_in_ms != null) o.lead_in_ms = b.lead_in_ms;
+      if (b.tail_ms) o.tail_ms = b.tail_ms;
+      Object.assign(o, clone(b.extra));
+      if (b.lines.length) o.lines = clone(b.lines);
+      const tl = buildTMFor(i);
+      const tracks = {};
+      for (const r of Object.keys(b.kf)) {
+        const jt = {};
+        for (const [j, arr] of Object.entries(b.kf[r])) {
+          if (!arr || !arr.length) continue;
+          jt[j] = sortedIn(arr, tl).map(k => {
+            const out = {};
+            if (k.a) { out.at = atOut(k.a); if (Math.round(k.off * 1000)) out.offset_ms = Math.round(k.off * 1000); }
+            else out.t_ms = Math.round(k.t * 1000);
+            out.deg = Math.round(k.v * 10) / 10;
+            if (k.group) out.group = k.group;
+            return out;
+          });
+        }
+        if (Object.keys(jt).length) tracks[r] = jt;
+      }
+      o.tracks = tracks;
+      if (Object.keys(b.groups || {}).length) o.groups = clone(b.groups);
+      return o;
+    });
+    return s;
+  }
+
+  // ---------- 声と合成の状態 ----------
+  const effVoice = L => {
+    const v = Object.assign({}, DEF_VOICE, META.voice || {}, L.voice || {});
+    v.speaker = Object.assign({}, DEF_VOICE.speaker, (META.voice || {}).speaker || {}, (L.voice || {}).speaker || {});
+    return v;
+  };
+  const keyOf = L => JSON.stringify([L.say, effVoice(L), L.reading || []]);
+  const isDirty = L => synthKeys[L.id] !== keyOf(L);
+  function refreshSynthKeys() {
+    synthKeys = {};
+    for (const b of BLOCKS) for (const L of b.lines) {
+      const B = BLD.lines[L.id];
+      if (B && B.status === "ok" && B.timing) synthKeys[L.id] = keyOf(L);
+    }
+  }
+
+  // ---------- 仮の時刻（合成する前・文を変えた直後） ----------
+  const SMALL = "ゃゅょぁぃぅぇぉゎャュョァィゥェォヮ";
+  const PARTICLES = "はがをにでとのもへ";
+  const PUNCT_S = "、，,", PUNCT_L = "。．.！？!?";
+  const isKanji = c => /[一-鿿々]/.test(c);
+  function estimate(say) {
+    const phrases = [];
+    let cur = { text: "", units: [], pause: 0 };
+    const moras = p => p.units.reduce((a, u) => a + u.n, 0);
+    const push = pause => {
+      if (cur.units.length) { cur.pause = pause; phrases.push(cur); }
+      else if (phrases.length) phrases[phrases.length - 1].pause = Math.max(phrases[phrases.length - 1].pause, pause);
+      cur = { text: "", units: [], pause: 0 };
+    };
+    const ch = [...(say || "")];
+    for (let i = 0; i < ch.length; i++) {
+      const c = ch[i], next = ch[i + 1];
+      if (PUNCT_S.includes(c)) { push(0.25); continue; }
+      if (PUNCT_L.includes(c)) { push(0.4); continue; }
+      if (/\s/.test(c)) continue;
+      if (SMALL.includes(c) && cur.units.length) { const u = cur.units[cur.units.length - 1]; u.k += c; cur.text += c; continue; }
+      const n = isKanji(c) ? 2 : 1;
+      cur.units.push({ k: c, n, d: n * 0.115 }); cur.text += c;
+      if (PARTICLES.includes(c) && next && !PUNCT_S.includes(next) && !PUNCT_L.includes(next) && !SMALL.includes(next) && moras(cur) >= 3) push(0);
+    }
+    push(0);
+    if (phrases.length) phrases[phrases.length - 1].pause = 0;
+    return phrases;
+  }
+
+  // ---------- 時間軸 ----------
+  function buildTMFor(bIndex) {
+    const b = BLOCKS[bIndex];
+    let t = (b.lead_in_ms ?? META.lead_in_ms ?? 500) / 1000;
+    const lines = [];
+    b.lines.forEach((L, li) => {
+      if (li > 0) t += (L.gap_ms ?? META.gap_ms ?? 300) / 1000;
+      const start = t, B = BLD.lines[L.id], v = effVoice(L);
+      let phrases = [], moras = [], dur, est = false, env = null, ta = null;
+      if (B && B.timing && !isDirty(L)) {
+        const tm = B.timing;
+        moras = tm.moras.map(m => ({ k: m.text, start: start + m.start, end: start + m.end, idx: m.i, p: m.phrase, est: false }));
+        phrases = tm.phrases.map(p => ({ line: L.id, i: p.i, text: p.kana, start: start + p.start, end: start + p.end,
+          moras: moras.filter(m => m.p === p.i) }));
+        dur = tm.wav_duration ?? tm.duration; env = B.envelope || null; ta = B.text_anchors || {};
+      } else {
+        est = true;
+        const sp = v.speed || 1;
+        let x = start + v.pre_silence_s / sp, k = 0;
+        phrases = estimate(L.say).map((p, i) => {
+          const s0 = x;
+          const ms = p.units.map((u, j) => { const m = { k: u.k, start: x, end: x + u.d / sp, idx: k++, p: i, j, est: true }; x = m.end; return m; });
+          moras.push(...ms);
+          const ph = { line: L.id, i, text: p.text, start: s0, end: x, moras: ms };
+          x += (p.pause || 0) / sp;
+          return ph;
+        });
+        x += v.post_silence_s / sp;
+        dur = x - start;
+      }
+      lines.push({ id: L.id, li, start, end: start + dur, phrases, moras, voice: v, est, env, ta });
+      t = start + dur;
+    });
+    return { lines, audioEnd: lines.length ? t : 0 };
+  }
+  function buildTM() {
+    TM = buildTMFor(bi);
+    let last = TM.audioEnd;
+    for (const r of Object.keys(blk().kf)) for (const arr of Object.values(blk().kf[r])) for (const k of arr) last = Math.max(last, eff(k));
+    DUR = Math.max(4, Math.ceil((last + (blk().tail_ms || 0) / 1000 + 1.0) * 10) / 10);
+  }
+  const tmLineIn = (tl, id) => tl.lines.find(l => l.id === id);
+  const tmLine = id => tmLineIn(TM, id);
+  function anchorTimeIn(tl, a) {
+    const L = tmLineIn(tl, a.line); if (!L) return null;
+    if (a.type === "p") { const p = L.phrases[a.i]; return p ? (a.edge === "start" ? p.start : p.end) : null; }
+    if (a.type === "m") { const m = L.moras[a.i]; return m ? (a.edge === "start" ? m.start : m.end) : null; }
+    if (L.ta) {
+      const r = L.ta[`${a.text}#${a.occ || 1}`];
+      if (r && r.mora_start != null) { const m0 = L.moras[r.mora_start], m1 = L.moras[r.mora_end]; if (m0 && m1) return a.edge === "start" ? m0.start : m1.end; }
+    }
+    return null;
+  }
+  const anchorTime = a => anchorTimeIn(TM, a);
+  const effIn = (k, tl) => {
+    if (k.a) { const t = anchorTimeIn(tl, k.a); if (t != null) return t + k.off; const L = tmLineIn(tl, k.a.line); return (L ? L.start : 0) + k.off; }
+    return k.t;
+  };
+  const eff = k => effIn(k, TM);
+  const unresolved = k => k.a && anchorTime(k.a) == null;
+  const sortedIn = (arr, tl) => arr.slice().sort((x, y) => effIn(x, tl) - effIn(y, tl));
+  const sorted = arr => sortedIn(arr, TM);
+  function anchorLabel(a) {
+    const L = tmLine(a.line); const e = a.edge === "start" ? "始まり" : "終わり";
+    if (!L) return `${a.line}（なくなった台詞）`;
+    if (a.type === "p") { const p = L.phrases[a.i]; return p ? `${a.line}「${p.text}」の${e}` : `${a.line} 句 ${a.i}（ない）`; }
+    if (a.type === "m") { const m = L.moras[a.i]; return m ? `${a.line} モーラ「${m.k}」の${e}` : `${a.line} モーラ ${a.i}（ない）`; }
+    return `${a.line}「${a.text}」の${e}${unresolved({ a }) ? "（合成すると決まる）" : ""}`;
+  }
+  function snapTargets() {
+    const out = [];
+    for (const L of TM.lines) for (const p of L.phrases) {
+      out.push({ time: p.start, a: { line: L.id, type: "p", i: p.i, edge: "start", txt: p.text }, strong: true });
+      out.push({ time: p.end, a: { line: L.id, type: "p", i: p.i, edge: "end", txt: p.text }, strong: true });
+      p.moras.forEach((m, j) => { if (j > 0) out.push({ time: m.start, a: { line: L.id, type: "m", i: m.idx, edge: "start", txt: m.k }, strong: false }); });
+    }
+    return out;
+  }
+  function nearestTarget(t, pxTol) {
+    let best = null, bd = Infinity;
+    for (const s of snapTargets()) { const d = Math.abs(s.time - t) * pps - (s.strong ? 3 : 0); if (d < bd) { bd = d; best = s; } }
+    return bd <= pxTol ? best : null;
+  }
+  const smooth = s => 3 * s * s - 2 * s * s * s;
+  function valueAt(arr, t, rest = 0) {
+    if (!arr || !arr.length) return rest;
+    const ks = sorted(arr);
+    if (t <= eff(ks[0])) return ks[0].v;
+    for (let i = 0; i < ks.length - 1; i++) {
+      const t0 = eff(ks[i]), t1 = eff(ks[i + 1]);
+      if (t <= t1) { const T = t1 - t0; if (T <= 1e-9) return ks[i + 1].v; return ks[i].v + (ks[i + 1].v - ks[i].v) * smooth((t - t0) / T); }
+    }
+    return ks[ks.length - 1].v;
+  }
+  const kfArr = (r, key) => (blk().kf[r] || {})[key] || [];
+  function analyze(r) {
+    const out = [];
+    for (const L of lanesOf(r)) {
+      const ks = sorted(kfArr(r, L.key));
+      for (let i = 0; i < ks.length - 1; i++) {
+        const t0 = eff(ks[i]), t1 = eff(ks[i + 1]), dv = Math.abs(ks[i + 1].v - ks[i].v), T = t1 - t0;
+        if (T <= 1e-6) { if (dv > 0) out.push({ lane: L, t0, t1, kind: "same", id: ks[i + 1].id }); continue; }
+        const pk = 1.5 * dv / T, pa = 6 * dv / (T * T);
+        if (L.vmax && pk > L.vmax) out.push({ lane: L, t0, t1, pk, kind: "vel", id: ks[i + 1].id });
+        else if (L.amax && pa > L.amax) out.push({ lane: L, t0, t1, pk: pa, kind: "acc", id: ks[i + 1].id });
+      }
+      if (L.rangeKnown) for (const k of ks) if (k.v < L.min || k.v > L.max) out.push({ lane: L, t0: eff(k), kind: "range", v: k.v, id: k.id });
+    }
+    return out;
+  }
+
+  // ---------- 編集の記録 ----------
+  function snapshot() { return JSON.stringify({ META, BLOCKS, nextId, warnings, bi }); }
+  function pushHist() { history.push(snapshot()); if (history.length > 100) history.shift(); markUnsaved(); }
+  function undo() {
+    const s = history.pop(); if (!s) { toast("これ以上戻せません"); return; }
+    const o = JSON.parse(s); META = o.META; BLOCKS = o.BLOCKS; nextId = o.nextId; warnings = o.warnings; bi = Math.min(o.bi, BLOCKS.length - 1);
+    if (sel && !findKf(sel.id)) sel = null;
+    markUnsaved(); render();
+  }
+  function markUnsaved() { unsaved = true; renderSaveState(); scheduleCheck(); }
+  function renderSaveState() {
+    const el = $("saveState");
+    el.textContent = !SID ? "" : unsaved ? "未保存の変更あり" : "保存済み";
+    el.className = "state" + (unsaved ? " unsaved" : "");
+  }
+  let busyN = 0;
+  function busy(msg, on) {
+    busyN += on ? 1 : -1;
+    const b = $("busy");
+    if (on) b.textContent = msg;
+    b.hidden = busyN <= 0;
+  }
+
+  // ---------- 台詞・声・ブロック ----------
+  function allLineIds() { return BLOCKS.flatMap(b => b.lines.map(L => L.id)); }
+  function renderBlocks() {
+    $("blockSeg").innerHTML = BLOCKS.map((b, i) => `<button type="button" data-bi="${i}" aria-pressed="${i === bi}">${esc(b.id)}</button>`).join("");
+    $("blockSeg").querySelectorAll("button").forEach(x => x.addEventListener("click", () => { pause(); bi = +x.dataset.bi; sel = null; selLine = null; voiceScope = "all"; render(); }));
+    $("delBlockBtn").disabled = BLOCKS.length <= 1;
+    $("linesTitle").textContent = `台詞（ブロック ${blk().id}）`;
+    const b = blk();
+    $("bmeta").innerHTML = `<label for="bStart">開始</label>
+      <select id="bStart"><option value="auto" ${b.start !== "operator" ? "selected" : ""}>前のブロックに続けて自動で</option>
+        <option value="operator" ${b.start === "operator" ? "selected" : ""}>操作者の合図で</option></select>
+      <label for="bTail">最後の余白</label><input id="bTail" type="number" step="100" min="0" value="${b.tail_ms || 0}"> ms`;
+    $("bStart").addEventListener("change", e => { pushHist(); b.start = e.target.value; });
+    $("bTail").addEventListener("change", e => { pushHist(); b.tail_ms = Math.max(0, Math.round(+e.target.value || 0)); buildTM(); renderTimeline(); });
+  }
+  function renderLines() {
+    const b = blk(), box = $("lines");
+    if (!b.lines.length) { box.innerHTML = `<p class="empty">発話のないブロック（動作だけ）です。「＋ 台詞を追加」で台詞を足せます。</p>`; return; }
+    box.innerHTML = b.lines.map((L, i) => {
+      const B = BLD.lines[L.id], dirty = isDirty(L), over = L.voice && Object.keys(L.voice).length;
+      const st = dirty ? (B && B.status !== "unsynthesized" ? "合成し直しが必要" : "未合成") : "合成済み";
+      const rd = (L.reading || []).map(r => `${r.text}→${r.kana}`).join("、");
+      return `<div class="lcard${selLine === L.id ? " sel" : ""}" data-line="${esc(L.id)}">
+        <div class="lid">${esc(L.id)}</div>
+        <textarea id="say-${esc(L.id)}" rows="1" aria-label="${esc(L.id)} の台詞">${esc(L.say)}</textarea>
+        <div class="lmeta">
+          <label for="gap-${esc(L.id)}">${i === 0 ? "ブロックの始まりから" : "前の台詞から"}</label>
+          <input id="gap-${esc(L.id)}" type="number" step="50" min="0" value="${i === 0 ? (b.lead_in_ms ?? META.lead_in_ms ?? 500) : (L.gap_ms ?? META.gap_ms ?? 300)}"> ms
+          <span class="chip ${dirty ? "warn" : "good"}">${st}</span>
+          ${over ? `<span class="chip">声: 個別</span>` : ""}
+          ${rd ? `<span class="rd">読み: ${esc(rd)}</span>` : ""}
+          <span class="grow"></span>
+          <button type="button" class="small" data-act="listen" ${dirty ? "disabled" : ""} aria-label="${esc(L.id)} を聞く">聞く</button>
+          <button type="button" class="small" data-act="reading">読み</button>
+          <button type="button" class="small" data-act="up" ${i === 0 ? "disabled" : ""} aria-label="${esc(L.id)} を上へ">↑</button>
+          <button type="button" class="small" data-act="down" ${i === b.lines.length - 1 ? "disabled" : ""} aria-label="${esc(L.id)} を下へ">↓</button>
+          <button type="button" class="small danger" data-act="del">削除</button>
+        </div>
+      </div>`;
+    }).join("");
+    b.lines.forEach((L, i) => {
+      const ta = $(`say-${L.id}`);
+      ta.addEventListener("focus", () => { if (selLine !== L.id) { selLine = L.id; markSelLine(); } });
+      ta.addEventListener("change", () => { pushHist(); L.say = ta.value.trim() || "（空）"; buildTM(); render(); synthNow([L.id]); });
+      const gap = $(`gap-${L.id}`);
+      gap.addEventListener("change", () => {
+        pushHist(); const v = Math.max(0, Math.round(+gap.value || 0));
+        if (i === 0) b.lead_in_ms = v; else L.gap_ms = v;
+        buildTM(); render();
+      });
+    });
+    box.querySelectorAll("button[data-act]").forEach(btn => btn.addEventListener("click", () => {
+      const id = btn.closest(".lcard").dataset.line, i = b.lines.findIndex(L => L.id === id), act = btn.dataset.act, L = b.lines[i];
+      if (act === "listen") { listen(L); return; }
+      if (act === "reading") {
+        const cur = (L.reading || []).map(r => `${r.text}=${r.kana}`).join(", ");
+        const v = prompt("読みの修正（文字=かな をカンマで区切る。例: 今日=きょう, 4=よん）", cur);
+        if (v == null) return;
+        pushHist();
+        const rs = v.split(/[,、]/).map(x => x.trim()).filter(Boolean).map(x => { const [t, k] = x.split("="); return { text: (t || "").trim(), kana: (k || "").trim() }; }).filter(r => r.text && r.kana);
+        if (rs.length) L.reading = rs; else delete L.reading;
+        buildTM(); render(); synthNow([L.id]); return;
+      }
+      pushHist();
+      if (act === "up" && i > 0) [b.lines[i - 1], b.lines[i]] = [b.lines[i], b.lines[i - 1]];
+      if (act === "down" && i < b.lines.length - 1) [b.lines[i + 1], b.lines[i]] = [b.lines[i], b.lines[i + 1]];
+      if (act === "del") {
+        let n = 0;
+        for (const r of Object.keys(b.kf)) for (const arr of Object.values(b.kf[r])) for (const k of arr)
+          if (k.a && k.a.line === id) { k.t = Math.max(0, eff(k)); k.a = null; k.off = 0; n++; }
+        b.lines.splice(i, 1);
+        if (selLine === id) selLine = null;
+        if (voiceScope === id) voiceScope = "all";
+        if (n) warnings.push({ n, lines: id });
+        toast(`${id} を削除しました${n ? `。固定していたキーフレーム ${n} 個は時刻で置き直しました` : ""}`);
+      }
+      buildTM(); render();
+    }));
+  }
+  function markSelLine() { document.querySelectorAll(".lcard").forEach(c => c.classList.toggle("sel", c.dataset.line === selLine)); }
+
+  const spLabel = sp => `${sp.name}（${sp.style || "ノーマル"}）`;
+  function renderVoice() {
+    const box = $("voice");
+    const lines = blk().lines;
+    const L = voiceScope === "all" ? null : lines.find(x => x.id === voiceScope);
+    const cur = L ? effVoice(L) : effVoice({});
+    const over = k => L && L.voice && k in L.voice;
+    let spk;
+    if (VOICES) {
+      const opts = VOICES.flatMap(s => s.styles.map(st => ({ name: s.name, style: st })));
+      const has = opts.some(o => o.name === cur.speaker.name && o.style === cur.speaker.style);
+      if (!has) opts.unshift({ name: cur.speaker.name, style: cur.speaker.style, missing: true });
+      spk = `<select id="vSpeaker" style="grid-column: 2 / span 2">${opts.map(o => `<option value="${esc(JSON.stringify([o.name, o.style]))}" ${o.name === cur.speaker.name && o.style === cur.speaker.style ? "selected" : ""}>${esc(spLabel(o))}${o.missing ? (o.name === "TBD" ? "（未決定）" : "（この VOICEVOX にない）") : ""}</option>`).join("")}</select>`;
+    } else {
+      spk = `<span style="grid-column: 2 / span 2">${esc(spLabel(cur.speaker))} ${voicesErr ? `<span class="chip bad">${esc(voicesErr)}</span> <button type="button" class="small" id="vRetry">もう一度</button>` : `<span class="busy">VOICEVOX の話者を読み込み中…</span>`}</span>`;
+    }
+    box.innerHTML = `
+      <div class="scope"><label class="lbl" for="vScope">設定する範囲</label>
+        <select id="vScope"><option value="all">台本全体</option>${lines.map(x => `<option value="${esc(x.id)}" ${voiceScope === x.id ? "selected" : ""}>${esc(x.id)} だけ</option>`).join("")}</select>
+        ${L && L.voice ? `<button type="button" class="small" id="vClear">${esc(L.id)} の個別の設定を消す</button>` : ""}
+        <label class="lbl" for="vPurpose">台本の用途</label>
+        <select id="vPurpose"><option value="demo" ${META.purpose !== "experiment" ? "selected" : ""}>デモ</option><option value="experiment" ${META.purpose === "experiment" ? "selected" : ""}>実験（固定が必須・声は 1 つ）</option></select></div>
+      <div class="vrow${over("speaker") ? " over" : ""}"><span class="name">話者</span>${spk}</div>
+      ${VPARAMS.map(p => `<div class="vrow${over(p.key) ? " over" : ""}"><label class="name" for="v-${p.key}">${p.label}</label>
+        <input type="range" id="v-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${cur[p.key]}"><span class="val" id="vv-${p.key}">${p.fmt(+cur[p.key])}</span></div>`).join("")}
+      <p class="vnote">${L ? `● は ${esc(L.id)} だけ台本全体の設定と違う項目。` : ""}話速と前後の無音は発話の時刻を変えます。値を離すと合成し直します。
+        VOICEVOX の<a href="${esc(ST.terms_url)}" target="_blank" rel="noopener">利用規約</a>と、使う声ごとの規約に従ってください（多くの声は「VOICEVOX:声の名前」のクレジットを求めます）。</p>`;
+    $("vScope").addEventListener("change", e => { voiceScope = e.target.value; if (voiceScope !== "all") selLine = voiceScope; renderVoice(); markSelLine(); });
+    $("vPurpose").addEventListener("change", e => { pushHist(); META.purpose = e.target.value; });
+    const setV = (k, v) => {
+      if (L) { L.voice = L.voice || {}; L.voice[k] = v; } else { META.voice = META.voice || {}; META.voice[k] = v; }
+    };
+    const after = () => { buildTM(); render(); synthNow(L ? [L.id] : null); };
+    const sp = $("vSpeaker");
+    if (sp) sp.addEventListener("change", e => { pushHist(); const [name, style] = JSON.parse(e.target.value); setV("speaker", { name, style }); after(); });
+    const rt = $("vRetry"); if (rt) rt.addEventListener("click", loadVoices);
+    for (const p of VPARAMS) {
+      const r = $(`v-${p.key}`);
+      r.addEventListener("input", () => { $(`vv-${p.key}`).textContent = p.fmt(+r.value); });
+      r.addEventListener("change", () => { pushHist(); setV(p.key, +r.value); after(); });
+    }
+    const c = $("vClear");
+    if (c) c.addEventListener("click", () => { pushHist(); L.voice = null; delete L.voice; after(); });
+  }
+
+  // ---------- タイムライン ----------
+  const H = { ruler: 26, text: 30, speech: 58, mora: 22 };
+  const LANE = 58, PADX = 14;
+  const headH = () => H.ruler + H.text + H.speech + H.mora;
+  const X = t => PADX + t * pps;
+  const svg = $("tl"), scroller = $("scroller");
+  const partVar = p => `var(--${p})`;
+  function laneGeom(i) { const top = headH() + i * LANE; return { top, y0: top + 9, y1: top + LANE - 9 }; }
+  function yOf(L, i, v) { const g = laneGeom(i); return g.y0 + (L.max - v) / (L.max - L.min) * (g.y1 - g.y0); }
+  function vOf(L, i, y) { const g = laneGeom(i); return L.max - (y - g.y0) / (g.y1 - g.y0) * (L.max - L.min); }
+  function wavePath() {
+    const top = H.ruler + H.text, mid = top + H.speech / 2, amp = H.speech / 2 - 6;
+    let d = "";
+    for (const L of TM.lines) {
+      const up = [], dn = [];
+      if (L.env && L.env.length) {
+        L.env.forEach((a, n) => { const x = X(L.start + n * 0.01).toFixed(1); const v = Math.min(1, a * 1.6); up.push(`${x},${(mid - v * amp).toFixed(1)}`); dn.push(`${x},${(mid + v * amp).toFixed(1)}`); });
+      } else {
+        for (const m of L.moras) {
+          const N = 8;
+          for (let n = 0; n <= N; n++) { const t = m.start + (m.end - m.start) * n / N, a = 0.55 * Math.sin(Math.PI * n / N); const x = X(t).toFixed(1); up.push(`${x},${(mid - a * amp).toFixed(1)}`); dn.push(`${x},${(mid + a * amp).toFixed(1)}`); }
+        }
+      }
+      if (up.length) d += `M${up.join(" L")} L${dn.reverse().join(" L")} Z `;
+    }
+    return d;
+  }
+  let dragSnap = null;
+  function render() {
+    buildTM();
+    renderBlocks();
+    renderLines();
+    renderVoice();
+    renderRobots();
+    renderTimeline();
+    renderRunRobots();
+    renderFreeze();
+  }
+  function renderRobots() {
+    const rs = META.robots || [];
+    if (!rs.includes(robot)) robot = rs[0] || null;
+    $("robotSeg").innerHTML = rs.map(r => `<button type="button" data-r="${esc(r)}" aria-pressed="${r === robot}">${esc((ST.robots[r] || {}).label || r)}</button>`).join("");
+    $("robotSeg").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { pause(); robot = b.dataset.r; sel = null; renderRobots(); renderTimeline(); }));
+    const gs = Object.keys(ST.gestures || {});
+    const cur = $("gestSel").value;
+    $("gestSel").innerHTML = gs.map(g => `<option value="${esc(g)}" ${g === cur ? "selected" : ""}>${esc(g)}</option>`).join("");
+    gestDefaults();
+  }
+  function gestDefaults() {
+    const g = (ST.gestures || {})[$("gestSel").value]; if (!g) return;
+    const p = g.params || {};
+    $("gAmp").value = (p.amplitude || {}).default ?? 1; $("gSpd").value = (p.speed || {}).default ?? 1;
+    $("gestSel").title = g.description || "";
+  }
+  function renderTimeline() {
+    if (!robot) { svg.innerHTML = ""; $("labels").innerHTML = ""; return; }
+    const lanes = lanesOf(robot);
+    const W = Math.ceil(X(DUR) + PADX), Ht = headH() + lanes.length * LANE;
+    svg.setAttribute("width", W); svg.setAttribute("height", Ht); svg.setAttribute("viewBox", `0 0 ${W} ${Ht}`);
+    let s = "";
+    const sTop = H.ruler + H.text;
+    for (const L of TM.lines) for (const p of L.phrases)
+      s += `<rect class="phrase-bg${L.li % 2 ? " alt" : ""}" x="${X(p.start)}" y="${sTop}" width="${Math.max(1, X(p.end) - X(p.start))}" height="${H.speech}"/>`;
+    for (let i = 0; i <= DUR * 10 + 1e-6; i++) {
+      const t = i / 10, x = X(t), major = i % 5 === 0;
+      s += `<line class="${major ? "g-major" : "g-minor"}" x1="${x}" x2="${x}" y1="${major ? 10 : 17}" y2="${major ? Ht : H.ruler}"/>`;
+      if (major) s += `<text class="rlab" x="${x + 3}" y="11">${t.toFixed(1)}</text>`;
+    }
+    s += `<line class="g-major" x1="0" x2="${W}" y1="${H.ruler}" y2="${H.ruler}"/>`;
+    for (const L of TM.lines) {
+      for (const p of L.phrases) for (const t of [p.start, p.end]) s += `<line class="phrase-line" x1="${X(t)}" x2="${X(t)}" y1="${H.ruler}" y2="${Ht}"/>`;
+      s += `<line class="line-start" x1="${X(L.start)}" x2="${X(L.start)}" y1="${H.ruler}" y2="${sTop + H.speech}"/>`;
+      s += `<text class="line-tag" x="${X(L.start) + 3}" y="${sTop + 11}">${esc(L.id)}${L.est ? "（仮）" : ""}</text>`;
+      for (const p of L.phrases) s += `<text class="phrase-text" x="${(X(p.start) + X(p.end)) / 2}" y="${H.ruler + 20}" text-anchor="middle">${esc(p.text)}</text>`;
+    }
+    s += `<path class="wave" d="${wavePath()}"/>`;
+    const mTop = sTop + H.speech;
+    for (const L of TM.lines) for (const m of L.moras) {
+      s += `<line class="mora-tick" x1="${X(m.start)}" x2="${X(m.start)}" y1="${mTop}" y2="${mTop + 6}"/>`;
+      s += `<text class="mora${m.est ? " est" : ""}" x="${(X(m.start) + X(m.end)) / 2}" y="${mTop + 16}" text-anchor="middle">${esc(m.k)}</text>`;
+    }
+    s += `<rect class="ruler-hit" x="0" y="0" width="${W}" height="${headH()}" data-seek="1"/>`;
+    const viol = analyze(robot);
+    lanes.forEach((L, i) => {
+      const g = laneGeom(i), col = partVar(L.part);
+      s += `<line class="lane-sep" x1="0" x2="${W}" y1="${g.top}" y2="${g.top}"/>`;
+      if (L.min < 0 && L.max > 0) { const yz = yOf(L, i, 0); s += `<line class="zero" x1="0" x2="${W}" y1="${yz}" y2="${yz}"/>`; }
+      s += `<rect class="lane-bg" data-lane="${esc(L.key)}" x="0" y="${g.top}" width="${W}" height="${LANE}"/>`;
+      for (const v of viol) if (v.lane.key === L.key && (v.kind === "vel" || v.kind === "acc"))
+        s += `<rect class="viol" x="${X(v.t0)}" y="${g.top + 1}" width="${Math.max(2, X(v.t1) - X(v.t0))}" height="${LANE - 2}" pointer-events="none"/>`;
+      const arr = kfArr(robot, L.key);
+      let d = ""; const N = Math.round(DUR * 30);
+      for (let n = 0; n <= N; n++) { const t = DUR * n / N; d += (n ? " L" : "M") + `${X(t).toFixed(1)},${yOf(L, i, valueAt(arr, t, L.rest)).toFixed(1)}`; }
+      s += `<path class="curve" d="${d}" stroke="${col}" pointer-events="none"/>`;
+      for (const v of viol) if (v.lane.key === L.key && (v.kind === "vel" || v.kind === "acc")) {
+        let dd = ""; const M = 24;
+        for (let n = 0; n <= M; n++) { const t = v.t0 + (v.t1 - v.t0) * n / M; dd += (n ? " L" : "M") + `${X(t).toFixed(1)},${yOf(L, i, valueAt(arr, t)).toFixed(1)}`; }
+        s += `<path class="viol-curve" d="${dd}" pointer-events="none"/>`;
+      }
+      for (const k of sorted(arr)) {
+        const x = X(eff(k)), y = yOf(L, i, Math.max(L.min, Math.min(L.max, k.v))), isSel = sel && sel.id === k.id, r = isSel ? 7.5 : 6.2;
+        const gem = `M${x},${y - r} L${x + r},${y} L${x},${y + r} L${x - r},${y} Z`;
+        const at = k.a ? anchorTime(k.a) : null;
+        s += `<g class="kf${isSel ? " sel" : ""}" data-lane="${esc(L.key)}" data-id="${k.id}">`;
+        if (at != null) s += `<line class="pin" x1="${X(at)}" x2="${x}" y1="${g.top + 3}" y2="${y}"/><circle cx="${X(at)}" cy="${g.top + 3}" r="2.4" fill="var(--speech)"/>`;
+        s += `<circle class="hit" cx="${x}" cy="${y}" r="12"/><circle class="ring" cx="${x}" cy="${y}" r="11"/>`;
+        s += `<path class="gem" d="${gem}" fill="${k.a ? col : "var(--kf-fill)"}" stroke="${unresolved(k) ? "var(--danger)" : col}"/></g>`;
+      }
+    });
+    if (dragSnap) {
+      const x = X(dragSnap.time);
+      s += `<line class="snap-line" x1="${x}" x2="${x}" y1="${H.ruler}" y2="${Ht}"/>`;
+      s += `<text class="snap-text" x="${x + 5}" y="${H.ruler + H.text + 24}">${esc(anchorLabel(dragSnap.a))}</text>`;
+    }
+    s += `<g id="ph" pointer-events="none"><line class="ph-line" x1="0" x2="0" y1="0" y2="${Ht}"/><path class="ph-head" d="M-6,0 L6,0 L0,8 Z"/></g>`;
+    svg.innerHTML = s;
+    renderLabels();
+    renderInspector();
+    renderCheck(viol);
+    updatePlayhead(false);
+  }
+  function renderLabels() {
+    const lanes = lanesOf(robot);
+    let h = `<div class="row head" style="height:${H.ruler}px">時間 [s]</div>`;
+    h += `<div class="row head" style="height:${H.text}px">台詞（句）</div>`;
+    h += `<div class="row head" style="height:${H.speech}px">音声</div>`;
+    h += `<div class="row head" style="height:${H.mora}px">モーラ</div>`;
+    for (const L of lanes) {
+      const note = L.tbd.length ? `${L.tbd.join("・")} 未確定` : L.vmax ? `上限 ${L.vmax}°/s` : "上限 未設定";
+      h += `<div class="row" style="height:${LANE}px"><div class="name"><span class="dot" style="background:${partVar(L.part)}"></span>${esc(L.label)}</div>
+        <div class="meta"><span>${esc(note)}</span><b id="val-${esc(L.key)}">0°</b></div></div>`;
+    }
+    $("labels").innerHTML = h;
+  }
+
+  // ---------- 再生位置・姿勢 ----------
+  function updatePlayhead(scrollIntoView) {
+    const ph = $("ph");
+    if (ph) ph.setAttribute("transform", `translate(${X(curT)},0)`);
+    $("timeLbl").textContent = `${curT.toFixed(3)} s`;
+    if (robot) for (const L of lanesOf(robot)) {
+      const el = document.getElementById(`val-${L.key}`);
+      if (el) el.textContent = `${valueAt(kfArr(robot, L.key), curT, L.rest).toFixed(1)}°`;
+    }
+    if (scrollIntoView) {
+      const x = X(curT), l = scroller.scrollLeft, w = scroller.clientWidth;
+      if (x > l + w - 60) scroller.scrollLeft = x - 80; else if (x < l + 20) scroller.scrollLeft = Math.max(0, x - 80);
+    }
+    drawView();
+  }
+  const canvas = $("view");
+  let az = -0.55, el = 0.32;
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const SELF7_KEYS = ["waist_yaw", "neck_yaw", "neck_pitch", "l_shoulder", "l_elbow", "r_shoulder", "r_elbow"];
+  function drawView() {
+    const dpr = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
+    const c = canvas.getContext("2d");
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, w, h);
+    const ro = $("readout");
+    if (!robot) { ro.innerHTML = ""; return; }
+    const lanes = lanesOf(robot);
+    const q = {}; for (const L of lanes) q[L.key] = valueAt(kfArr(robot, L.key), curT, L.rest);
+    ro.innerHTML = lanes.map(L => `<span>${esc(L.label)}</span><span>${q[L.key].toFixed(1)}°</span>`).join("");
+    if (!SELF7_KEYS.every(k => k in q)) {
+      c.fillStyle = cssVar("--muted"); c.font = `13px ${cssVar("--font")}`; c.textAlign = "center";
+      c.fillText("このロボットの姿勢の図はまだありません", w / 2, h / 2 - 10);
+      c.fillText("（関節の向きを実機で確かめてから）", w / 2, h / 2 + 12);
+      $("viewNote").textContent = "角度は体の向きの角度（度）。";
+      return;
+    }
+    $("viewNote").textContent = "ドラッグで視点を回せます。角度は体の向き（肩 0° = 腕が真下、+ = 前）。";
+    for (const k of SELF7_KEYS) q[k] *= Math.PI / 180;
+    const scale = Math.min(w, h) * 1.25, cx = w / 2, cy = h * 0.86;
+    const rotY = (p, a) => [p[0] * Math.cos(a) + p[2] * Math.sin(a), p[1], -p[0] * Math.sin(a) + p[2] * Math.cos(a)];
+    const rotX = (p, a) => [p[0], p[1] * Math.cos(a) - p[2] * Math.sin(a), p[1] * Math.sin(a) + p[2] * Math.cos(a)];
+    const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+    const P = p => { const r1 = rotY(p, az); const y = r1[1] * Math.cos(el) - r1[2] * Math.sin(el); const z = r1[1] * Math.sin(el) + r1[2] * Math.cos(el); return { x: cx + r1[0] * scale, y: cy - y * scale, z }; };
+    const W = p => rotY(p, q.waist_yaw);
+    c.beginPath();
+    for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 2; const pt = P([Math.cos(a) * 0.17, 0, Math.sin(a) * 0.13]); i ? c.lineTo(pt.x, pt.y) : c.moveTo(pt.x, pt.y); }
+    c.fillStyle = cssVar("--grid"); c.fill(); c.strokeStyle = cssVar("--line"); c.lineWidth = 1; c.stroke();
+    const items = [];
+    const hip = W([0, 0.07, 0]), chest = W([0, 0.36, 0]);
+    const belly0 = W([0, 0.1, 0.07]), belly1 = W([0, 0.31, 0.07]);
+    items.push({ z: (P(hip).z + P(chest).z) / 2, draw: () => {
+      const a = P(hip), b = P(chest);
+      c.lineCap = "round"; c.strokeStyle = cssVar("--body-fill"); c.lineWidth = 0.27 * scale; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+      const fa = P(belly0), fb = P(belly1);
+      if ((fa.z + fb.z) / 2 > (a.z + b.z) / 2) { c.strokeStyle = cssVar("--belly"); c.lineWidth = 0.15 * scale; c.beginPath(); c.moveTo(fa.x, fa.y); c.lineTo(fb.x, fb.y); c.stroke(); }
+    }});
+    const neck = [0, 0.43, 0];
+    const headLocal = p => W(add(neck, rotY(rotX(p, q.neck_pitch), q.neck_yaw)));
+    const hc = headLocal([0, 0.08, 0.005]);
+    items.push({ z: P(hc).z, draw: () => {
+      const n = P(W(neck)), hcp = P(hc);
+      c.strokeStyle = cssVar("--body-fill"); c.lineWidth = 0.06 * scale; c.beginPath(); c.moveTo(P(chest).x, P(chest).y); c.lineTo(n.x, n.y); c.stroke();
+      c.fillStyle = cssVar("--body-fill"); c.beginPath(); c.arc(hcp.x, hcp.y, 0.095 * scale, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = cssVar("--head"); c.lineWidth = 2; c.stroke();
+      for (const sx of [-0.038, 0.038]) {
+        const ep = P(headLocal([sx, 0.095, 0.085]));
+        if (ep.z > hcp.z) { c.fillStyle = cssVar("--belly"); c.beginPath(); c.arc(ep.x, ep.y, 0.022 * scale, 0, Math.PI * 2); c.fill(); }
+      }
+      const g0 = P(headLocal([0, 0.08, 0.1])), g1 = P(headLocal([0, 0.08, 0.2]));
+      c.strokeStyle = cssVar("--head"); c.lineWidth = 1.5; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(g0.x, g0.y); c.lineTo(g1.x, g1.y); c.stroke(); c.setLineDash([]);
+    }});
+    for (const side of ["l", "r"]) {
+      const sx = side === "l" ? 0.2 : -0.2, th = q[`${side}_shoulder`], ph = q[`${side}_elbow`];
+      const S = [sx, 0.35, 0];
+      const E = add(S, mul([0, -Math.cos(th), Math.sin(th)], 0.15));
+      const Hn = add(E, mul([0, -Math.cos(th + ph), Math.sin(th + ph)], 0.14));
+      const ws = W(S), we = W(E), wh = W(Hn);
+      const col = cssVar(side === "l" ? "--larm" : "--rarm");
+      items.push({ z: (P(ws).z + P(we).z + P(wh).z) / 3, draw: () => {
+        const a = P(ws), b = P(we), d = P(wh);
+        c.lineCap = "round"; c.strokeStyle = col; c.lineWidth = 0.055 * scale;
+        c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.lineTo(d.x, d.y); c.stroke();
+        c.fillStyle = cssVar("--panel");
+        for (const p of [a, b]) { c.beginPath(); c.arc(p.x, p.y, 0.016 * scale, 0, Math.PI * 2); c.fill(); }
+      }});
+    }
+    items.sort((a, b) => a.z - b.z).forEach(it => it.draw());
+  }
+  let viewDrag = null;
+  canvas.addEventListener("pointerdown", e => { viewDrag = { x: e.clientX, y: e.clientY, az, el }; try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* 合成のイベント */ } canvas.style.cursor = "grabbing"; });
+  canvas.addEventListener("pointermove", e => {
+    if (!viewDrag) return;
+    az = viewDrag.az + (e.clientX - viewDrag.x) * 0.01;
+    el = Math.max(-0.2, Math.min(1.2, viewDrag.el + (e.clientY - viewDrag.y) * 0.006));
+    drawView();
+  });
+  canvas.addEventListener("pointerup", () => { viewDrag = null; canvas.style.cursor = "grab"; });
+
+  // ---------- 下段 ----------
+  function findKf(id) {
+    if (!robot) return null;
+    for (const L of lanesOf(robot)) { const k = kfArr(robot, L.key).find(x => x.id === id); if (k) return { L, k }; }
+    return null;
+  }
+  function segPeak(L, k) {
+    const ks = sorted(kfArr(robot, L.key)); const i = ks.findIndex(x => x.id === k.id);
+    const f = (a, b) => { if (!a || !b) return null; const T = eff(b) - eff(a); return T > 1e-6 ? 1.5 * Math.abs(b.v - a.v) / T : (Math.abs(b.v - a.v) > 0 ? Infinity : 0); };
+    return { before: f(ks[i - 1], k), after: f(k, ks[i + 1]) };
+  }
+  const fmtV = (v, L) => v == null ? "—" : (v === Infinity ? "∞" : `${v.toFixed(0)}°/s`) + (L.vmax && v != null && v > L.vmax ? "（上限超え）" : "");
+  const akey = a => `${a.line}:${a.type}:${a.type === "t" ? a.text + "#" + (a.occ || 1) : a.i}:${a.edge}`;
+  function renderInspector() {
+    const box = $("insp");
+    const f = sel && findKf(sel.id);
+    if (!f) {
+      box.innerHTML = `<ul class="hint">
+        <li>台詞を書き換えて欄の外を押すと、その台詞を VOICEVOX で合成し直します。「＋ 台詞を追加」で行を足せます。</li>
+        <li>キーフレーム（◆）をドラッグして、時刻と角度を変えます。空いたところをダブルクリックすると足せます。</li>
+        <li>句やモーラの境目に寄せると吸着し、その位置に固定されます（塗りの◆）。Alt を押しながらだと吸着しません。</li>
+        <li>固定したキーフレームは、文や話速を変えても発話についていきます。白抜きの◆は時刻で置いたものです。</li>
+        <li>Space で再生・停止、Delete で削除、Ctrl+Z で元に戻す、Ctrl+S で保存。</li></ul>`;
+      return;
+    }
+    const { L, k } = f, pk = segPeak(L, k);
+    const targets = snapTargets().filter(s => s.strong);
+    const opts = [`<option value="">なし（時刻で固定）</option>`].concat(targets.map(s => `<option value="${esc(akey(s.a))}" ${k.a && akey(k.a) === akey(s.a) ? "selected" : ""}>${esc(anchorLabel(s.a))}</option>`));
+    if (k.a && k.a.type !== "p") opts.push(`<option value="${esc(akey(k.a))}" selected>${esc(anchorLabel(k.a))}</option>`);
+    box.innerHTML = `<div class="fields">
+      <label>関節</label><span><span class="dot" style="background:${partVar(L.part)}"></span> ${esc(L.label)}（${esc((ST.robots[robot] || {}).label || robot)}）</span>
+      <label for="fAnchor">固定先</label><select id="fAnchor">${opts.join("")}</select>
+      <label for="fTime">${k.a ? "ずらし [ms]" : "時刻 [ms]"}</label><input id="fTime" type="number" step="10" value="${Math.round((k.a ? k.off : k.t) * 1000)}">
+      <label>実際の時刻</label><span class="ro">${(eff(k) * 1000).toFixed(0)} ms</span>
+      <label for="fVal">角度 [°]</label><input id="fVal" type="number" step="1" min="${L.min}" max="${L.max}" value="${k.v}">
+      <label>前の区間</label><span class="ro">${fmtV(pk.before, L)}</span>
+      <label>後の区間</label><span class="ro">${fmtV(pk.after, L)}</span>
+      ${k.group ? `<label>まとまり</label><span class="ro">${esc(k.group)}</span>` : ""}
+    </div>
+    <div class="actions"><button type="button" class="danger" id="fDel">削除</button></div>`;
+    $("fAnchor").addEventListener("change", e => {
+      pushHist(); const t = eff(k);
+      if (!e.target.value) { k.a = null; k.t = t; k.off = 0; }
+      else { const s = snapTargets().find(x => akey(x.a) === e.target.value); if (s) { k.a = { ...s.a }; k.off = 0; } }
+      buildTM(); renderTimeline();
+    });
+    $("fTime").addEventListener("change", e => { pushHist(); const v = (+e.target.value || 0) / 1000; if (k.a) k.off = v; else k.t = Math.max(0, v); buildTM(); renderTimeline(); });
+    $("fVal").addEventListener("change", e => { pushHist(); k.v = Math.max(L.min, Math.min(L.max, Math.round(+e.target.value || 0))); renderTimeline(); });
+    $("fDel").addEventListener("click", delSelected);
+  }
+  function renderCheck(viol) {
+    const chip = $("checkChip"), box = $("checkList");
+    const items = [];
+    const dirty = blk().lines.filter(isDirty).map(L => L.id);
+    if (dirty.length) items.push(`<li class="warn">${esc(dirty.join("・"))} は合成していないか、文・声を変えたあと合成し直していません（時刻は仮）。</li>`);
+    for (const w of warnings) items.push(`<li class="warn">${esc(w.lines)} の固定先が見つからず、キーフレーム ${w.n} 個を時刻で置き直しました。位置を確かめてください。</li>`);
+    for (const r of META.robots || []) for (const [key, arr] of Object.entries(blk().kf[r] || {})) for (const k of arr)
+      if (unresolved(k)) items.push(`<li class="warn" data-id="${k.id}" data-robot="${esc(r)}">${esc(laneOf(r, key)?.label || key)}: ${esc(anchorLabel(k.a))} の位置がまだ決まっていません。</li>`);
+    for (const v of viol) {
+      if (v.kind === "vel") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>最大 <span class="num">${v.pk.toFixed(0)}°/s</span>（上限 <span class="num">${v.lane.vmax}°/s</span>）。間を広げるか、角度の差を小さくします。</li>`);
+      else if (v.kind === "acc") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>角加速度 <span class="num">${v.pk.toFixed(0)}°/s²</span>（上限 <span class="num">${v.lane.amax}</span>）。</li>`);
+      else if (v.kind === "same") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>同じ時刻に違う角度のキーフレームがあります。</li>`);
+      else items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>角度 <span class="num">${v.v}°</span> が範囲 <span class="num">${v.lane.min}〜${v.lane.max}°</span> の外です。</li>`);
+    }
+    const shown = new Set();
+    for (const i of serverIssues) {
+      if (i.level === "info") continue;
+      if ((i.code === "K7" || i.code === "K5") && i.robot === robot) continue;   // 上の表示と重なる
+      const key = i.code + i.msg + (i.robot || "") + (i.joint || "") + (i.block || "");
+      if (shown.has(key)) continue; shown.add(key);
+      const where = [i.robot, i.block, i.joint].filter(Boolean).join(" ");
+      items.push(`<li class="${i.level === "error" ? "" : "warn"}"><span class="what">${esc(i.code)}</span> ${esc(where)}<br>${esc(i.msg)}</li>`);
+    }
+    if (!items.length) items.push(`<li class="info">問題は見つかりませんでした（実行の前の検査と同じ内容）。</li>`);
+    const bad = viol.length + serverIssues.filter(i => i.level === "error" && !((i.code === "K7" || i.code === "K5") && i.robot === robot)).length;
+    const warn = items.filter(x => x.includes('class="warn"')).length;
+    chip.className = `chip ${bad ? "bad" : warn ? "warn" : "good"}`;
+    chip.textContent = bad ? `検査: エラー ${bad} 件` : warn ? `検査: 注意 ${warn} 件` : "検査: 問題なし";
+    box.innerHTML = `<ul>${items.join("")}</ul>${bad ? `<p class="foot" style="margin-top:8px">エラーがあると実機では実行しません（上限を超えた軌道は切り詰めずに止めます）。</p>` : ""}`;
+    box.querySelectorAll("li[data-id]").forEach(li => {
+      const go = () => {
+        if (li.dataset.robot && li.dataset.robot !== robot) { robot = li.dataset.robot; renderRobots(); }
+        const f = findKf(+li.dataset.id); if (!f) return; sel = { lane: f.L.key, id: f.k.id }; curT = Math.max(0, eff(f.k) - 0.3); renderTimeline(); updatePlayhead(true);
+      };
+      li.addEventListener("click", go); li.addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+    });
+    $("yaml").textContent = serverYaml || "（検査の結果を待っています）";
+  }
+  let checkTimer = 0, checkSeq = 0;
+  function scheduleCheck() { clearTimeout(checkTimer); checkTimer = setTimeout(runCheck, 500); }
+  async function runCheck() {
+    if (!SID) return;
+    const seq = ++checkSeq;
+    try {
+      const r = await api("POST", "check", { script: toScript() });
+      if (seq !== checkSeq) return;
+      serverIssues = r.issues || []; serverYaml = r.yaml || "";
+    } catch (e) { serverIssues = [{ level: "error", code: "—", msg: e.message }]; }
+    renderCheck(robot ? analyze(robot) : []);
+  }
+
+  // ---------- 操作 ----------
+  function delSelected() {
+    if (!sel) return; const f = findKf(sel.id); if (!f) return;
+    pushHist(); blk().kf[robot][f.L.key] = kfArr(robot, f.L.key).filter(k => k.id !== sel.id); sel = null; buildTM(); renderTimeline(); toast("削除しました");
+  }
+  function svgPoint(e) { const r = svg.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  const tOfX = x => Math.max(0, Math.min(DUR, (x - PADX) / pps));
+  let drag = null;
+  svg.addEventListener("pointerdown", e => {
+    const p = svgPoint(e);
+    const g = e.target.closest(".kf");
+    if (g) {
+      const id = +g.dataset.id, f = findKf(id); if (!f) return;
+      sel = { lane: f.L.key, id }; pushHist();
+      drag = { kind: "kf", id, laneIdx: lanesOf(robot).findIndex(L => L.key === f.L.key), moved: false };
+      try { svg.setPointerCapture(e.pointerId); } catch (err) { /* 合成のイベント */ } renderTimeline(); e.preventDefault(); return;
+    }
+    if (e.target.dataset.seek) { drag = { kind: "seek" }; try { svg.setPointerCapture(e.pointerId); } catch (err) { /* 合成のイベント */ } curT = tOfX(p.x); if (playing) pause(); updatePlayhead(false); return; }
+    if (e.target.classList.contains("lane-bg") && sel) { sel = null; renderTimeline(); }
+  });
+  svg.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const p = svgPoint(e);
+    if (drag.kind === "seek") { curT = tOfX(p.x); updatePlayhead(false); return; }
+    const f = findKf(drag.id); if (!f) return;
+    const { L, k } = f;
+    drag.moved = true;
+    const t = tOfX(p.x);
+    const tg = snapOn && !e.altKey ? nearestTarget(t, 9) : null;
+    if (tg) { k.a = { ...tg.a }; k.off = 0; dragSnap = tg; }
+    else { k.a = null; k.t = Math.round(t * 100) / 100; k.off = 0; dragSnap = null; }
+    k.v = Math.max(L.min, Math.min(L.max, Math.round(vOf(L, drag.laneIdx, p.y))));
+    renderTimeline();
+  });
+  const endDrag = () => {
+    if (drag && drag.kind === "kf" && !drag.moved) history.pop();
+    const was = drag; drag = null;
+    if (was && was.kind === "kf" && was.moved) { buildTM(); renderTimeline(); scheduleCheck(); }
+    if (dragSnap) { dragSnap = null; renderTimeline(); }
+  };
+  svg.addEventListener("pointerup", endDrag);
+  svg.addEventListener("pointercancel", endDrag);
+  svg.addEventListener("dblclick", e => {
+    if (!e.target.classList.contains("lane-bg")) return;
+    const p = svgPoint(e), key = e.target.dataset.lane, L = laneOf(robot, key);
+    const t = tOfX(p.x), tg = snapOn && !e.altKey ? nearestTarget(t, 9) : null;
+    pushHist();
+    const v = Math.round(valueAt(kfArr(robot, key), tg ? tg.time : t, L.rest));
+    const n = tg ? { id: nextId++, t: 0, a: { ...tg.a }, off: 0, v, group: null } : { id: nextId++, t: Math.round(t * 100) / 100, a: null, off: 0, v, group: null };
+    blk().kf[robot] = blk().kf[robot] || {};
+    (blk().kf[robot][key] = blk().kf[robot][key] || []).push(n);
+    sel = { lane: key, id: n.id }; buildTM(); renderTimeline();
+    toast(tg ? `${L.label}: ${anchorLabel(tg.a)}に足しました` : `${L.label}: ${t.toFixed(2)} s に足しました`);
+  });
+
+  function insertGesture() {
+    const gid = $("gestSel").value, G = (ST.gestures || {})[gid];
+    if (!G) return;
+    const amp = +$("gAmp").value || 1, spd = +$("gSpd").value || 1;
+    const P = G.params || {};
+    const inRange = (name, v) => { const s = P[name]; return !s || (v >= s.min && v <= s.max); };
+    if (!inRange("amplitude", amp) || !inRange("speed", spd)) { toast(`大きさ・速さは ${JSON.stringify(P)} の範囲で`); return; }
+    const tg = snapOn ? nearestTarget(curT, 0.15 * pps) : null;
+    const base = tg ? tg.time : curT;
+    const anchor = (G.anchor_at_ms || 0) / 1000;
+    const b = blk();
+    const first = Math.min(...Object.values(G.robots || {}).flatMap(sp => Object.values(sp).map(pts => pts[0][0])));
+    if (isFinite(first) && base + (first / 1000 - anchor) / spd < -1e-6) { toast(`再生位置が先頭に近すぎて、${gid} の始まりが 0 秒より前になります。再生位置を後ろへ動かしてください`); return; }
+    let n = 1; while (b.groups[`${gid}-${n}`]) n++;
+    const group = `${gid}-${n}`;
+    pushHist();
+    let added = 0, replaced = 0; const skipped = [];
+    for (const r of META.robots || []) {
+      const spec = (G.robots || {})[r];
+      if (!spec) { skipped.push(`${r}（定義なし）`); continue; }
+      if (Object.values(spec).some(pts => pts.some(p => p[1] == null))) { skipped.push(`${r}（角度が未確定）`); continue; }
+      b.kf[r] = b.kf[r] || {};
+      for (const [key, pts] of Object.entries(spec)) {
+        const L = laneOf(r, key); if (!L) { skipped.push(`${r}.${key}（関節がない）`); continue; }
+        const offs = pts.map(([ms]) => (ms / 1000 - anchor) / spd);
+        const lo = base + offs[0] - 1e-6, hi = base + offs[offs.length - 1] + 1e-6;
+        const before = (b.kf[r][key] || []).length;
+        b.kf[r][key] = (b.kf[r][key] || []).filter(k => { if (unresolved(k)) return true; const t = eff(k); return t < lo || t > hi; });
+        replaced += before - b.kf[r][key].length;
+        pts.forEach(([ms, d], i) => {
+          const v = Math.round((L.rest + d * amp) * 10) / 10;
+          b.kf[r][key].push(tg ? { id: nextId++, t: 0, a: { ...tg.a }, off: offs[i], v, group } : { id: nextId++, t: Math.round((base + offs[i]) * 1000) / 1000, a: null, off: 0, v, group });
+          added++;
+        });
+      }
+    }
+    if (!added) { history.pop(); toast(`入れられるロボットがありません: ${skipped.join("、")}`); return; }
+    b.groups[group] = { gesture: gid, amplitude: amp, speed: spd, inserted: new Date().toISOString().slice(0, 19) };
+    sel = null; buildTM(); renderTimeline();
+    toast(`${gid} を${tg ? anchorLabel(tg.a) : `${base.toFixed(2)} s`}に挿入しました${replaced ? `（重なっていた ${replaced} 個を置き換え）` : ""}${skipped.length ? `。入れなかった: ${skipped.join("、")}` : ""}`);
+  }
+
+  // ---------- 合成 ----------
+  let synthRunning = null;
+  async function synthNow(ids) {
+    if (!SID) return;
+    const need = (ids || allLineIds()).filter(id => { const L = BLOCKS.flatMap(b => b.lines).find(x => x.id === id); return L && isDirty(L); });
+    if (!need.length) return;
+    const before = new Map();
+    for (const b of BLOCKS) { const tl = buildTMFor(BLOCKS.indexOf(b)); for (const r of Object.keys(b.kf)) for (const arr of Object.values(b.kf[r])) for (const k of arr) before.set(k.id, { t: effIn(k, tl), txt: k.a && k.a.type === "p" ? (tmLineIn(tl, k.a.line)?.phrases[k.a.i] || {}).text : null }); }
+    if (synthRunning) await synthRunning.catch(() => {});
+    busy(`合成中（${need.join("・")}）…`, true);
+    const job = api("POST", "synth", { script: toScript(), lines: need });
+    synthRunning = job;
+    try {
+      const r = await job;
+      BLD = { manifest: r.manifest, lines: r.lines };
+      refreshSynthKeys();
+      const fix = reanchor(need, before);
+      buildTM(); render(); scheduleCheck();
+      toast(`${need.join("・")} を合成しました${fix.lost ? `。固定先が見つからないキーフレーム ${fix.lost} 個を時刻で置き直しました` : ""}${fix.moved ? `。${fix.moved} 個は同じ読みの句に付け直しました` : ""}`);
+    } catch (e) {
+      toast(`合成できません: ${e.message}`);
+    } finally { busy("", false); synthRunning = null; }
+  }
+  function reanchor(ids, before) {
+    let moved = 0, lost = 0;
+    BLOCKS.forEach((b, bix) => {
+      const tl = buildTMFor(bix);
+      for (const r of Object.keys(b.kf)) for (const arr of Object.values(b.kf[r])) for (const k of arr) {
+        if (!k.a || !ids.includes(k.a.line) || k.a.type !== "p") continue;
+        const old = before.get(k.id); if (!old || !old.txt) continue;
+        const L = tmLineIn(tl, k.a.line); if (!L || L.est) continue;
+        const p = L.phrases[k.a.i];
+        if (p && p.text === old.txt) continue;
+        const cand = L.phrases.filter(x => x.text === old.txt);
+        if (cand.length) { k.a.i = cand.reduce((best, x) => Math.abs(x.i - k.a.i) < Math.abs(best.i - k.a.i) ? x : best).i; moved++; }
+        else if (!p) { k.a = null; k.t = Math.max(0, old.t); k.off = 0; lost++; }
+      }
+    });
+    if (lost) warnings.push({ n: lost, lines: ids.join("・") });
+    return { moved, lost };
+  }
+
+  // ---------- 音声の再生 ----------
+  let playing = false, raf = 0, actx = null, nodes = [], t0ctx = 0, t0play = 0;
+  const bufCache = new Map();
+  async function bufferFor(lineId) {
+    const B = BLD.lines[lineId]; if (!B || !B.wav_sha256) return null;
+    const key = `${SID}:${lineId}:${B.wav_sha256}`;
+    if (bufCache.has(key)) return bufCache.get(key);
+    const r = await fetch(`/api/audio?id=${encodeURIComponent(SID)}&line=${encodeURIComponent(lineId)}`, { headers: { "X-Token": TOKEN } });
+    if (!r.ok) return null;
+    const buf = await ensureCtx().decodeAudioData(await r.arrayBuffer());
+    bufCache.set(key, buf);
+    return buf;
+  }
+  function ensureCtx() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); return actx; }
+  async function play() {
+    if (!SID) return;
+    if (curT >= DUR - 0.01) curT = 0;
+    ensureCtx();
+    playing = true; $("playBtn").textContent = "■ 停止";
+    const bufs = {};
+    if (soundOn) for (const L of TM.lines) if (!L.est) { try { bufs[L.id] = await bufferFor(L.id); } catch (e) { bufs[L.id] = null; } }
+    if (!playing) return;
+    t0ctx = actx.currentTime + 0.06; t0play = curT;
+    if (soundOn) for (const L of TM.lines) {
+      if (curT >= L.end) continue;
+      const buf = bufs[L.id];
+      if (buf) {
+        const src = actx.createBufferSource(); src.buffer = buf; src.connect(actx.destination);
+        if (curT <= L.start) src.start(t0ctx + (L.start - curT)); else src.start(t0ctx, curT - L.start);
+        nodes.push(src);
+      } else beeps(L);
+    }
+    const step = () => {
+      curT = Math.min(DUR, t0play + Math.max(0, actx.currentTime - t0ctx));
+      updatePlayhead(true);
+      if (curT >= DUR) { pause(); return; }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  function beeps(L) {
+    for (const m of L.moras) {
+      if (m.start < curT) continue;
+      const at = t0ctx + (m.start - curT), o = actx.createOscillator(), g = actx.createGain();
+      o.type = "triangle"; o.frequency.value = 330 * Math.pow(2, (L.voice.pitch || 0) * 4);
+      const peak = Math.max(0.0002, 0.06 * Math.min(2, L.voice.volume || 1));
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + Math.min(0.09, m.end - m.start));
+      o.connect(g).connect(actx.destination); o.start(at); o.stop(at + 0.12); nodes.push(o);
+    }
+  }
+  function pause() {
+    playing = false; cancelAnimationFrame(raf);
+    for (const n of nodes) { try { n.stop(); } catch (e) { /* 止まっている */ } }
+    nodes = []; $("playBtn").textContent = "▶ 再生";
+  }
+  async function listen(L) {
+    pause();
+    const tl = tmLine(L.id); if (tl) { curT = tl.start; updatePlayhead(true); }
+    play();
+  }
+
+  // ---------- 台本の読み込み・保存 ----------
+  async function loadScript(id) {
+    pause();
+    busy("台本を読み込み中…", true);
+    try {
+      const r = await api("GET", `script?id=${encodeURIComponent(id)}`);
+      if (r.errors) toast(`台本の形式に誤りがあります: ${r.errors.split("\n")[0]}`);
+      SID = id; SHA = r.sha;
+      fromScript(r.script);
+      BLD = { manifest: r.manifest, lines: r.lines };
+      refreshSynthKeys();
+      bi = 0; sel = null; selLine = null; voiceScope = "all"; history = []; warnings = []; unsaved = false; curT = 0;
+      serverIssues = []; serverYaml = "";
+      try { localStorage.setItem("talkscript.script", id); } catch (e) { /* 使えない環境 */ }
+      $("scriptSel").value = id;
+      if (!BLOCKS.length) BLOCKS.push({ id: "B1", start: "auto", groups: {}, lines: [], kf: {}, extra: {} });
+      render(); renderSaveState(); scheduleCheck();
+    } catch (e) { toast(`読み込めません: ${e.message}`); }
+    finally { busy("", false); }
+  }
+  async function save(force) {
+    if (!SID) return false;
+    busy("保存中…", true);
+    try {
+      const r = await api("PUT", `script?id=${encodeURIComponent(SID)}`, { script: toScript(), base_sha: SHA, force: !!force });
+      SHA = r.sha; BLD = { manifest: r.manifest, lines: r.lines }; refreshSynthKeys();
+      unsaved = false; renderSaveState(); render(); toast("保存しました"); return true;
+    } catch (e) {
+      if (e.status === 409 && !force && confirm(`${e.message}\n\n画面の内容で上書きしますか？`)) { busy("", false); return save(true); }
+      toast(`保存できません: ${e.message}`); return false;
+    } finally { busy("", false); }
+  }
+  function renderFreeze() {
+    const fr = !!(BLD.manifest && BLD.manifest.frozen);
+    $("freezeBtn").textContent = fr ? "固定を解く" : "固定";
+    $("freezeBtn").title = fr ? `音声を固定済み（${BLD.manifest.frozen_at || ""}）。台詞や声を変えるには固定を解く` : "合成した音声を固定する（実験の台本では必須）";
+  }
+  async function toggleFreeze() {
+    if (!SID) return;
+    const fr = !!(BLD.manifest && BLD.manifest.frozen);
+    if (unsaved && !(await save())) return;
+    try {
+      const r = await api("POST", "freeze", { id: SID, undo: fr });
+      BLD.manifest.frozen = r.frozen; BLD.manifest.frozen_at = r.frozen_at; renderFreeze(); scheduleCheck();
+      toast(r.frozen ? "音声を固定しました" : "固定を解きました");
+    } catch (e) { toast(`固定できません: ${e.message}`); }
+  }
+
+  // ---------- 実機で再生 ----------
+  function renderRunRobots() {
+    const rs = META ? META.robots || [] : [];
+    const prev = new Set([...document.querySelectorAll("#runRobots input:checked")].map(x => x.value));
+    $("runRobots").innerHTML = rs.map(r => `<label class="tog"><input type="checkbox" value="${esc(r)}" ${prev.size ? (prev.has(r) ? "checked" : "") : "checked"}> ${esc((ST.robots[r] || {}).label || r)}</label>`).join("");
+  }
+  let runPoll = 0, runSince = 0;
+  function runLog(text) { const p = $("runLog"); p.textContent += text + "\n"; p.scrollTop = p.scrollHeight; }
+  async function startRun() {
+    if (!SID) return;
+    if (unsaved) {
+      if (!confirm("未保存の変更があります。保存してから実行しますか？")) return;
+      if (!(await save())) return;
+    }
+    const robots = [...document.querySelectorAll("#runRobots input:checked")].map(x => x.value);
+    if (!robots.length && $("runMode").value !== "speech_relax" && $("runMode").value !== "dry") { toast("ロボットを選んでください"); return; }
+    const notes = { condition: $("nCondition").value, subject: $("nSubject").value, distance: $("nDistance").value, spl_db: $("nSpl").value, note: $("nNote").value };
+    $("runLog").textContent = "";
+    try {
+      await api("POST", "play", { id: SID, mode: $("runMode").value, robots, notes });
+      runSince = 0; setRunUi("running"); pollRun();
+    } catch (e) { runLog(`実行できません: ${e.message}`); }
+  }
+  function setRunUi(state) {
+    const active = state === "running" || state === "operator";
+    $("runBtn").disabled = active; $("stopBtn").disabled = !active; $("stopNowBtn").disabled = !active;
+    $("runState").textContent = { running: "実行中", operator: "合図を待っています", done: "終わりました", idle: "" }[state] || state;
+  }
+  async function pollRun() {
+    clearTimeout(runPoll);
+    try {
+      const r = await api("GET", `run?since=${runSince}`);
+      for (const l of r.log) runLog(l);
+      runSince = r.next;
+      setRunUi(r.state);
+      $("opPrompt").hidden = r.state !== "operator";
+      if (r.state === "operator") $("opText").textContent = (r.prompt || "").replace("Enter で開始（Ctrl+C で中止）: ", "開始の合図を待っています");
+      if (r.state === "done") {
+        runLog(`結果: ${r.result}`);
+        loadRuns();
+        return;
+      }
+    } catch (e) { runLog(`状態を読めません: ${e.message}`); }
+    runPoll = setTimeout(pollRun, 400);
+  }
+  async function loadRuns() {
+    try {
+      const r = await api("GET", "runs");
+      $("recBody").innerHTML = r.runs.length ? r.runs.map(x => `<tr data-run="${esc(x.run_id)}"><td class="num">${esc(x.run_id)}</td><td>${esc(x.mode || "")}</td>
+        <td class="${x.result === "ok" ? "res-ok" : "res-bad"}">${esc(x.result || "")}</td></tr>`).join("") : `<tr><td colspan="3" class="empty">まだありません</td></tr>`;
+      $("recBody").querySelectorAll("tr[data-run]").forEach(tr => tr.addEventListener("click", async () => {
+        try { $("recSummary").textContent = (await api("GET", `runs/summary?run_id=${encodeURIComponent(tr.dataset.run)}`)).summary; }
+        catch (e) { $("recSummary").textContent = e.message; }
+      }));
+    } catch (e) { $("recBody").innerHTML = `<tr><td colspan="3">${esc(e.message)}</td></tr>`; }
+  }
+
+  // ---------- 環境 ----------
+  async function doctor(network) {
+    $("docList").innerHTML = `<li class="empty">確かめています…</li>`;
+    try {
+      const r = await api("GET", `doctor${network ? "?network=1" : ""}`);
+      $("docList").innerHTML = r.checks.map(c => `<li><span class="${c.ok === true ? "m-ok" : c.ok === false ? "m-ng" : "m-wa"}">${c.ok === true ? "OK" : c.ok === false ? "NG" : "注意"}</span><span>${esc(c.what)}</span><span class="d">${esc(c.detail)}</span></li>`).join("");
+      return r.checks;
+    } catch (e) { $("docList").innerHTML = `<li>${esc(e.message)}</li>`; return []; }
+  }
+  async function openEnv() {
+    $("envDlg").showModal();
+    $("wsPath2").value = ST.workspace || "";
+    $("envNote").textContent = `talkscript ${ST.version}。ロボットのアドレス（自作機 ${ST.settings.self7_host}、Sota ${ST.settings.sota_host}）は、作業フォルダの talkscript.toml で変えます。`;
+    doctor(false);
+    try {
+      const d = await api("GET", "devices");
+      $("devSel").innerHTML = `<option value="">OS の既定の出力機器</option>` + d.devices.map(x => `<option value="${esc(x.name)}" ${d.current === x.name ? "selected" : ""}>${esc(x.name)}（${esc(x.hostapi)}）</option>`).join("");
+    } catch (e) { $("devSel").innerHTML = `<option>${esc(e.message)}</option>`; }
+  }
+
+  // ---------- 起動 ----------
+  let toastTimer = 0;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 4200); }
+  async function loadVoices() {
+    VOICES = null; voicesErr = null; if (META) renderVoice();
+    try { const r = await api("GET", "voices"); VOICES = r.speakers; }
+    catch (e) { voicesErr = e.message.length > 80 ? e.message.slice(0, 80) + "…" : e.message; }
+    if (META) renderVoice();
+  }
+  async function refreshState() {
+    ST = await api("GET", "state");
+    $("wsLbl").textContent = ST.workspace || "（作業フォルダなし）";
+    $("wsLbl").title = ST.workspace || "";
+    $("scriptSel").innerHTML = (ST.scripts || []).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+    $("foot").textContent = `talkscript ${ST.version}。台詞の時刻は VOICEVOX で合成した結果から求め、合成していない台詞は文字数から作った仮の値（斜体）を使います。` +
+      `補間は各キーフレームで速度 0 になる 3 次式で、区間の最大角速度 = 1.5 × 角度差 ÷ 時間で検査します。上限はロボットの設定ファイル（config/robots）の値です。`;
+  }
+  async function start() {
+    if (!TOKEN) { document.body.innerHTML = "<p style='padding:20px'>talkscript のコマンドから開いてください（合言葉がありません）。</p>"; return; }
+    await refreshState();
+    setInterval(() => api("GET", "ping").catch(() => {}), 5000);
+    api("GET", "ping").catch(() => {});
+    if (!ST.workspace) { $("wsPath").value = ST.default_workspace; $("wsDlg").showModal(); return; }
+    await afterWorkspace();
+  }
+  async function afterWorkspace() {
+    const scripts = ST.scripts || [];
+    let want = null; try { want = localStorage.getItem("talkscript.script"); } catch (e) { /* 使えない環境 */ }
+    loadVoices();
+    loadRuns();
+    if (scripts.length) await loadScript(scripts.includes(want) ? want : scripts[0]);
+    else toast("台本がありません。「＋ 新しい台本」で作ります");
+  }
+
+  // ---------- つなぎ ----------
+  $("playBtn").addEventListener("click", () => playing ? pause() : play());
+  $("toStartBtn").addEventListener("click", () => { pause(); curT = 0; updatePlayhead(true); });
+  $("snapChk").addEventListener("change", e => { snapOn = e.target.checked; });
+  $("soundChk").addEventListener("change", e => { soundOn = e.target.checked; if (playing) { pause(); } });
+  $("zoomRng").addEventListener("input", e => { const c = curT; pps = +e.target.value; renderTimeline(); curT = c; updatePlayhead(true); });
+  $("gestSel").addEventListener("change", gestDefaults);
+  $("insertBtn").addEventListener("click", insertGesture);
+  $("undoBtn").addEventListener("click", undo);
+  $("saveBtn").addEventListener("click", () => save());
+  $("synthBtn").addEventListener("click", () => { const d = allLineIds(); if (!BLOCKS.flatMap(b => b.lines).some(isDirty)) toast("合成し直す台詞はありません"); synthNow(d); });
+  $("freezeBtn").addEventListener("click", toggleFreeze);
+  $("scriptSel").addEventListener("change", e => {
+    if (unsaved && !confirm("未保存の変更があります。保存せずに別の台本を開きますか？")) { e.target.value = SID; return; }
+    loadScript(e.target.value);
+  });
+  $("newScriptBtn").addEventListener("click", async () => {
+    const id = prompt("新しい台本の名前（英数字と - _）"); if (!id) return;
+    const tpl = SID && confirm(`今の台本（${SID}）を写して作りますか？\n（キャンセルで空の台本）`) ? SID : "";
+    try { await api("POST", "script/new", { id, template: tpl }); await refreshState(); await loadScript(id); toast(`${id} を作りました`); }
+    catch (e) { toast(`作れません: ${e.message}`); }
+  });
+  $("addBlockBtn").addEventListener("click", () => {
+    if (!SID) return;
+    pushHist();
+    let n = BLOCKS.length + 1; while (BLOCKS.some(b => b.id === `B${n}`)) n++;
+    const kf = {}; for (const r of META.robots || []) kf[r] = {};
+    BLOCKS.push({ id: `B${n}`, start: "operator", groups: {}, lines: [], kf, extra: {} });
+    bi = BLOCKS.length - 1; sel = null; render();
+    toast(`ブロック B${n} を足しました（操作者の合図で開始）`);
+  });
+  $("delBlockBtn").addEventListener("click", () => {
+    if (BLOCKS.length <= 1 || !confirm(`ブロック ${blk().id} を削除しますか？`)) return;
+    pushHist(); BLOCKS.splice(bi, 1); bi = Math.max(0, bi - 1); sel = null; render();
+  });
+  $("addLineBtn").addEventListener("click", () => {
+    if (!SID) return;
+    pushHist();
+    const n = Math.max(0, ...allLineIds().map(id => +String(id).replace(/\D/g, "") || 0)) + 1;
+    const L = { id: `L${n}`, say: "新しい台詞です。" };
+    if (blk().lines.length) L.gap_ms = 300;
+    blk().lines.push(L); selLine = L.id; render();
+    const ta = $(`say-${L.id}`); if (ta) { ta.focus(); ta.select(); }
+    toast(`${L.id} を追加しました。文を書き換えて欄の外を押すと合成します`);
+  });
+  $("copyBtn").addEventListener("click", () => {
+    const txt = $("yaml").textContent;
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($("yaml")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("選択しました。Ctrl+C でコピーできます"); };
+    try { navigator.clipboard.writeText(txt).then(() => toast("コピーしました"), fallback); } catch (e) { fallback(); }
+  });
+  $("runBtn").addEventListener("click", startRun);
+  $("stopBtn").addEventListener("click", () => api("POST", "run/stop", { mode: "graceful" }).then(() => runLog("止める要求を送りました（休止姿勢へ戻します）")).catch(e => runLog(e.message)));
+  $("stopNowBtn").addEventListener("click", () => api("POST", "run/stop", { mode: "now" }).then(() => runLog("すぐ止める要求を送りました（トルクを切ります）")).catch(e => runLog(e.message)));
+  $("opGo").addEventListener("click", () => api("POST", "run/continue").catch(e => runLog(e.message)));
+  $("netBtn").addEventListener("click", async () => {
+    runLog("接続を確かめています…");
+    const cs = await doctor(true);
+    for (const c of cs) runLog(`[${c.ok === true ? "OK" : c.ok === false ? "NG" : "注意"}] ${c.what}：${c.detail}`);
+  });
+  $("recReload").addEventListener("click", loadRuns);
+  $("envBtn").addEventListener("click", openEnv);
+  document.querySelectorAll("dialog [data-close]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
+  $("docAgain").addEventListener("click", () => doctor(false));
+  $("docNet").addEventListener("click", () => doctor(true));
+  $("devSave").addEventListener("click", async () => {
+    try { await api("POST", "settings", { audio_device: $("devSel").value }); await refreshState(); toast("音声の出力機器を設定しました（この PC の設定）"); doctor(false); }
+    catch (e) { toast(e.message); }
+  });
+  async function openWorkspace(path, dlg) {
+    try {
+      await api("POST", "workspace", { path, create: true, default: true });
+      await refreshState(); if (dlg) dlg.close(); unsaved = false; await afterWorkspace();
+    } catch (e) { $("wsErr").textContent = e.message; toast(e.message); }
+  }
+  $("wsCreate").addEventListener("click", () => openWorkspace($("wsPath").value, $("wsDlg")));
+  $("wsDlg").addEventListener("cancel", e => e.preventDefault());
+  $("wsOpen2").addEventListener("click", () => {
+    if (unsaved && !confirm("未保存の変更があります。保存せずに作業フォルダを変えますか？")) return;
+    openWorkspace($("wsPath2").value, $("envDlg"));
+  });
+  $("quitBtn").addEventListener("click", async () => {
+    if (unsaved && !confirm("未保存の変更があります。保存せずに終了しますか？")) return;
+    try { await api("POST", "quit"); } catch (e) { /* 終わった */ }
+    document.body.innerHTML = "<p style='padding:24px'>talkscript を終了しました。この窓を閉じてください。</p>";
+    window.close();
+  });
+  document.addEventListener("keydown", e => {
+    const tag = (e.target.tagName || "").toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); return; }
+    if (["input", "select", "textarea"].includes(tag) || document.querySelector("dialog[open]")) return;
+    if (e.key === " " && tag !== "button") { e.preventDefault(); playing ? pause() : play(); }
+    else if ((e.key === "Delete" || e.key === "Backspace") && sel) { e.preventDefault(); delSelected(); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
+  });
+  window.addEventListener("beforeunload", e => { if (unsaved) { e.preventDefault(); e.returnValue = ""; } });
+  window.addEventListener("resize", () => drawView());
+  if (window.matchMedia) { const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", () => SID && renderTimeline()); }
+
+  start().catch(e => toast(`起動できません: ${e.message}`));
+})();
+
+</script>
+</body>
+</html>

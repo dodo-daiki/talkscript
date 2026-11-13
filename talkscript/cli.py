@@ -1,5 +1,6 @@
-"""コマンド。
+"""コマンド。引数なしで実行すると、画面（GUI）を開く。
 
+    talkscript                           # 画面を開く（talkscript gui と同じ）
     talkscript setup                     # 初回の準備（VOICEVOX の導入・PC ごとの設定・作業フォルダ）。足りないものは確認してから入れる
     talkscript doctor                    # 動かすのに必要なものがそろっているかを確かめる
     talkscript init <フォルダ>           # 作業フォルダを作る（台本・ロボットの設定・ひな形の例を写す）
@@ -31,7 +32,7 @@ from .robots import AdapterError
 from .voicevox import VoicevoxClient, VoicevoxError
 
 #: 作業フォルダなしで動くコマンド
-NO_WORKSPACE = {"setup", "doctor", "init", "engine", "voices"}
+NO_WORKSPACE = {"setup", "doctor", "init", "engine", "voices", "shortcut"}
 
 
 def _client(st):
@@ -305,65 +306,39 @@ def cmd_setup(a, st):
             workspace.write_user_settings({"workspace": str(d)})
             io.set_workspace(d)
             print(f"[済] 作業フォルダを作った: {d}")
+    from . import shortcut
+    if shortcut.exists():
+        print("[済] 画面を開くショートカット")
+    elif ask(f"画面（GUI）を開くショートカットを、{shortcut.where()}に作りますか？", a.yes):
+        try:
+            for p in shortcut.create():
+                print(f"[済] ショートカット: {p}")
+        except shortcut.ShortcutError as e:
+            print(f"[注意] ショートカットを作れなかった: {e}（talkscript と入力すれば画面が開く）")
     print(f"PC ごとの設定: {workspace.user_settings_path()}")
+    print("画面を開くには: talkscript（引数なし）か、作ったショートカット")
     print()
     return cmd_doctor(argparse.Namespace(network=False), workspace.load_settings(io.ROOT))
 
 
+def cmd_shortcut(a, st):
+    from . import shortcut
+    if a.remove:
+        for p in shortcut.remove():
+            print(f"消した: {p}")
+        return 0
+    for p in shortcut.create():
+        print(f"作った: {p}")
+    return 0
+
+
 def cmd_doctor(a, st):
-    bad = 0
-
-    def line(ok, what, detail=""):
-        nonlocal bad
-        mark = {True: "OK  ", False: "NG  ", None: "注意"}[ok]
-        if ok is False:
-            bad += 1
-        print(f"[{mark}] {what}{'：' + detail if detail else ''}")
-
-    line(True, "talkscript", f"{__version__}（Python {sys.version.split()[0]}、{engine.platform_key()}）")
-    try:
-        import sounddevice as sd
-        pa = sd.get_portaudio_version()[1]
-        try:
-            dev = sd.query_devices(kind="output")
-            line(True, "音声の出力", f"{pa}、既定の出力 {dev['name']}")
-        except Exception as e:  # noqa: BLE001
-            line(False, "音声の出力", f"{pa} は使えるが、出力機器が見つからない（{e}）。スピーカーをつなぐか、OS の音声の設定を確かめる")
-    except (ImportError, OSError) as e:
-        line(False, "音声の出力", f"PortAudio が使えない: {e}（Linux は libportaudio2 が要る）")
-    url = st.get("voicevox", {}).get("url", "http://127.0.0.1:50021")
-    v = engine.running_version(url)
-    exe = engine.find_engine(st)
-    if v:
-        line(True, "VOICEVOX ENGINE", f"{v} が動いている（{url}）")
-    elif exe:
-        line(True, "VOICEVOX ENGINE", f"止まっている（合成のときに自動で起動する: {exe}）")
-    else:
-        line(False, "VOICEVOX ENGINE", "見つからない（talkscript setup）")
-    if io.ROOT is None:
-        line(False, "作業フォルダ", "見つからない（talkscript init <フォルダ> --default）")
-    else:
-        line(True, "作業フォルダ", str(io.ROOT))
-        for r in sorted(x.stem for x in io.CONFIG.glob("robots/*.yaml")):
-            try:
-                cfg = io.load_robot(r)
-                host = st.get(r, {}).get("host", (cfg.get("connection") or {}).get("host"))
-                tbd = [j for j, jc in cfg["joints"].items() if any(io.is_tbd(jc.get(k, 0)) for k in ("sign", "offset", "range", "vmax"))]
-                detail = f"アドレス {host}" + (f"、未確定の関節 {len(tbd)}" if tbd else "")
-                line(None if io.is_tbd(host) or tbd else True, f"ロボット {r}", detail)
-            except io.FormatError as e:
-                line(False, f"ロボット {r}", str(e))
-        n = len(list(io.SCRIPTS.glob("*.yaml")))
-        line(True, "台本", f"{n} 個（{io.SCRIPTS}）")
-    if a.network and io.ROOT is not None:
-        try:
-            from .robots.self7 import Self7Adapter
-            ad = Self7Adapter(io.load_robot("self7"), st, lambda e: None)
-            info = ad.connect()
-            ad.client.close()
-            line(True, "自作機の agent", f"{info['agent']}、時計のずれ {info['clock']['offset_ns'] / 1e6:.1f} ms")
-        except Exception as e:  # noqa: BLE001
-            line(False, "自作機の agent", str(e))
+    from .diag import checks
+    rows = checks(st, network=getattr(a, "network", False))
+    for r in rows:
+        mark = {True: "OK  ", False: "NG  ", None: "注意"}[r["ok"]]
+        print(f"[{mark}] {r['what']}{'：' + r['detail'] if r['detail'] else ''}")
+    bad = sum(r["ok"] is False for r in rows)
     print("そろっている" if bad == 0 else f"足りないもの {bad} 件")
     return 0 if bad == 0 else 1
 
@@ -383,7 +358,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog="talkscript", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--workspace", help="作業フォルダ")
     ap.add_argument("--version", action="version", version=f"talkscript {__version__}")
-    sub = ap.add_subparsers(dest="cmd", required=True)
+    sub = ap.add_subparsers(dest="cmd")
+    sub.add_parser("gui", help="画面を開く")
+    p = sub.add_parser("shortcut", help="スタートメニュー（Linux はアプリ一覧）とデスクトップに、画面を開くショートカットを作る")
+    p.add_argument("--remove", action="store_true")
     p = sub.add_parser("setup"); p.add_argument("--yes", action="store_true", help="確認をすべて「はい」にする")
     p.add_argument("--no-voicevox", action="store_true"); p.add_argument("--workspace-dir")
     p = sub.add_parser("doctor"); p.add_argument("--network", action="store_true", help="Pi の agent へつながるかも確かめる")
@@ -411,6 +389,9 @@ def main(argv=None):
     p = sub.add_parser("latency-sota"); p.add_argument("--native", action="append", required=True, help="例 HEAD_Y=10（ネイティブの角度）")
     p.add_argument("--msec", type=int, default=300); p.add_argument("--repeat", type=int, default=5)
     a = ap.parse_args(argv)
+    if a.cmd in (None, "gui"):
+        from .gui import main as gui_main
+        return gui_main(["--workspace", a.workspace] if a.workspace else [])
     for f in (sys.stdout, sys.stderr):              # 端末の文字コードで出せない文字（° など）で止まらないように
         try:
             f.reconfigure(errors="replace")

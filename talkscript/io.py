@@ -65,7 +65,7 @@ def read_yaml(p) -> dict:
 
 
 def write_yaml(p, d: dict) -> None:
-    pathlib.Path(p).write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False, width=140), encoding="utf-8")
+    pathlib.Path(p).write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False, width=140, default_flow_style=None), encoding="utf-8")
 
 
 def read_json(p) -> dict:

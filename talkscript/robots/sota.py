@@ -164,7 +164,8 @@ class SotaAdapter(RobotAdapter):
         """Sota は完了を返さないので、予定の終わり（送信 + 遅れ + Msec の合計）まで待つだけ。"""
         block = self.blocks[block_id]
         for th in self._threads:
-            th.join(max(0.0, (deadline_ns - time.perf_counter_ns()) / 1e9))
+            while th.is_alive() and time.perf_counter_ns() < deadline_ns:
+                th.join(0.1)
         self._threads = []
         self.event("finished_estimated", block=block_id, total_ms=sum(p["Msec"] for p in block["poses"]))
         return True

@@ -22,7 +22,8 @@ def git_state() -> dict:
 
 
 class RunRecord:
-    def __init__(self, script_id: str, *, base: pathlib.Path | None = None, run_id: str | None = None):
+    def __init__(self, script_id: str, *, base: pathlib.Path | None = None, run_id: str | None = None, echo=print):
+        self.echo = echo
         stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         base = base or io.RUNS
         self.run_id = run_id or f"{stamp}_{script_id}"
@@ -58,8 +59,7 @@ class RunRecord:
             fp.write(json.dumps(ev, ensure_ascii=False) + "\n")
             fp.flush()
         if kind in ("warn", "fault", "heartbeat_lost", "disengaged", "audio_status"):
-            print(f"  [{ev.get('robot', '')}{'' if 'robot' not in ev else ' '}{kind}] {ev.get('detail') or ev.get('reason') or ''}",
-                  flush=True)
+            self.echo(f"  [{ev.get('robot', '')}{'' if 'robot' not in ev else ' '}{kind}] {ev.get('detail') or ev.get('reason') or ''}")
 
     def write_run(self, **kw) -> None:
         self.run.update(kw)

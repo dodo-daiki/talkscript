@@ -118,3 +118,25 @@ def test_setup_without_tty_does_not_install(user_dirs, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "VOICEVOX の利用規約" in out and "対話できないので行わない" in out
     assert not (user_dirs / "talkscript-work").exists()
+
+
+def test_shortcut_create_and_remove(user_dirs, monkeypatch):
+    from talkscript import shortcut
+    desk = user_dirs / "desktop"
+    desk.mkdir()
+    monkeypatch.setattr(shortcut, "_desktop", lambda: desk)
+    made = shortcut.create()
+    assert len(made) == 2 and all(p.exists() for p in made)
+    assert shortcut.exists()
+    assert made[1].parent == desk
+    if sys.platform != "win32":
+        assert "talkscript-gui" in made[0].read_text(encoding="utf-8")
+    assert len(shortcut.remove()) == 2 and not shortcut.exists()
+
+
+def test_cli_without_args_opens_gui(monkeypatch):
+    import talkscript.gui as gui
+    seen = {}
+    monkeypatch.setattr(gui, "main", lambda argv=None: seen.setdefault("argv", argv) or 0)
+    assert cli.main([]) == 0
+    assert seen["argv"] == []

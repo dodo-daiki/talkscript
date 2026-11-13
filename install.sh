@@ -10,11 +10,11 @@
 #   3. uv（Python とパッケージの管理。https://docs.astral.sh/uv/。~/.local/bin に入る）
 #   4. Python（uv が入れる。システムの Python には手を付けない）
 #   5. talkscript 本体（uv tool install）
-#   6. talkscript setup: VOICEVOX（利用規約への同意を求めてから）、PC ごとの設定、作業フォルダ
+#   6. talkscript setup: VOICEVOX（利用規約への同意を求めてから）、PC ごとの設定、作業フォルダ、画面を開くショートカット
 # apt のない配布物では、1・2 の入れ方を表示して止まる。
 set -eu
 
-TALKSCRIPT_VERSION=0.1.2
+TALKSCRIPT_VERSION=0.2.0
 UV_VERSION=0.13.0
 PYTHON_VERSION=3.12
 YES=0
@@ -160,6 +160,7 @@ else
     "$TS" "$@" || code=$?
 fi
 echo ""
+echo "talkscript の画面を開くには: アプリ一覧の talkscript か、端末で talkscript（引数なし）"
 echo "talkscript のコマンド: $TS"
 [ "$code" = 0 ] || echo "足りないものが残っている（上の NG）。talkscript doctor で確かめられる"
 exit "$code"

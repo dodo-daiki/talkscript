@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "talkscript"
-version = "0.1.2"
+version = "0.2.0"
 description = "発話（VOICEVOX）と関節ごとのキーフレームを 1 つの台本で書き、ロボットを発話に合わせて動かす"
 readme = "README.md"
 license = "MIT"
@@ -19,6 +19,9 @@ test = ["pytest", "python-can>=4.0"]
 [project.scripts]
 talkscript = "talkscript.cli:main"
 
+[project.gui-scripts]
+talkscript-gui = "talkscript.gui:main"
+
 [project.urls]
 Repository = "https://github.com/dodo-daiki/talkscript"
 
@@ -31,6 +34,7 @@ namespaces = true                 # defaults/ 以下（.py のないフォルダ
 "talkscript.defaults.config.robots" = ["*.yaml"]
 "talkscript.defaults.config.gestures" = ["*.yaml"]
 "talkscript.defaults.scripts" = ["*.yaml"]
+"talkscript.gui.static" = ["*.html"]
 
 [tool.pytest.ini_options]
 pythonpath = [".", "tools"]

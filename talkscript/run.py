@@ -53,7 +53,10 @@ def _parallel(fns):
 
 def play(script_name: str, *, mode: str = "speech_motion", robots: list[str] | None = None, settings: dict | None = None,
          notes: dict | None = None, adapters: dict | None = None, audio=None, operator_input=input, log=print,
-         runs_base=None) -> RunRecord:
+         runs_base=None, ctx: dict | None = None) -> RunRecord:
+    """台本を実行する。ctx を渡すと、アダプタ・音声・記録を入れる（画面の「すぐ止める」がアダプタを直接止めるため）。
+    止めるときは、このスレッドに KeyboardInterrupt を送る（Ctrl+C と同じ。1 回目は休止姿勢へ戻す、2 回目はすぐ止める）。"""
+    ctx = ctx if ctx is not None else {}
     if mode not in MODES:
         raise PlayError(f"モードは {list(MODES)}")
     m = MODES[mode]
@@ -74,7 +77,8 @@ def play(script_name: str, *, mode: str = "speech_motion", robots: list[str] | N
     man = build.load_manifest(script["id"])
     cfgs = load_robot_cfgs(script)
 
-    rec = RunRecord(script["id"], base=runs_base)
+    rec = RunRecord(script["id"], base=runs_base, echo=log)
+    ctx["record"] = rec
     rec.write_run(mode=mode, robots=robots, notes=notes or {}, script_sha256=io.sha256_file(spath),
                   manifest_sha256=_sha_or_none(io.BUILD / script["id"] / "manifest.json"),
                   traj_sha256={r: io.sha256_file(io.BUILD / script["id"] / f"{r}.traj.json") for r in robots},
@@ -93,6 +97,7 @@ def play(script_name: str, *, mode: str = "speech_motion", robots: list[str] | N
         if len(srs) != 1:
             raise PlayError(f"行によってサンプリング周波数が違う: {srs}")
         audio = AudioOut(srs.pop(), device=settings.get("audio", {}).get("device"), on_event=rec.event)
+    ctx["adapters"], ctx["audio"] = adapters, audio
     sota_lat = getattr(adapters.get("sota"), "latency_s", None)
     rec.write_run(sota_latency_s=sota_lat)
 

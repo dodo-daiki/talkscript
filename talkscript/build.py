@@ -53,8 +53,10 @@ def speaker_label(voice: dict) -> str:
 
 
 def synth_key(line: dict, voice: dict, speaker_id: int, engine_version: str) -> str:
+    def num(v):   # 1 と 1.0 を同じにする（画面の JSON を通ると 1.0 が 1 になるため）
+        return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else v
     body = {"say": line["say"], "reading": line.get("reading") or [], "speaker_id": speaker_id,
-            "voice": {k: voice[k] for k in sorted(voice) if k != "speaker"}, "engine": engine_version}
+            "voice": {k: num(voice[k]) for k in sorted(voice) if k != "speaker"}, "engine": engine_version}
     return io.sha256_bytes(json.dumps(body, ensure_ascii=False, sort_keys=True).encode("utf-8"))
 
 
