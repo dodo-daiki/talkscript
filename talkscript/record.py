@@ -14,7 +14,7 @@ from . import __version__, io
 def git_state() -> dict:
     def run(*a):
         try:
-            return subprocess.run(["git", *a], cwd=io.ROOT, capture_output=True, text=True, timeout=5).stdout.strip()
+            return subprocess.run(["git", *a], cwd=io.ROOT, capture_output=True, encoding="utf-8", errors="replace", timeout=5).stdout.strip()
         except (OSError, subprocess.SubprocessError):
             return None
     status = run("status", "--porcelain", "--", ".")

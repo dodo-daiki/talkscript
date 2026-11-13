@@ -29,7 +29,7 @@ param(
     [switch]$Update               # 画面からの更新（入っていても尋ねずに入れ直す）
 )
 $ErrorActionPreference = "Stop"
-$TalkscriptVersion = "0.2.2"
+$TalkscriptVersion = "0.2.3"
 $UvVersion = "0.13.0"
 $PythonVersion = "3.12"
 if (-not $Source) { $Source = "https://github.com/dodo-daiki/talkscript/releases/download/v$TalkscriptVersion/talkscript-$TalkscriptVersion-py3-none-any.whl" }

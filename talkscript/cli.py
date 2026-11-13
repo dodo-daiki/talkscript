@@ -308,18 +308,13 @@ def cmd_setup(a, st):
             io.set_workspace(d)
             print(f"[済] 作業フォルダを作った: {d}")
     from . import shortcut
-    if shortcut.exists():
-        try:
-            shortcut.create()
-            print("[済] 画面を開くショートカット（アイコンと起動先を今の版に合わせた）")
-        except shortcut.ShortcutError as e:
-            print(f"[済] 画面を開くショートカット（作り直せなかった: {e}）")
-    elif ask(f"画面（GUI）を開くショートカットを、{shortcut.where()}に作りますか？", a.yes):
-        try:
-            for p in shortcut.create():
-                print(f"[済] ショートカット: {p}")
-        except shortcut.ShortcutError as e:
-            print(f"[注意] ショートカットを作れなかった: {e}（talkscript と入力すれば画面が開く）")
+    try:   # スタートメニュー（アプリの一覧）には必ず置く（Windows の検索にも出る）。デスクトップは尋ねる
+        desk = None if shortcut.desktop_exists() or shortcut.desktop_path() is None else \
+            ask("デスクトップにも talkscript のアイコンを置きますか？", a.yes)
+        for p in shortcut.create(desktop=desk):
+            print(f"[済] ショートカット: {p}")
+    except Exception as e:  # noqa: BLE001  ショートカットがなくても、talkscript と入力すれば画面は開く
+        print(f"[注意] ショートカットを作れなかった: {e}（talkscript と入力すれば画面が開く）")
     print(f"PC ごとの設定: {workspace.user_settings_path()}")
     print("画面を開くには: talkscript（引数なし）か、作ったショートカット")
     print()
@@ -332,7 +327,7 @@ def cmd_shortcut(a, st):
         for p in shortcut.remove():
             print(f"消した: {p}")
         return 0
-    for p in shortcut.create():
+    for p in shortcut.create(desktop=None if a.refresh else True):
         print(f"作った: {p}")
     return 0
 
@@ -469,6 +464,7 @@ def main(argv=None):
     sub.add_parser("gui", help="画面を開く")
     p = sub.add_parser("shortcut", help="スタートメニュー（Linux はアプリ一覧）とデスクトップに、画面を開くショートカットを作る")
     p.add_argument("--remove", action="store_true")
+    p.add_argument("--refresh", action="store_true", help="スタートメニューと、すでにあるデスクトップのものだけ作り直す（更新のあと）")
     p = sub.add_parser("setup"); p.add_argument("--yes", action="store_true", help="確認をすべて「はい」にする")
     p.add_argument("--no-voicevox", action="store_true"); p.add_argument("--workspace-dir")
     p = sub.add_parser("update", help="新しい版を確かめ、あれば更新する")

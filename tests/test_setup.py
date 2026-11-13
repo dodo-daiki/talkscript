@@ -21,6 +21,8 @@ def user_dirs(tmp_path, monkeypatch):
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "localappdata"))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdgconf"))
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdgdata"))
+    (tmp_path / "desktop").mkdir(exist_ok=True)
+    monkeypatch.setenv("TALKSCRIPT_DESKTOP_DIR", str(tmp_path / "desktop"))   # 本物のデスクトップに触れない
     monkeypatch.delenv(workspace.ENV, raising=False)
     monkeypatch.setattr(io, "ROOT", None)
     return tmp_path
@@ -124,7 +126,7 @@ def test_setup_without_tty_does_not_install(user_dirs, monkeypatch, capsys):
 def test_shortcut_create_and_remove(user_dirs, monkeypatch):
     from talkscript import shortcut
     desk = user_dirs / "desktop"
-    desk.mkdir()
+    desk.mkdir(exist_ok=True)
     monkeypatch.setattr(shortcut, "_desktop", lambda: desk)
     monkeypatch.setenv("XDG_DATA_HOME", str(user_dirs / "xdgdata"))
     made = shortcut.create()
@@ -158,3 +160,33 @@ def test_cli_without_args_opens_gui(monkeypatch):
     monkeypatch.setattr(gui, "main", lambda argv=None: seen.setdefault("argv", argv) or 0)
     assert cli.main([]) == 0
     assert seen["argv"] == []
+
+
+def test_setup_always_adds_start_menu(user_dirs, monkeypatch, capsys):
+    """スタートメニュー（Windows の検索はここから探す）には尋ねずに置く。デスクトップは尋ねる（対話できなければ置かない）。"""
+    from talkscript import shortcut
+    monkeypatch.chdir(user_dirs)
+    monkeypatch.setattr(shortcut, "gui_exe", lambda: __import__("pathlib").Path(sys.executable))
+    monkeypatch.setattr(engine, "running_version", lambda url: "0.0.0")
+    monkeypatch.setattr(sys, "stdin", _io.StringIO(""))
+    cli.main(["setup", "--no-voicevox"])
+    out = capsys.readouterr().out
+    assert shortcut.start_menu_path().exists() and not shortcut.desktop_exists()
+    assert "デスクトップにも" in out
+    shortcut.create(desktop=True)
+    assert shortcut.desktop_exists()
+    shortcut.desktop_path().unlink()
+    shortcut.create(desktop=None)                                       # 更新のあと: ないデスクトップには作らない
+    assert not shortcut.desktop_exists() and shortcut.start_menu_path().exists()
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows だけ")
+def test_desktop_folder_from_windows(monkeypatch):
+    """デスクトップの場所は Windows に直接尋ねる（OneDrive の「デスクトップ」のような日本語の場所でも読み違えない）。"""
+    from talkscript import shortcut
+    monkeypatch.delenv("TALKSCRIPT_DESKTOP_DIR", raising=False)
+    p = shortcut._known_folder_desktop()
+    r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                        "[Console]::OutputEncoding = [Text.Encoding]::UTF8; [Environment]::GetFolderPath('Desktop')"],
+                       capture_output=True, encoding="utf-8", timeout=30)
+    assert p is not None and p.is_dir() and str(p) == r.stdout.strip()

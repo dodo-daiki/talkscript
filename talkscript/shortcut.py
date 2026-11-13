@@ -60,53 +60,78 @@ def _desktop() -> pathlib.Path | None:
         p = pathlib.Path(os.environ["TALKSCRIPT_DESKTOP_DIR"])
         return p if p.is_dir() else None
     if sys.platform == "win32":
-        p = pathlib.Path(os.environ.get("USERPROFILE", pathlib.Path.home())) / "Desktop"
-        try:
-            out = subprocess.run(["powershell", "-NoProfile", "-Command", "[Environment]::GetFolderPath('Desktop')"],
-                                 capture_output=True, text=True, timeout=15).stdout.strip()
-            if out:
-                p = pathlib.Path(out)
-        except (OSError, subprocess.SubprocessError):
-            pass
+        p = _known_folder_desktop() or pathlib.Path(os.environ.get("USERPROFILE", pathlib.Path.home())) / "Desktop"
         return p if p.is_dir() else None
     try:
-        out = subprocess.run(["xdg-user-dir", "DESKTOP"], capture_output=True, text=True, timeout=5).stdout.strip()
+        out = subprocess.run(["xdg-user-dir", "DESKTOP"], capture_output=True, encoding="utf-8", errors="replace",
+                             timeout=5).stdout.strip()
         p = pathlib.Path(out) if out else pathlib.Path.home() / "Desktop"
     except (OSError, subprocess.SubprocessError):
         p = pathlib.Path.home() / "Desktop"
     return p if p.is_dir() and p != pathlib.Path.home() else None
 
 
-def paths() -> list[pathlib.Path]:
-    out = []
+def _known_folder_desktop() -> pathlib.Path | None:
+    """Windows のデスクトップの場所（OneDrive の「デスクトップ」に移されていても）。
+    PowerShell に尋ねると、出力の文字コード（UTF-8 か cp932 か）で読み違えることがあるので、Windows に直接尋ねる。"""
+    import ctypes
+    import uuid
+    from ctypes import wintypes
+
+    class GUID(ctypes.Structure):
+        _fields_ = [("d1", wintypes.DWORD), ("d2", wintypes.WORD), ("d3", wintypes.WORD), ("d4", ctypes.c_ubyte * 8)]
+    g = GUID.from_buffer_copy(uuid.UUID("{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}").bytes_le)   # FOLDERID_Desktop
+    out = ctypes.c_wchar_p()
+    try:
+        if ctypes.windll.shell32.SHGetKnownFolderPath(ctypes.byref(g), 0, None, ctypes.byref(out)) != 0:
+            return None
+        return pathlib.Path(out.value) if out.value else None
+    except (OSError, AttributeError):
+        return None
+    finally:
+        if out:
+            ctypes.windll.ole32.CoTaskMemFree(out)
+
+
+def start_menu_path() -> pathlib.Path:
+    """スタートメニュー（Windows）・アプリの一覧（Linux）のショートカット。Windows の検索はここから探す。"""
     if sys.platform == "win32":
-        out.append(pathlib.Path(os.environ.get("APPDATA", "")) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / f"{NAME}.lnk")
-        d = _desktop()
-        if d:
-            out.append(d / f"{NAME}.lnk")
-    else:
-        out.append(pathlib.Path(os.environ.get("XDG_DATA_HOME", pathlib.Path.home() / ".local" / "share")) / "applications" / f"{NAME}.desktop")
-        d = _desktop()
-        if d:
-            out.append(d / f"{NAME}.desktop")
-    return out
+        return pathlib.Path(os.environ.get("APPDATA", "")) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / f"{NAME}.lnk"
+    return pathlib.Path(os.environ.get("XDG_DATA_HOME", pathlib.Path.home() / ".local" / "share")) / "applications" / f"{NAME}.desktop"
+
+
+def desktop_path() -> pathlib.Path | None:
+    d = _desktop()
+    return d / (f"{NAME}.lnk" if sys.platform == "win32" else f"{NAME}.desktop") if d else None
+
+
+def paths() -> list[pathlib.Path]:
+    d = desktop_path()
+    return [start_menu_path()] + ([d] if d else [])
 
 
 def where() -> str:
-    return "スタートメニューとデスクトップ" if sys.platform == "win32" else "アプリの一覧（とデスクトップ）"
+    return "スタートメニュー（Windows の検索にも出る）" if sys.platform == "win32" else "アプリの一覧"
 
 
 def exists() -> bool:
-    ps = paths()
-    return bool(ps) and ps[0].exists()
+    return start_menu_path().exists()
 
 
-def create() -> list[pathlib.Path]:
-    """ショートカットを作る（あれば作り直す。アイコンと起動先を今の talkscript に合わせる）。"""
+def desktop_exists() -> bool:
+    d = desktop_path()
+    return bool(d and d.exists())
+
+
+def create(desktop: bool | None = True) -> list[pathlib.Path]:
+    """ショートカットを作る（あれば作り直す。アイコンと起動先を今の talkscript に合わせる）。
+    スタートメニュー（アプリの一覧）には必ず作る。デスクトップは desktop が True なら作り、None ならすでにあるときだけ作り直す。"""
     exe = gui_exe()
     icon = install_icon()
     made = []
-    for p in paths():
+    d = desktop_path()
+    want_desk = d is not None and (desktop or (desktop is None and d.exists()))
+    for p in [start_menu_path()] + ([d] if want_desk else []):
         p.parent.mkdir(parents=True, exist_ok=True)
         if sys.platform == "win32":
             ps = ("$s = (New-Object -ComObject WScript.Shell).CreateShortcut($env:TS_LNK); $s.TargetPath = $env:TS_EXE; "
@@ -114,7 +139,7 @@ def create() -> list[pathlib.Path]:
                   "if ($env:TS_ICO) { $s.IconLocation = $env:TS_ICO + ',0' }; $s.Save()")
             r = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps],
                                env={**os.environ, "TS_LNK": str(p), "TS_EXE": str(exe), "TS_ICO": str(icon or "")},
-                               capture_output=True, text=True, timeout=30)
+                               capture_output=True, encoding="utf-8", errors="replace", timeout=30)
             if r.returncode != 0 or not p.exists():
                 raise ShortcutError(f"{p} を作れない: {r.stderr.strip()[:200]}")
         else:

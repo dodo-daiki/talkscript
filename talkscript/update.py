@@ -156,13 +156,13 @@ def start_update(result: dict, *, wait_pids=(), log=print) -> str:
     uv = _uv()
     log(f"入れ直す: {whl}")
     r = subprocess.run([uv, "tool", "install", "--force", "--python", PYTHON, "--from", str(whl), "talkscript"],
-                       capture_output=True, text=True)
+                       capture_output=True, encoding="utf-8", errors="replace")
     if r.returncode != 0:
         raise UpdateError(f"uv tool install に失敗した: {(r.stderr or r.stdout).strip()[-400:]}")
     from . import shortcut
     if shortcut.exists():    # 新しい版のコマンドで作り直す（アイコン・起動先）
-        bin_dir = subprocess.run([uv, "tool", "dir", "--bin"], capture_output=True, text=True).stdout.strip()
+        bin_dir = subprocess.run([uv, "tool", "dir", "--bin"], capture_output=True, encoding="utf-8", errors="replace").stdout.strip()
         ts = pathlib.Path(bin_dir) / "talkscript"
         if ts.is_file():
-            subprocess.run([str(ts), "shortcut"], capture_output=True, text=True)
+            subprocess.run([str(ts), "shortcut", "--refresh"], capture_output=True)
     return "done"

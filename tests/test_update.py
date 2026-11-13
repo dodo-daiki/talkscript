@@ -17,6 +17,8 @@ def user_dirs(tmp_path, monkeypatch):
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "localappdata"))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdgconf"))
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdgdata"))
+    (tmp_path / "desktop").mkdir(exist_ok=True)
+    monkeypatch.setenv("TALKSCRIPT_DESKTOP_DIR", str(tmp_path / "desktop"))   # 本物のデスクトップに触れない
     monkeypatch.delenv(workspace.ENV, raising=False)
     monkeypatch.setattr(io, "ROOT", None)
     return tmp_path
@@ -125,7 +127,7 @@ def test_cli_update_check(user_dirs, monkeypatch, capsys):
 def test_uninstall_removes_ours_and_keeps_workspace(user_dirs, monkeypatch, capsys):
     from talkscript import shortcut
     desk = user_dirs / "desktop"
-    desk.mkdir()
+    desk.mkdir(exist_ok=True)
     monkeypatch.setenv("TALKSCRIPT_DESKTOP_DIR", str(desk))
     ws = user_dirs / "work"
     workspace.init_workspace(ws)
