@@ -43,6 +43,9 @@ def test_page_and_token(gui):
         html = r.read().decode("utf-8")
     assert "<title>talkscript</title>" in html and "fonts.googleapis" not in html
     assert call("GET", "state", token="wrong")[0] == 403
+    assert 'href="/icon.svg"' in html
+    with urllib.request.urlopen(base + "/icon.svg") as r:
+        assert r.headers["Content-Type"] == "image/svg+xml" and b"<svg" in r.read()
 
 
 def test_state_and_script_roundtrip(gui):

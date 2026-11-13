@@ -113,6 +113,7 @@ def main(argv=None) -> int:
     if not a.no_window:
         log(f"窓を開く: {open_window(url)}")
     threading.Thread(target=server.idle_watch, args=(app,), daemon=True).start()
+    app.start_update_check()
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

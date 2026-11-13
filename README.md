@@ -20,7 +20,14 @@
 続けて VOICEVOX（CPU 版 0.26.2、約 2.1 GB）を、利用規約への同意を求めたうえで公式の配布から入れます。
 最後に作業フォルダと、画面を開くショートカットを（確認してから）作ります。管理者の権限は、Linux で apt を使うときだけ要ります。
 
-**Windows**（PowerShell）:
+**Windows**: [talkscript-setup.exe](https://github.com/dodo-daiki/talkscript/releases/latest/download/talkscript-setup.exe)
+（最新の版のインストーラー）をダウンロードし、ダブルクリックします。窓が開き、足りないものを 1 つずつ尋ねます。
+終わると、デスクトップとスタートメニューに talkscript のアイコンができます。以後はそのアイコンから画面を開きます。
+
+- インストーラーには電子署名がないため、初めて開くと「Windows によって PC が保護されました」と出ることがあります。
+  「詳細情報」を押し、「実行」を押してください。
+- インストーラーは、下の install.ps1 を中に持っていて、それを実行するだけです（作り方は `tools/build_setup.py`）。
+  PowerShell から直接実行しても同じです:
 
 ```powershell
 irm https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.ps1 -OutFile install.ps1
@@ -50,9 +57,38 @@ curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.
 | VOICEVOX | Windows: `%LOCALAPPDATA%\talkscript\VOICEVOX`、Linux: `~/.local/share/talkscript/VOICEVOX` |
 | PC ごとの設定 | Windows: `%APPDATA%\talkscript\settings.toml`、Linux: `~/.config/talkscript/settings.toml` |
 
-確かめるときは `talkscript doctor` を使います。更新は、新しい版のインストーラーをもう一度実行します
-（入れたときの版の wheel を指しているので、`uv tool upgrade talkscript` では新しい版になりません）。
-入っているものは、足りているものとして飛ばします。
+確かめるときは `talkscript doctor` を使います。
+
+### 更新
+
+画面を開くたびに、GitHub Releases に新しい版があるかを確かめます。あれば、画面の上に「新しい版 … があります」と出ます。
+「更新する」を押すと:
+
+- Windows: 新しい版のインストーラーをダウンロードし（sha256 を確かめます）、画面を閉じてから、インストーラーの窓で入れ直します。
+  足りないものがあれば、その窓で尋ねます。終わったら、アイコンから開き直してください。
+- Linux: 新しい版を入れ直します。画面を閉じて開き直すと、新しい版になります。
+
+コマンドでは `talkscript update`（確かめるだけなら `--check`）です。ネットにつながらないときは何も出ません。
+確かめないようにするには、`settings.toml` に次のように書きます（実験の PC など）:
+
+```toml
+[update]
+check = false
+```
+
+インストーラーをもう一度実行しても、更新できます（入っているものは飛ばします）。
+`uv tool upgrade talkscript` では新しい版になりません（入れたときの版の wheel を指しているため）。
+
+### アンインストール
+
+- Windows: 「設定 → アプリ → インストールされているアプリ」の **talkscript** で「アンインストール」を押します。
+  または、インストーラー（talkscript-setup.exe）をもう一度開いて「2」を選びます（`install.ps1 -Uninstall` と同じ）。
+- Linux: `curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.sh | sh -s -- --uninstall`
+
+talkscript のコマンドと画面、ショートカットとアイコン、「アプリ」の一覧の登録を消します。
+talkscript が入れた VOICEVOX と、PC ごとの設定は、尋ねてから消します。
+**作業フォルダ（台本・実行の記録）は消しません。** uv と Python も残します（ほかのものも使えるため）。
+画面で実機の実行をしている間は、アンインストールしません。
 
 VOICEVOX をすでに入れている場合は、`%LOCALAPPDATA%\Programs\VOICEVOX`（公式のインストーラーの既定の場所）を自動で探します。
 ほかの場所にあるときは、`settings.toml` の `[voicevox] engine_path` に `vv-engine/run(.exe)` の場所を書いてください。
@@ -164,6 +200,20 @@ uv run pytest -q                 # 擬似 VOICEVOX・擬似 RobotController を�
 ```sh
 python tools/gui_serve_fake.py /tmp/ts-e2e 120 &     # 擬似 VOICEVOX で画面のサーバを立て、1 行目に URL を出す
 node tools/gui_e2e.mjs "<その URL>" /tmp/ts-e2e shot.png
+```
+
+アイコンの元は `talkscript/assets/icon.svg`（16〜32 px 用は `icon-small.svg`）です。直したら、画像を作り直します:
+
+```sh
+uv run --with pillow python tools/make_icons.py preview.png   # talkscript.ico・talkscript.png と見本の画像
+```
+
+版を出すとき（Windows で）:
+
+```sh
+uv build                                  # dist/ に wheel と tar.gz
+python tools/build_setup.py               # dist/talkscript-setup.exe（install.ps1 の版が talkscript の版と同じか確かめる）
+gh release create v<版> dist/*            # 3 つを載せる。インストーラーは talkscript-setup.exe の名前のまま載せる
 ```
 
 ## ライセンス

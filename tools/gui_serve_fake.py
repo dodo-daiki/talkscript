@@ -21,6 +21,8 @@ if not (ws / "talkscript.toml").exists():
 app = server.App(ws, voicevox_factory=FakeVoicevox, log=lambda *_: None)
 build.synth(io.load_script("demo")[0], FakeVoicevox(), log=lambda *_: None)
 srv = server.serve(app)
+app.start_update_check(lambda: {"current": "0.2.2", "latest": "9.9.9", "newer": True, "page": "https://example.invalid/",
+                                "notes": "試験用の変更点", "can_update": False, "reason": "（試験: 更新はしない）"})
 print(f"http://127.0.0.1:{srv.server_address[1]}/#{app.token}", flush=True)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 time.sleep(float(sys.argv[2]) if len(sys.argv) > 2 else 120)

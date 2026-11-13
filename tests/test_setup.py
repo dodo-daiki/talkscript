@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import io as _io
 import os
+import subprocess
 import sys
 import tarfile
 import zipfile
@@ -125,13 +126,30 @@ def test_shortcut_create_and_remove(user_dirs, monkeypatch):
     desk = user_dirs / "desktop"
     desk.mkdir()
     monkeypatch.setattr(shortcut, "_desktop", lambda: desk)
+    monkeypatch.setenv("XDG_DATA_HOME", str(user_dirs / "xdgdata"))
     made = shortcut.create()
     assert len(made) == 2 and all(p.exists() for p in made)
     assert shortcut.exists()
     assert made[1].parent == desk
-    if sys.platform != "win32":
-        assert "talkscript-gui" in made[0].read_text(encoding="utf-8")
-    assert len(shortcut.remove()) == 2 and not shortcut.exists()
+    ico = shortcut.icon_path()
+    assert ico.is_file() and user_dirs in ico.parents                 # PC ごとのデータの場所に写す
+    if sys.platform == "win32":
+        r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                            "(New-Object -ComObject WScript.Shell).CreateShortcut($env:TS_LNK).IconLocation"],
+                           env={**os.environ, "TS_LNK": str(made[1])}, capture_output=True, text=True, timeout=30)
+        assert r.stdout.strip().lower() == f"{ico},0".lower()
+        assert ico.read_bytes()[:4] == b"\x00\x00\x01\x00"                # ICO
+    else:
+        text = made[0].read_text(encoding="utf-8")
+        assert "talkscript-gui" in text and f"Icon={ico}" in text
+    shortcut.create()                                                   # 作り直せる（setup の 2 回目）
+    assert len(shortcut.remove()) == 3 and not shortcut.exists() and not ico.exists()
+
+
+def test_icons_are_packaged():
+    from talkscript import shortcut
+    for name in ("icon.svg", "talkscript.ico", "talkscript.png"):
+        assert (shortcut.ASSETS / name).is_file(), name
 
 
 def test_cli_without_args_opens_gui(monkeypatch):

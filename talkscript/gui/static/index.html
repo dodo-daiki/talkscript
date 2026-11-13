@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>talkscript</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>
 :root {
   --bg: #f2f4f7;
@@ -205,6 +206,15 @@ header.top .ws { font: 12px var(--mono); color: var(--muted); overflow: hidden; 
 header.top select { min-width: 150px; }
 .state { font-size: 12px; color: var(--muted); }
 .state.unsaved { color: var(--warn); font-weight: 600; }
+.updbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 10px; padding: 8px 12px;
+  border: 1px solid var(--speech); border-radius: 10px; background: var(--speech-soft); font-size: 13px; }
+.updbar[hidden] { display: none !important; }
+.updbar .grow { flex: 1 1 auto; }
+.updbar a { color: inherit; }
+.upd-cover { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); }
+.upd-cover[hidden] { display: none !important; }
+.upd-cover div { max-width: 460px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); line-height: 1.7; }
 .blocks { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .blocks .seg button { min-width: 48px; font-family: var(--mono); }
 .bmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 0 12px 8px; font-size: 12.5px; color: var(--muted); }
@@ -269,6 +279,13 @@ a { color: var(--navy); }
     <span id="checkChip" class="chip"></span>
     <button type="button" id="envBtn" class="small">環境</button>
   </header>
+
+  <div class="updbar" id="updBar" role="status" hidden>
+    <span id="updText"></span><span class="grow"></span>
+    <a id="updNotes" href="#" target="_blank" rel="noopener">変更点</a>
+    <button type="button" id="updGo" class="small">更新する</button>
+    <button type="button" id="updLater" class="small">あとで</button>
+  </div>
 
   <div class="speech-grid">
     <section class="panel" aria-label="台詞">
@@ -419,6 +436,7 @@ a { color: var(--navy); }
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="upd-cover" id="updCover" hidden><div id="updCoverText"></div></div>
 
 <script>
 (() => {
@@ -1649,9 +1667,52 @@ a { color: var(--navy); }
     $("foot").textContent = `talkscript ${ST.version}。台詞の時刻は VOICEVOX で合成した結果から求め、合成していない台詞は文字数から作った仮の値（斜体）を使います。` +
       `補間は各キーフレームで速度 0 になる 3 次式で、区間の最大角速度 = 1.5 × 角度差 ÷ 時間で検査します。上限はロボットの設定ファイル（config/robots）の値です。`;
   }
+  // ---------- 新しい版の通知と更新 ----------
+  let updLater = false;
+  function renderUpdate() {
+    const u = ST.update, bar = $("updBar");
+    if (!u || u.pending || !u.newer || updLater) { bar.hidden = true; return; }
+    $("updText").textContent = `新しい版 ${u.latest} があります（いまは ${u.current}）。` + (u.can_update ? "" : ` ${u.reason || ""}`);
+    $("updNotes").href = u.page || "#"; $("updNotes").hidden = !u.page; $("updNotes").title = u.notes || "";
+    $("updGo").hidden = !u.can_update;
+    bar.hidden = false;
+  }
+  async function watchUpdate() {          // サーバは裏で確かめるので、結果が出るまで何回か読み直す
+    for (let i = 0; i < 12 && ST.update && ST.update.pending; i++) {
+      await new Promise(r => setTimeout(r, 1500));
+      try { ST.update = (await api("GET", "state")).update; } catch (e) { return; }
+    }
+    renderUpdate();
+  }
+  async function doUpdate() {
+    const u = ST.update; if (!u || !u.can_update) return;
+    const win = navigator.userAgent.includes("Windows");
+    let msg = `talkscript を ${u.latest} に更新します。`;
+    msg += win ? "\n\nこの画面を閉じ、インストーラーの窓を開きます。足りないものがあれば、その窓で尋ねます。終わったら、talkscript のアイコンから開き直してください。" : "\n\n入れ直したあと、画面を閉じて開き直すと新しい版になります。";
+    if (unsaved) msg += "\n\n保存していない変更があります。先に保存してください（このまま進むと失われます）。";
+    if (!confirm(msg)) return;
+    $("updGo").disabled = true; busy("新しい版をダウンロードしています…", true);
+    try {
+      const r = await api("POST", "update");
+      if (r.mode === "installer") {
+        unsaved = false;
+        $("updCoverText").textContent = `インストーラーの窓で、talkscript ${r.latest} への更新を進めています。この画面は閉じてかまいません（自動で閉じます）。`;
+        $("updCover").hidden = false;
+        setTimeout(() => { try { window.close(); } catch (e) { /* 閉じられない窓 */ } }, 2500);
+      } else {
+        $("updText").textContent = `${r.latest} を入れました。画面を閉じて開き直すと、新しい版になります。`;
+        $("updGo").hidden = true;
+      }
+    } catch (e) { toast(`更新できません: ${e.message}`); $("updGo").disabled = false; }
+    finally { busy("", false); }
+  }
+  $("updGo").addEventListener("click", doUpdate);
+  $("updLater").addEventListener("click", () => { updLater = true; renderUpdate(); });
+
   async function start() {
     if (!TOKEN) { document.body.innerHTML = "<p style='padding:20px'>talkscript のコマンドから開いてください（合言葉がありません）。</p>"; return; }
     await refreshState();
+    renderUpdate(); watchUpdate();
     setInterval(() => api("GET", "ping").catch(() => {}), 5000);
     api("GET", "ping").catch(() => {});
     if (!ST.workspace) { $("wsPath").value = ST.default_workspace; $("wsDlg").showModal(); return; }

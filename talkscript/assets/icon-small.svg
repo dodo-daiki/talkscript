@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- 16〜32 px 用の簡略版（icon.svg から、台・アンテナ・音の波を省き、形を太くした） -->
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="#1d3760"/>
+  <rect x="28" y="92" width="150" height="124" rx="36" fill="#f4f1ea"/>
+  <rect x="50" y="118" width="106" height="70" rx="22" fill="#16304f"/>
+  <circle cx="82" cy="153" r="16" fill="#4bd0e3"/>
+  <circle cx="126" cy="153" r="16" fill="#4bd0e3"/>
+  <path d="M150 20 h66 a28 28 0 0 1 28 28 v26 a28 28 0 0 1 -28 28 h-34 l-26 22 l4 -22 h-10 a28 28 0 0 1 -28 -28 v-26 a28 28 0 0 1 28 -28 Z" fill="#e0a24a"/>
+</svg>

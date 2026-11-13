@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "talkscript"
-version = "0.2.1"
+version = "0.2.2"
 description = "発話（VOICEVOX）と関節ごとのキーフレームを 1 つの台本で書き、ロボットを発話に合わせて動かす"
 readme = "README.md"
 license = "MIT"
@@ -35,6 +35,7 @@ namespaces = true                 # defaults/ 以下（.py のないフォルダ
 "talkscript.defaults.config.gestures" = ["*.yaml"]
 "talkscript.defaults.scripts" = ["*.yaml"]
 "talkscript.gui.static" = ["*.html"]
+"talkscript.assets" = ["*.svg", "*.ico", "*.png"]
 
 [tool.pytest.ini_options]
 pythonpath = [".", "tools"]

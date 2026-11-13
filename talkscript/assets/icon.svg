@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- talkscript のアイコン: 卓上のロボット（顔と首と台）が、発話（吹き出しの中の音の波）に合わせて動く。
+       アンテナの先の◆は、画面のキーフレームの印。色は画面の配色（navy・speech・head）に合わせる。 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#27477a"/>
+      <stop offset="1" stop-color="#132643"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="54" fill="url(#bg)"/>
+  <!-- 台と首 -->
+  <rect x="58" y="206" width="104" height="18" rx="9" fill="#c9d3e3"/>
+  <rect x="96" y="178" width="28" height="34" rx="6" fill="#c9d3e3"/>
+  <!-- アンテナとキーフレームの◆ -->
+  <rect x="106" y="58" width="8" height="34" rx="4" fill="#f4f1ea"/>
+  <path d="M110 30 L126 46 L110 62 L94 46 Z" fill="#e0a24a"/>
+  <!-- 顔 -->
+  <rect x="44" y="84" width="132" height="104" rx="32" fill="#f4f1ea"/>
+  <rect x="62" y="104" width="96" height="62" rx="20" fill="#16304f"/>
+  <circle cx="90" cy="135" r="11" fill="#4bd0e3"/>
+  <circle cx="130" cy="135" r="11" fill="#4bd0e3"/>
+  <!-- 吹き出しと音の波 -->
+  <path d="M164 66 h52 a24 24 0 0 1 24 24 v26 a24 24 0 0 1 -24 24 h-30 l-18 16 l2 -16 h-6 a24 24 0 0 1 -24 -24 v-26 a24 24 0 0 1 24 -24 Z" fill="#e0a24a"/>
+  <rect x="160" y="96" width="9" height="20" rx="4.5" fill="#132643"/>
+  <rect x="176" y="84" width="9" height="44" rx="4.5" fill="#132643"/>
+  <rect x="192" y="90" width="9" height="32" rx="4.5" fill="#132643"/>
+  <rect x="208" y="99" width="9" height="14" rx="4.5" fill="#132643"/>
+</svg>

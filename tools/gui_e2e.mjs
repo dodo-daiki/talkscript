@@ -46,6 +46,11 @@ const q = s => `document.querySelector(${JSON.stringify(s)})`;
 let v = await ev(`return { lines: document.querySelectorAll(".lcard").length, chips: [...document.querySelectorAll(".lcard .chip")].map(c => c.textContent), check: ${q("#checkChip")}.textContent, kfs: document.querySelectorAll("#tl .kf").length };`);
 check("読み込み: 台詞 2 行・合成済み", v.lines === 2 && v.chips.every(c => c === "合成済み"), v);
 
+v = await ev(`await new Promise(r => setTimeout(r, 2000)); const bar = ${q("#updBar")};
+  const shown = { hidden: bar.hidden, text: ${q("#updText")}.textContent, go: ${q("#updGo")}.hidden };
+  ${q("#updLater")}.click(); return { ...shown, after: bar.hidden };`);
+check("新しい版の通知（あとでで隠す）", !v.hidden && v.text.includes("9.9.9") && v.go && v.after, v);
+
 v = await ev(`${q("#addLineBtn")}.click(); await new Promise(r => setTimeout(r, 100));
   const ta = document.querySelector("#say-L3"); ta.value = "テストの台詞です。"; ta.dispatchEvent(new Event("change"));
   await new Promise(r => setTimeout(r, 1500));

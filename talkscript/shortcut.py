@@ -3,6 +3,9 @@
 Windows: スタートメニュー（%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs）とデスクトップに talkscript.lnk。
 Linux:   ~/.local/share/applications/talkscript.desktop（アプリ一覧）と、デスクトップのフォルダがあればそこにも。
 どちらも talkscript-gui（Windows ではコンソールの窓を出さない起動口）を開く。
+アイコンは同梱の talkscript/assets/ から、PC ごとのデータの場所へ写して使う（talkscript を入れ直しても場所が変わらない）:
+  Windows: %LOCALAPPDATA%\\talkscript\\talkscript.ico
+  Linux:   ~/.local/share/icons/hicolor/256x256/apps/talkscript.png
 """
 from __future__ import annotations
 
@@ -13,6 +16,7 @@ import subprocess
 import sys
 
 NAME = "talkscript"
+ASSETS = pathlib.Path(__file__).resolve().parent / "assets"
 
 
 class ShortcutError(Exception):
@@ -31,7 +35,30 @@ def gui_exe() -> pathlib.Path:
     raise ShortcutError("talkscript-gui が見つからない（talkscript を入れ直す）")
 
 
+def icon_path() -> pathlib.Path:
+    if sys.platform == "win32":
+        from .workspace import user_data_dir
+        return user_data_dir() / f"{NAME}.ico"
+    base = pathlib.Path(os.environ.get("XDG_DATA_HOME", pathlib.Path.home() / ".local" / "share"))
+    return base / "icons" / "hicolor" / "256x256" / "apps" / f"{NAME}.png"
+
+
+def install_icon() -> pathlib.Path | None:
+    """同梱のアイコンを写す。写せなければ None（アイコンなしでショートカットを作る）。"""
+    src = ASSETS / (f"{NAME}.ico" if sys.platform == "win32" else f"{NAME}.png")
+    dst = icon_path()
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dst)
+        return dst
+    except OSError:
+        return None
+
+
 def _desktop() -> pathlib.Path | None:
+    if os.environ.get("TALKSCRIPT_DESKTOP_DIR"):   # 試験で、本物のデスクトップに作らないため
+        p = pathlib.Path(os.environ["TALKSCRIPT_DESKTOP_DIR"])
+        return p if p.is_dir() else None
     if sys.platform == "win32":
         p = pathlib.Path(os.environ.get("USERPROFILE", pathlib.Path.home())) / "Desktop"
         try:
@@ -75,20 +102,25 @@ def exists() -> bool:
 
 
 def create() -> list[pathlib.Path]:
+    """ショートカットを作る（あれば作り直す。アイコンと起動先を今の talkscript に合わせる）。"""
     exe = gui_exe()
+    icon = install_icon()
     made = []
     for p in paths():
         p.parent.mkdir(parents=True, exist_ok=True)
         if sys.platform == "win32":
             ps = ("$s = (New-Object -ComObject WScript.Shell).CreateShortcut($env:TS_LNK); $s.TargetPath = $env:TS_EXE; "
-                  "$s.WorkingDirectory = $env:USERPROFILE; $s.Description = '発話と動作の台本ツール talkscript'; $s.Save()")
+                  "$s.WorkingDirectory = $env:USERPROFILE; $s.Description = '発話と動作の台本ツール talkscript'; "
+                  "if ($env:TS_ICO) { $s.IconLocation = $env:TS_ICO + ',0' }; $s.Save()")
             r = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps],
-                               env={**os.environ, "TS_LNK": str(p), "TS_EXE": str(exe)}, capture_output=True, text=True, timeout=30)
+                               env={**os.environ, "TS_LNK": str(p), "TS_EXE": str(exe), "TS_ICO": str(icon or "")},
+                               capture_output=True, text=True, timeout=30)
             if r.returncode != 0 or not p.exists():
                 raise ShortcutError(f"{p} を作れない: {r.stderr.strip()[:200]}")
         else:
             p.write_text("[Desktop Entry]\nType=Application\nName=talkscript\nComment=発話と動作の台本ツール\n"
-                         f"Exec=\"{exe}\"\nTerminal=false\nCategories=Development;AudioVideo;\n", encoding="utf-8")
+                         f"Exec=\"{exe}\"\n" + (f"Icon={icon}\n" if icon else "") +
+                         "Terminal=false\nCategories=Development;AudioVideo;\n", encoding="utf-8")
             p.chmod(0o755)
         made.append(p)
     return made
@@ -96,7 +128,7 @@ def create() -> list[pathlib.Path]:
 
 def remove() -> list[pathlib.Path]:
     gone = []
-    for p in paths():
+    for p in paths() + [icon_path()]:
         if p.exists():
             p.unlink()
             gone.append(p)

@@ -21,6 +21,7 @@ PC ごとの settings.toml の workspace の順に探す（workspace.py）。
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 import time
@@ -32,7 +33,7 @@ from .robots import AdapterError
 from .voicevox import VoicevoxClient, VoicevoxError
 
 #: 作業フォルダなしで動くコマンド
-NO_WORKSPACE = {"setup", "doctor", "init", "engine", "voices", "shortcut"}
+NO_WORKSPACE = {"setup", "doctor", "init", "engine", "voices", "shortcut", "update", "uninstall"}
 
 
 def _client(st):
@@ -308,7 +309,11 @@ def cmd_setup(a, st):
             print(f"[済] 作業フォルダを作った: {d}")
     from . import shortcut
     if shortcut.exists():
-        print("[済] 画面を開くショートカット")
+        try:
+            shortcut.create()
+            print("[済] 画面を開くショートカット（アイコンと起動先を今の版に合わせた）")
+        except shortcut.ShortcutError as e:
+            print(f"[済] 画面を開くショートカット（作り直せなかった: {e}）")
     elif ask(f"画面（GUI）を開くショートカットを、{shortcut.where()}に作りますか？", a.yes):
         try:
             for p in shortcut.create():
@@ -343,6 +348,108 @@ def cmd_doctor(a, st):
     return 0 if bad == 0 else 1
 
 
+def cmd_update(a, st):
+    """新しい版を確かめ、あれば（確認してから）更新する。"""
+    from . import update
+    r = update.check(force=True)
+    if r.get("error"):
+        print(f"新しい版を確かめられない: {r['error']}")
+        return 1
+    if not r["newer"]:
+        print(f"talkscript {r['current']} は最新です（Release の最新: {r['latest']}）")
+        return 0
+    print(f"新しい版があります: {r['current']} → {r['latest']}（{r.get('page')}）")
+    if r.get("notes"):
+        print("変更点: " + r["notes"].strip())
+    if a.check:
+        return 0
+    if not r["can_update"]:
+        print(f"ここからは更新できない: {r['reason']}")
+        return 1
+    if not ask(f"talkscript を {r['latest']} に更新しますか？", a.yes):
+        return 0
+    how = update.start_update(r, wait_pids=[os.getpid(), os.getppid()])
+    if how == "installer":
+        print("新しい窓でインストーラーが動きます。このコマンドは終わります（終わったあとに入れ直します）")
+    else:
+        print(f"{r['latest']} を入れました。画面を開いていたら、閉じて開き直してください")
+    return 0
+
+
+def _close_gui() -> bool:
+    """開いている画面（のサーバ）を閉じる。実行中なら閉じずに False。"""
+    import json as _json
+    import urllib.request
+    from .gui import _alive, _state_file
+    sf = _state_file()
+    try:
+        info = _json.loads(sf.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return True
+    if not _alive(info):
+        return True
+    base = f"http://127.0.0.1:{info['port']}/api/"
+    hdr = {"X-Token": info["token"], "Content-Type": "application/json"}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(base + "run", headers=hdr), timeout=3) as r:
+            if _json.loads(r.read()).get("state") in ("running", "operator"):
+                return False
+        urllib.request.urlopen(urllib.request.Request(base + "quit", data=b"{}", headers=hdr, method="POST"), timeout=3).close()
+    except OSError:
+        pass
+    for _ in range(20):
+        if not _alive(info):
+            break
+        time.sleep(0.25)
+    return True
+
+
+def _size(p) -> str:
+    n = sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
+    return f"{n / 1e9:.1f} GB" if n >= 1e9 else f"{n / 1e6:.0f} MB"
+
+
+def cmd_uninstall(a, st):
+    """talkscript が PC に置いたもの（ショートカット・アイコン・VOICEVOX・設定・覚え書き）を消す。
+    プログラム本体（uv tool）は、このあとインストーラーが消す（動いているあいだは消せないため）。作業フォルダは消さない。"""
+    import shutil
+    from . import shortcut
+    if not _close_gui():
+        print("中止: 画面で実機の実行をしている。終わってから、もう一度アンインストールする")
+        return 1
+    if engine.stop_engine():
+        print("[済] talkscript が起動した VOICEVOX ENGINE を止めた")
+    for p in shortcut.remove():
+        print(f"[済] 消した: {p}")
+    vv = engine.install_dir()
+    if vv.exists():
+        if ask(f"talkscript が入れた VOICEVOX（{vv}、{_size(vv)}）も消しますか？", a.yes):
+            shutil.rmtree(vv, ignore_errors=True)
+            print(f"[済] 消した: {vv}")
+        else:
+            print(f"[残す] VOICEVOX: {vv}")
+    ws = workspace.load_user_settings().get("workspace")
+    cfg = workspace.user_config_dir()
+    if cfg.exists():
+        if ask(f"PC ごとの設定（{cfg}。作業フォルダの場所・音声の出力機器など）も消しますか？", a.yes):
+            shutil.rmtree(cfg, ignore_errors=True)
+            print(f"[済] 消した: {cfg}")
+        else:
+            print(f"[残す] PC ごとの設定: {cfg}")
+    data = workspace.user_data_dir()
+    for name in ("gui.json", "gui.log", "update.json", "updates", "engine.pid", "engine.log"):
+        p = data / name
+        if p.is_dir():
+            shutil.rmtree(p, ignore_errors=True)
+        elif p.exists():
+            p.unlink(missing_ok=True)
+    if data.exists() and not any(data.iterdir()):
+        data.rmdir()
+    if ws:
+        print(f"[残す] 作業フォルダ（台本・実行の記録）: {ws}。要らなければ、自分で消してください")
+    return 0
+
+
 def cmd_engine(a, st):
     url = st.get("voicevox", {}).get("url", "http://127.0.0.1:50021")
     if a.action == "start":
@@ -364,6 +471,11 @@ def main(argv=None):
     p.add_argument("--remove", action="store_true")
     p = sub.add_parser("setup"); p.add_argument("--yes", action="store_true", help="確認をすべて「はい」にする")
     p.add_argument("--no-voicevox", action="store_true"); p.add_argument("--workspace-dir")
+    p = sub.add_parser("update", help="新しい版を確かめ、あれば更新する")
+    p.add_argument("--check", action="store_true", help="確かめるだけ"); p.add_argument("--yes", action="store_true")
+    p = sub.add_parser("uninstall", help="talkscript が PC に置いたもの（ショートカット・VOICEVOX・設定）を消す。"
+                                         "本体はインストーラーの -Uninstall / --uninstall で消す")
+    p.add_argument("--yes", action="store_true", help="確認をすべて「はい」にする（作業フォルダは消さない）")
     p = sub.add_parser("doctor"); p.add_argument("--network", action="store_true", help="Pi の agent へつながるかも確かめる")
     p = sub.add_parser("init"); p.add_argument("dir"); p.add_argument("--default", action="store_true",
                                                                        help="PC ごとの設定の既定の作業フォルダにする")

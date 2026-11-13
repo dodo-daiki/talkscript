@@ -11,6 +11,7 @@ import datetime
 import http.server
 import io as _io
 import json
+import os
 import pathlib
 import shutil
 import threading
@@ -69,8 +70,45 @@ class App:
         self.log = log
         self.voicevox_factory = voicevox_factory
         self.server = None
+        self.update = None          # 新しい版の確認の結果（None = まだ確かめていない、または確かめない）
         if ws is not None:
             io.set_workspace(ws)
+
+    # --- 新しい版 ----------------------------------------------------------------------------
+    def start_update_check(self, checker=None) -> None:
+        """新しい版を、裏で 1 回確かめる（画面を待たせない）。PC ごとの設定 [update] check = false なら確かめない。"""
+        from .. import update
+        if workspace.load_user_settings().get("update", {}).get("check", True) is False:
+            return
+        self.update = {"pending": True}
+
+        def work():
+            r = (checker or update.check)()
+            self.update = r
+            if r.get("newer"):
+                self.log(f"新しい版がある: {r['current']} → {r['latest']}")
+        threading.Thread(target=work, daemon=True).start()
+
+    def update_public(self) -> dict | None:
+        u = self.update
+        if not u:
+            return None
+        return {k: u.get(k) for k in ("pending", "current", "latest", "newer", "page", "notes", "can_update", "reason")}
+
+    def start_update(self) -> dict:
+        from .. import update
+        if self.run.state in ("running", "operator"):
+            raise ApiError("実機の実行中は更新できない", 409)
+        u = self.update or {}
+        if not u.get("can_update"):
+            raise ApiError(u.get("reason") or "更新できる新しい版がない", 409)
+        try:
+            how = update.start_update(u, wait_pids=[os.getpid(), os.getppid()], log=self.log)
+        except (update.UpdateError, OSError) as e:
+            raise ApiError(f"更新を始められない: {e}", 500)
+        if how == "installer":      # インストーラーが入れ直せるように、このサーバを終える
+            threading.Timer(1.5, self.server.shutdown).start()
+        return {"mode": how, "latest": u.get("latest")}
 
     # --- 設定・VOICEVOX ------------------------------------------------------------------------
     def settings(self) -> dict:
@@ -123,7 +161,7 @@ class App:
 
     def state(self) -> dict:
         st = self.settings()
-        d = {"version": __version__, "workspace": str(io.ROOT) if io.ROOT else None,
+        d = {"version": __version__, "workspace": str(io.ROOT) if io.ROOT else None, "update": self.update_public(),
              "default_workspace": str(pathlib.Path.home() / "talkscript-work"),
              "terms_url": engine.TERMS_URL, "voicevox_version": engine.VOICEVOX_VERSION,
              "settings": {"self7_host": st.get("self7", {}).get("host"), "sota_host": st.get("sota", {}).get("host"),
@@ -332,6 +370,8 @@ def make_handler(app: App):
                     return self._json({"error": "not found"}, 404)
                 if u.path in ("/", "/index.html"):
                     return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
+                if u.path == "/icon.svg":   # タブと、アプリ用の窓のアイコン
+                    return self._send(200, (STATIC.parent.parent / "assets" / "icon.svg").read_bytes(), "image/svg+xml")
                 return self._json({"error": "not found"}, 404)
             if self.headers.get("X-Token") != app.token:
                 return self._json({"error": "合言葉が違う"}, 403)
@@ -364,6 +404,8 @@ def make_handler(app: App):
                 return {"ok": True}
             if path == "state":
                 return app.state()
+            if path == "update" and method == "POST":
+                return app.start_update()
             if path == "quit" and method == "POST":
                 threading.Thread(target=app.server.shutdown, daemon=True).start()
                 return {"ok": True}
