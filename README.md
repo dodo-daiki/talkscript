@@ -50,7 +50,9 @@ curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.
 | VOICEVOX | Windows: `%LOCALAPPDATA%\talkscript\VOICEVOX`、Linux: `~/.local/share/talkscript/VOICEVOX` |
 | PC ごとの設定 | Windows: `%APPDATA%\talkscript\settings.toml`、Linux: `~/.config/talkscript/settings.toml` |
 
-確かめるときは `talkscript doctor` を使います。更新は `uv tool upgrade talkscript` か、インストーラーをもう一度実行します。
+確かめるときは `talkscript doctor` を使います。更新は、新しい版のインストーラーをもう一度実行します
+（入れたときの版の wheel を指しているので、`uv tool upgrade talkscript` では新しい版になりません）。
+入っているものは、足りているものとして飛ばします。
 
 VOICEVOX をすでに入れている場合は、`%LOCALAPPDATA%\Programs\VOICEVOX`（公式のインストーラーの既定の場所）を自動で探します。
 ほかの場所にあるときは、`settings.toml` の `[voicevox] engine_path` に `vv-engine/run(.exe)` の場所を書いてください。
