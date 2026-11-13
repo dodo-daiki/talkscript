@@ -1,4 +1,4 @@
-"""組み立て: 台本 → ロボットごとの軌道（talkscript-design.md §6）。
+"""組み立て: 台本 → ロボットごとの軌道。
 
 ブロックの始まりを 0 秒とする。行 i の音声の始まり S_i = 行 i−1 の音声の終わり + gap_ms（最初の行は lead_in_ms）。
 キーフレームの時刻: t_ms ÷ 1000、または S_line + 発話の位置の時刻 + offset_ms ÷ 1000。
@@ -100,7 +100,7 @@ def resolve_block(script: dict, block: dict, robot_cfgs: dict, issues: list) -> 
 
 
 def sota_poses(tracks: dict, cfg: dict, duration: float, dt_ms: int) -> list[dict]:
-    """関節ごとの曲線を dt_ms ごとに標本化し、RobotController の姿勢の列にする（ネイティブの角度、整数）。§6.6"""
+    """関節ごとの曲線を dt_ms ごとに標本化し、RobotController の姿勢の列にする（ネイティブの角度、整数）。"""
     dt = dt_ms / 1000
     samples = {j: interp.sample_track(tr, dt, duration) for j, tr in tracks.items()}
     n = len(next(iter(samples.values())))
@@ -119,7 +119,7 @@ def sota_native(cfg: dict, body: dict) -> dict:
 
 
 def compile_script(script: dict, robot_cfgs: dict, issues: list, *, sota_dt_ms: int = 100) -> dict:
-    """ロボット → 軌道ファイルの中身（§6.6）。"""
+    """ロボット → 軌道ファイル（<ロボット>.traj.json）の中身。"""
     man = build.load_manifest(script["id"])
     trajs = {r: {"format": "talkscript/traj@1", "robot": r, "script": script["id"], "interp": interp.INTERP,
                  "unit": "deg_body", "blocks": []} for r in script["robots"]}

@@ -2,7 +2,7 @@ format: talkscript/script@1
 id: demo
 purpose: demo                        # demo / experiment（experiment は固定が必須・行ごとの声の上書き禁止）
 voice:
-  speaker: {name: TBD, style: ノーマル}   # 未決定（tts/README.md）。talkscript voices で一覧を見て、本人が決める
+  speaker: {name: TBD, style: ノーマル}   # talkscript voices で一覧を見て決める
   speed: 1.0
   pitch: 0.0
   intonation: 1.0

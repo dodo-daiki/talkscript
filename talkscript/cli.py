@@ -192,7 +192,7 @@ def cmd_sota_axes(a, st):
 
 
 def cmd_latency_sota(a, st):
-    """V5 の補助: 予定の時刻 t に PC から短い音を鳴らし、同じ t に Sota へ play_pose を送る。動画で音と動き出しの差を数える。"""
+    """Sota の遅れの測定の補助: 予定の時刻 t に PC から短い音を鳴らし、同じ t に Sota へ play_pose を送る。動画で音と動き出しの差を数える。"""
     from .audio import AudioOut
     from .record import RunRecord
     from .robots.sota import RobotControllerClient

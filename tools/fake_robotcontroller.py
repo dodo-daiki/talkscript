@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RobotController の擬似サーバ（テスト用。talkscript-design.md §14）。
+"""RobotController の擬似サーバ（テスト用）。
 
     python tools/fake_robotcontroller.py --port 22222
 

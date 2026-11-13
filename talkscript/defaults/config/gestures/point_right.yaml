@@ -1,6 +1,6 @@
 format: talkscript/gesture@1
 id: point_right
-description: "右腕で指し示す（肩 40°・肘 30°）。bringup/arm_motion.py の point_right（2026-11-09 に実機で動かした大きさ）から、肘の拍子を除いたもの"
+description: "右腕で指し示す（肩 40°・肘 30°）"
 anchor_at_ms: 1400                   # 指し終わったところ（腕が上がり切った点）を挿入位置に合わせる
 params:
   amplitude: {default: 1.0, min: 0.0, max: 1.2}

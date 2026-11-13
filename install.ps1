@@ -22,7 +22,7 @@ param(
     [string]$WorkspaceDir = ""    # 作業フォルダの場所（既定: ホームの talkscript-work）
 )
 $ErrorActionPreference = "Stop"
-$TalkscriptVersion = "0.1.1"
+$TalkscriptVersion = "0.1.2"
 $UvVersion = "0.13.0"
 $PythonVersion = "3.12"
 if (-not $Source) { $Source = "https://github.com/dodo-daiki/talkscript/releases/download/v$TalkscriptVersion/talkscript-$TalkscriptVersion-py3-none-any.whl" }

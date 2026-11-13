@@ -1,4 +1,4 @@
-"""ファイルの読み書きと形式の検査（talkscript-design.md §3、検査 K1）。
+"""ファイルの読み書きと形式の検査（検査 K1）。
 
 データは dict のまま扱う（ファイル形式と 1 対 1）。置き場所は作業フォルダ（workspace.py）の中:
 - 台本:           scripts/<id>.yaml
@@ -37,8 +37,8 @@ def require_workspace() -> pathlib.Path:
 VOICE_KEYS = {"speaker", "speed", "pitch", "intonation", "volume", "pre_silence_s", "post_silence_s", "sampling_rate"}
 DEFAULT_VOICE = {"speaker": {"name": "TBD", "style": "ノーマル"}, "speed": 1.0, "pitch": 0.0, "intonation": 1.0,
                  "volume": 1.0, "pre_silence_s": 0.1, "post_silence_s": 0.1, "sampling_rate": 24000}
-DEFAULT_GAP_MS = 300          # 提案（design §3.1）
-DEFAULT_LEAD_IN_MS = 500      # 提案（design §6.1）
+DEFAULT_GAP_MS = 300          # 行の間の既定（提案値）
+DEFAULT_LEAD_IN_MS = 500      # 最初の行の前の既定（提案値。動作を発話より先に始められるように）
 
 
 class FormatError(Exception):

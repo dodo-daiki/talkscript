@@ -1,4 +1,4 @@
-"""合成と固定（talkscript-design.md §4.1・§4.2・§5.3・§5.4）。
+"""合成と固定。
 
 出力（build/<台本 id>/）:
   <行>.query.json  合成に使った audio_query（声の値と読みの修正を反映したもの）
@@ -6,14 +6,14 @@
   <行>.marks.json  モーラ・句の時刻（timing.py）と、台本の文字の位置（text_anchors）
   manifest.json    エンジンの版、話者 ID、行ごとの合成の鍵・sha256・長さ、固定したか
 
-文字の位置（at: {text: …}）の求め方（設計書 §5.3 の pyopenjtalk の代わり）:
+文字の位置（at: {text: …}）の求め方:
   文の先頭からその文字の手前まで・終わりまでの 2 つの部分文を audio_query にかけ、モーラの数を数える。
   部分文のモーラ列が文全体のモーラ列の先頭と一致することを確かめる（一致しなければエラーにし、phrase か mora で書くよう知らせる）。
-  VOICEVOX 自身の辞書で数えるので、pyopenjtalk との辞書の違い（V-T5）が起きない。
+  VOICEVOX 自身の辞書で数えるので、別の形態素解析器（pyopenjtalk など）との辞書の違いが起きない。
 
 読みの修正（reading: [{text: 今日, kana: きょう}]）:
-  合成の前に、文の中の text を kana に置き換えてから audio_query にかける（設計書 §5.4 の accent_phrases の差し替えより簡単な方法。
-  アクセントが変わりうるので、聞いて確かめる。V-T2）。
+  合成の前に、文の中の text を kana に置き換えてから audio_query にかける（accent_phrases を差し替えるより簡単な方法。
+  アクセントが変わりうるので、聞いて確かめる）。
 """
 from __future__ import annotations
 

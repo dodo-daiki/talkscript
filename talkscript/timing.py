@@ -1,6 +1,6 @@
-"""audio_query からモーラ・アクセント句の時刻を計算する（talkscript-design.md §5.2）。
+"""audio_query からモーラ・アクセント句の時刻を計算する。
 
-VOICEVOX ENGINE の合成の仕組みについての仮定（V-T1 で確かめる。エンジンのソースの記憶にもとづく。未確認）:
+VOICEVOX ENGINE の合成の仕組みについての仮定（エンジン 0.26.1・話速 1.0 で、フレームへの丸めは WAV の長さと一致した。話速を変えたときの前後の無音の扱いは未確認）:
 
 - 音素の長さは秒。子音・母音・句の後の間（pause_mora）・前後の無音（pre/postPhonemeLength）が 1 つずつ音素になる。
 - 文中の間は、`pauseLength` が null でなければその値に置き換え、`pauseLengthScale` を掛ける（項目がない版では何もしない）。
@@ -12,8 +12,8 @@ WAV の長さと 10 ms 以内で合うものを採用して marks.json に記録
 """
 from __future__ import annotations
 
-FRAME_RATE = 24000 / 256          # 93.75 フレーム/秒（仮定。V-T1）
-TOLERANCE_S = 0.010               # 計算と WAV の長さの差の許容（提案。design §5.2）
+FRAME_RATE = 24000 / 256          # 93.75 フレーム/秒
+TOLERANCE_S = 0.010               # 計算と WAV の長さの差の許容（提案値）
 
 MODELS = [                         # 試す順番（最初に合ったものを採る）
     {"name": "frames_scaled_prepost", "frames": True, "scale_prepost": True},
@@ -86,7 +86,7 @@ def timeline(query: dict, model: dict | None = None) -> dict:
 
 
 def fit_timeline(query: dict, wav_duration_s: float) -> dict:
-    """WAV の長さに合う仮定を探して時刻を返す。合わなければ TimingMismatch（V-T1 の結果で式を直す）。"""
+    """WAV の長さに合う仮定を探して時刻を返す。合わなければ TimingMismatch（式を直す）。"""
     tried = []
     for model in MODELS:
         d = total_duration(query, model)
@@ -97,7 +97,7 @@ def fit_timeline(query: dict, wav_duration_s: float) -> dict:
             tl["diff_s"] = d - wav_duration_s
             return tl
     raise TimingMismatch(f"計算した長さが WAV の長さ {wav_duration_s:.4f} s と合わない（許容 {TOLERANCE_S * 1000:.0f} ms）: "
-                         + "; ".join(tried) + "。talkscript/timing.py の仮定を V-T1 で確かめて直す")
+                         + "; ".join(tried) + "。talkscript/timing.py の仮定を見直す")
 
 
 def anchor_time(marks: dict, at: dict) -> float:

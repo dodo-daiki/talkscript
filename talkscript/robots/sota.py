@@ -1,6 +1,6 @@
-"""Sota のアダプタ: 研究室の RobotController（Sota の上の Java の TCP サーバ）へ送る（talkscript-design.md §8.7）。
+"""Sota のアダプタ: RobotController（Sota の上の Java の TCP サーバ）へ送る。
 
-通信（RobotController の README、2026-11-13 に確認した現行版。研究室の Sota の版が同じかは未確認 = V4）:
+通信（RobotController の README、2026-11-13 に確認した現行版。使う Sota の版が同じかは確かめる）:
   1 接続 1 コマンド。メッセージ = 4 バイトの本文長（big-endian、ヘッダ自身は含まない）＋本文。
   第 1 メッセージがコマンド名（ASCII）、第 2 メッセージが中身（不要なコマンドは送らない）。
   play_pose / play_motion / stop_pose / stop_motion は応答なし。read_axes だけ JSON を 1 メッセージ返す。
@@ -85,12 +85,12 @@ class SotaAdapter(RobotAdapter):
     def connect(self):
         axes = self.rc.read_axes()
         if not self.latency_measured:
-            self.event("warn", detail="Sota の遅れ latency_s が未測定（V5）。0 秒として送る")
+            self.event("warn", detail="Sota の遅れ latency_s が未測定。0 秒として送る（talkscript latency-sota で測る）")
         return {"axes": axes, "latency_s": self.latency_s, "preconnect": self.preconnect}
 
     def _need_native(self):
         if any(io.is_tbd(jc.get("sign")) or io.is_tbd(jc.get("offset")) for jc in self.cfg["joints"].values()):
-            raise AdapterError("config/robots/sota.yaml の sign・offset が未確定（V4）。Sota は動かせない")
+            raise AdapterError("config/robots/sota.yaml の sign・offset が未確定。Sota は動かせない")
 
     def load(self, run_id, block):
         self._need_native()

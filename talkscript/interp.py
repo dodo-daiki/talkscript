@@ -1,4 +1,4 @@
-"""補間と上限の計算（talkscript-design.md §6.5）。
+"""補間と上限の計算。
 
 PC（組み立て・検査）と Pi（talkscript-agent の受け取り時の検査と再生）で同じものを使う。
 Pi でも動くように、標準ライブラリだけで書く（Python 3.10 以上）。
@@ -95,7 +95,7 @@ def limit_violations(track, *, lo=None, hi=None, vmax=None, amax=None):
 
 
 def sample_track(track, dt: float, t_end: float, t_start: float = 0.0):
-    """t_start + dt, t_start + 2dt, …, t_end 以上の最初の点までの (時刻, 角度)。Sota 向けの変換（§6.6）で使う。"""
+    """t_start + dt, t_start + 2dt, …, t_end 以上の最初の点までの (時刻, 角度)。Sota 向けの変換で使う。"""
     n = max(1, math.ceil((t_end - t_start) / dt - 1e-9))
     return [(t_start + k * dt, eval_track(track, t_start + k * dt)) for k in range(1, n + 1)]
 

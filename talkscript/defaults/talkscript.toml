@@ -2,7 +2,7 @@
 #
 # 設定は次の順に重ねる（後のものが優先）:
 #   1. talkscript に同梱の既定値
-#   2. この talkscript.toml（作業フォルダ。研究室で共有する値: ロボットのアドレス、時間）
+#   2. この talkscript.toml（作業フォルダ。共有する値: ロボットのアドレス、時間）
 #   3. PC ごとの設定 settings.toml（Windows: %APPDATA%\talkscript\settings.toml、Linux: ~/.config/talkscript/settings.toml。
 #      音声の出力機器、VOICEVOX の場所など。インストーラーが作る）
 

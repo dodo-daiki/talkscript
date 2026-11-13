@@ -3,13 +3,12 @@ id: self7
 adapter: self7
 # Pi 5 の talkscript-agent（agent/server.py）。アドレスは talkscript.toml の [self7] host で上書きする
 connection: {host: TBD, port: 50110}
-# 関節の名前・角度の表記は bringup/arm_motion.py と同じ（体の向きの角度、度。肩 0° = 腕が真下・+ = 前、肘 0° = まっすぐ・+ = 曲げる、
-# 腰・首ヨー + = ロボットから見て左、首ピッチ + = うつむく）。CAN ID・SIGN は agent 側（arm_motion.py の表）が持つ。
+# 角度は体の向きの角度（度）。肩 0° = 腕が真下・+ = 前、肘 0° = まっすぐ・+ = 曲げる、
+# 腰・首ヨー + = ロボットから見て左、首ピッチ + = うつむく。モータの ID・向きは Pi 側の agent が持つ。
 #
-# 範囲: arm_motion.py の試しの範囲（RANGE_DEG・TRUNK_RANGE_DEG。機械的な範囲は未確認）。
-# vmax: 暫定の player（arm_motion.py の方式）の速度指令の上限 2.5 rad/s の 9 割 = 128.9 °/s を切り下げた値。
-#       usecase-motion-spec.md §2 の設計上限（首・腕 412 °/s、腰 130 °/s）より遅い。robot 層ができたら見直す。
-# amax: 肩だけ usecase-motion-spec.md §2 の 32.4 rad/s²（= 1856 °/s²。提案値・本人の承認待ち）。ほかは未設定（検査しない）。
+# range: 試しの動作で使っている範囲（機械的な範囲より狭い）。
+# vmax: agent の速度指令の上限 2.5 rad/s の 9 割（128.9 °/s）を切り下げた値。
+# amax: 肩だけ 32.4 rad/s²（= 1856 °/s²。提案値）。null は検査しない。
 joints:
   r_shoulder: {part: right_arm, range: [-20, 95], vmax: 128, amax: 1856}
   r_elbow:    {part: right_arm, range: [-10, 95], vmax: 128, amax: null}

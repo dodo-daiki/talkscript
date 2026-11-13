@@ -1,6 +1,6 @@
 format: talkscript/gesture@1
 id: nod
-description: "うなずき（UC1 標準: 全振幅 6°・1.1 秒。usecase-motion-spec.md §3、talkscript-design.md §3.2 の例）"
+description: "うなずき（全振幅 6°・1.1 秒）"
 anchor_at_ms: 300                    # 挿入位置に合わせる点（うつむき切ったところ）
 params:
   amplitude: {default: 1.0, min: 0.0, max: 1.5}
@@ -9,4 +9,4 @@ robots:                              # 休止姿勢からの差（体の向き�
   self7:
     neck_pitch: [[0, 0], [300, 6], [650, 0], [1100, 0]]
   sota:
-    HEAD_P: [[0, 0], [300, TBD], [650, 0], [1100, 0]]   # Sota の向きが分かるまで TBD（V4）
+    HEAD_P: [[0, 0], [300, TBD], [650, 0], [1100, 0]]   # Sota の関節の向きを実機で確かめるまで TBD

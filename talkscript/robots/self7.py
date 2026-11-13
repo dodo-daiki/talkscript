@@ -1,4 +1,4 @@
-"""自作機のアダプタ: Pi 5 の talkscript-agent（agent/server.py）と TCP/JSON でやりとりする（talkscript-design.md §8.5）。"""
+"""自作機のアダプタ: Pi 5 の talkscript-agentと TCP/JSON でやりとりする（1 行に 1 つの JSON。hello・time・engage・load・goto_rest・start_at・stop・disengage・fetch_log）。"""
 from __future__ import annotations
 
 import json

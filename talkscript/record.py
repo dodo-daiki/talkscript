@@ -1,4 +1,4 @@
-"""実行の記録（talkscript-design.md §10）。runs/<実行 ID>/ に書く。"""
+"""実行の記録。runs/<実行 ID>/ に書く。"""
 from __future__ import annotations
 
 import datetime
@@ -90,7 +90,7 @@ class RunRecord:
             if a.get("kind") == "audio_start":
                 lines.append(f"| | 音声 {a['line']} 出力開始（推定） | 予定との差 {a['late_ms']:+.1f} | 方式 {a.get('method')} |")
         lines += ["", f"警告 {self.counts['warn']}、故障 {self.counts['fault']}、音声の乱れ {self.counts['audio_status']}", "",
-                  "（音声の出力開始は PortAudio の時刻からの推定。動き出しの実際の時刻は self7_*.csv の応答の角度から後で求める。§10）"]
+                  "（音声の出力開始は PortAudio の時刻からの推定。動き出しの実際の時刻は self7_*.csv の応答の角度から後で求める）"]
         text = "\n".join(lines) + "\n"
         self.write_file("summary.md", text)
         return text

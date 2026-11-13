@@ -9,7 +9,7 @@
 - 音声は、PC の音声出力に時刻を指定して出します。ロボットには同じ開始時刻を共有させます。実際の時刻はすべて記録します。
 - 対応するロボット:
   - `self7`: 7 関節の自作機。Raspberry Pi の上の talkscript-agent に TCP/JSON で軌道を送ります
-  - `sota`: Vstone 社の Sota。研究室の RobotController（TCP 22222）に姿勢の列を送ります
+  - `sota`: Vstone 社の Sota。Sota の上で動かす RobotController（TCP 22222）に姿勢の列を送ります
   - `fake`: 試験用の擬似ロボット
 
 対応する OS は Windows と Linux です。
@@ -59,7 +59,7 @@ VOICEVOX をすでに入れている場合は、`%LOCALAPPDATA%\Programs\VOICEVO
 ## 作業フォルダ
 
 台本・ロボットの設定・組み立ての出力・実行の記録は、プログラムとは別の「作業フォルダ」に置きます。
-研究室で共有するなら、作業フォルダを git で管理してください。
+複数の人・PC で共有するなら、作業フォルダを git で管理してください。
 
 ```
 talkscript-work/

@@ -14,7 +14,7 @@
 # apt のない配布物では、1・2 の入れ方を表示して止まる。
 set -eu
 
-TALKSCRIPT_VERSION=0.1.1
+TALKSCRIPT_VERSION=0.1.2
 UV_VERSION=0.13.0
 PYTHON_VERSION=3.12
 YES=0

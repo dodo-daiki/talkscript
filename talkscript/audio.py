@@ -1,10 +1,10 @@
-"""時刻を指定した音声の出力（talkscript-design.md §8.4）。
+"""時刻を指定した音声の出力。
 
 sounddevice（PortAudio）の出力の流れを先に開いて無音を流しておき、コールバックが受け取る
 「この塊が DAC から出る時刻」（outputBufferDacTime、PortAudio の流れの時刻）を PC の単調時計に直して、
 予定の時刻に当たる標本から音声を書き込む。流れの時刻と単調時計の対応は、コールバックの中で
 currentTime と perf_counter_ns() を並べて測る（中央値）。DAC の時刻が 0 を返す出力方式では、流れの遅れ（latency）で代用する。
-どれだけ正しいか（Windows の MME・WASAPI で）は V7 で測る。実際に出し始めた時刻（推定）を行ごとに記録する。
+どれだけ正しいか（Windows の MME・WASAPI で）は未確認。実際に出し始めた時刻（推定）を行ごとに記録する。
 """
 from __future__ import annotations
 

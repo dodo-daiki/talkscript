@@ -1,4 +1,4 @@
-"""ロボットのアダプタ（talkscript-design.md §8.1）。"""
+"""ロボットのアダプタ。"""
 from .base import RobotAdapter, AdapterError
 
 

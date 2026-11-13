@@ -1,4 +1,7 @@
-"""実行前の検査（talkscript-design.md §7）。compile.py の結果に K2・K3・K7〜K10・K12 を足す。
+"""実行前の検査。compile.py の結果に K2・K3・K7〜K10・K12 を足す。
+
+K1 形式・参照先、K2 固定、K3 音声の照合、K4 発話の位置、K5 同じ時刻の矛盾、K7 範囲・角速度・角加速度、
+K8 未確定の設定、K9 休止姿勢で始まり終わるか、K10 長さ（表示だけ）、K11 順番の入れ替わり、K12 実験の台本の声。
 
 K13（合成し直しで固定先が見つからず時刻で置き直した）は編集画面の機能なので、CLI では出ない。
 """
@@ -86,12 +89,12 @@ def check_limits(script: dict, robot_cfgs: dict, trajs: dict, issues: list) -> d
             tbd = [k for k in ("sign", "offset", "range", "vmax") if k in jc and io.is_tbd(jc[k])]
             if tbd:
                 issues.append(Issue("error", "K8", f"設定が未確定（{', '.join(tbd)} が TBD）の関節を動かしている。"
-                                    f"config/robots/{r}.yaml を実機で確かめて埋める（V4）", robot=r, joint=j))
+                                    f"config/robots/{r}.yaml を実機で確かめて埋める", robot=r, joint=j))
             if jc.get("amax") is None:
                 issues.append(Issue("info", "K7", "角加速度の上限がない（検査しない）", robot=r, joint=j))
         if cfg.get("adapter") == "sota":
             if any(b.get("poses") is None for b in traj["blocks"]):
-                issues.append(Issue("error", "K8", "Sota の関節の向き（sign・offset）が未確定で、姿勢の列を作れない（V4）", robot=r))
+                issues.append(Issue("error", "K8", "Sota の関節の向き（sign・offset）が未確定で、姿勢の列を作れない", robot=r))
             for f in cfg.get("forbidden") or []:
                 issues.append(Issue("warn", "K8", f"ぶつかる組み合わせの検査は未実装: {f}", robot=r))
     return peaks
@@ -104,7 +107,7 @@ def check_info(script: dict, trajs: dict, issues: list) -> None:
             issues.append(Issue("info", "K10", f"長さ {b['duration_s']:.2f} s、音声 {audio:.2f} s、行 {len(b['audio'])}",
                                 robot=r, block=b["id"]))
             if r == "sota" and b["duration_s"] > 30:
-                issues.append(Issue("warn", "K10", "Sota の 1 ブロックが 30 秒を超える（PC が落ちたときに止められない。§9）",
+                issues.append(Issue("warn", "K10", "Sota の 1 ブロックが 30 秒を超える（PC が落ちたときに止められない）",
                                     robot=r, block=b["id"]))
 
 

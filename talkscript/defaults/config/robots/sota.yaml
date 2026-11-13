@@ -1,13 +1,13 @@
 format: talkscript/robot@1
 id: sota
 adapter: sota
-# 研究室の RobotController（TCP 22222）。起動は人が行う（talkscript-requirements.md §4.4。パスワードはここに書かない）
+# Sota の上で動かす RobotController（TCP 22222）。起動は人が行う（パスワードはここに書かない）
 connection: {host: TBD, port: 22222}   # Sota のアドレス。talkscript.toml の [sota] host で上書きできる
-latency_s: TBD        # 指令から動き出しまでの遅れ（V5: talkscript latency-sota で測る）
-preconnect: false     # true: t0 の前に接続してコマンド名だけ送っておく（V8 で効くか確かめる）
-axes_hz: 0            # 再生中に read_axes を読む頻度（0 = 読まない。Sota の負荷で動作が乱れないか V8 で確かめてから）
-# native = sign × body + offset。sign・offset・範囲・速度の上限は実機で確かめるまで TBD（V4）。TBD の関節を動かす台本は検査で止まる。
-# 範囲の例（ネイティブ）: HEAD_P −27〜5°、BODY_Y −61〜61°（RobotController のクライアントの README。talkscript-requirements.md §4.4）
+latency_s: TBD        # 指令から動き出しまでの遅れ（talkscript latency-sota で測る）
+preconnect: false     # true: t0 の前に接続してコマンド名だけ送っておく（効くかは未確認）
+axes_hz: 0            # 再生中に read_axes を読む頻度（0 = 読まない。Sota の負荷で動作が乱れないか確かめてから）
+# native = sign × body + offset。sign・offset・範囲・速度の上限は実機で確かめるまで TBD。TBD の関節を動かす台本は検査で止まる。
+# 範囲の例（ネイティブ）: HEAD_P −27〜5°、BODY_Y −61〜61°（RobotController のクライアントの README）
 joints:
   BODY_Y: {part: waist,     sign: TBD, offset: 0,   range: [-61, 61], vmax: TBD}
   L_SHOU: {part: left_arm,  sign: TBD, offset: TBD, range: TBD,       vmax: TBD}
@@ -18,4 +18,4 @@ joints:
   HEAD_P: {part: head,      sign: TBD, offset: 0,   range: TBD,       vmax: TBD}
   HEAD_R: {part: head,      sign: TBD, offset: 0,   range: [-30, 30], vmax: TBD}
 rest: {BODY_Y: 0, L_SHOU: 0, L_ELBO: 0, R_SHOU: 0, R_ELBO: 0, HEAD_Y: 0, HEAD_P: 0, HEAD_R: 0}
-forbidden: []         # ぶつかる組み合わせ（V4 で決める）
+forbidden: []         # ぶつかる組み合わせ（実機で確かめて決める）
