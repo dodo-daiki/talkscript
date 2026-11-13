@@ -120,3 +120,7 @@ uv run pytest -q                 # 擬似 VOICEVOX・擬似 RobotController を�
 
 `talkscript.testing` に、擬似 VOICEVOX（`FakeVoicevox`）と、一時的な作業フォルダを作る関数があります。
 `tools/fake_robotcontroller.py` は、RobotController の擬似サーバです。
+
+## ライセンス
+
+MIT（[LICENSE](LICENSE)）。VOICEVOX 本体と各声は、それぞれの利用規約に従います（上の「VOICEVOX の利用について」）。

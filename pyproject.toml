@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,8 @@ name = "talkscript"
 version = "0.1.0"
 description = "発話（VOICEVOX）と関節ごとのキーフレームを 1 つの台本で書き、ロボットを発話に合わせて動かす"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "dodo-daiki" }]
 requires-python = ">=3.11"
 dependencies = ["pyyaml>=6", "sounddevice>=0.4"]
