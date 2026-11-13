@@ -2,4 +2,4 @@
 
 設計: hardware/talkscript-design.md、要件: hardware/talkscript-requirements.md
 """
-__version__ = "0.1.0"
+__version__ = "0.1.1"

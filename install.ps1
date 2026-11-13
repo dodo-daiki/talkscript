@@ -17,15 +17,15 @@
 #>
 param(
     [switch]$Yes,                 # 確認をすべて「はい」にする
-    [string]$Source = "",         # talkscript の入手元（既定: GitHub の版のタグの zip）。フォルダか URL
+    [string]$Source = "",         # talkscript の入手元（既定: GitHub Releases の wheel）。フォルダか URL
     [switch]$NoVoicevox,          # VOICEVOX を入れない
     [string]$WorkspaceDir = ""    # 作業フォルダの場所（既定: ホームの talkscript-work）
 )
 $ErrorActionPreference = "Stop"
-$TalkscriptVersion = "0.1.0"
+$TalkscriptVersion = "0.1.1"
 $UvVersion = "0.13.0"
 $PythonVersion = "3.12"
-if (-not $Source) { $Source = "https://github.com/dodo-daiki/talkscript/archive/refs/tags/v$TalkscriptVersion.zip" }
+if (-not $Source) { $Source = "https://github.com/dodo-daiki/talkscript/releases/download/v$TalkscriptVersion/talkscript-$TalkscriptVersion-py3-none-any.whl" }
 
 function Confirm-Step([string]$Message) {
     if ($Yes) { Write-Host "$Message [y/N] y（-Yes）"; return $true }

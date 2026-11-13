@@ -38,7 +38,7 @@ curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.
 | `-Yes` / `--yes` | 確認をすべて「はい」にする（VOICEVOX の利用規約への同意を含む） |
 | `-NoVoicevox` / `--no-voicevox` | VOICEVOX を入れない（すでに入っている場合など） |
 | `-WorkspaceDir` / `--workspace-dir` | 作業フォルダの場所（既定はホームの `talkscript-work`） |
-| `-Source` / `--source` | talkscript の入手元（既定は GitHub のこの版の zip。手元のフォルダも指定できる） |
+| `-Source` / `--source` | talkscript の入手元（既定は GitHub Releases のこの版の wheel。手元のフォルダや zip の URL も指定できる） |
 
 インストールされるもの・場所:
 

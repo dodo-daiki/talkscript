@@ -14,7 +14,7 @@
 # apt のない配布物では、1・2 の入れ方を表示して止まる。
 set -eu
 
-TALKSCRIPT_VERSION=0.1.0
+TALKSCRIPT_VERSION=0.1.1
 UV_VERSION=0.13.0
 PYTHON_VERSION=3.12
 YES=0
@@ -33,7 +33,7 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
-[ -n "$SOURCE" ] || SOURCE="https://github.com/dodo-daiki/talkscript/archive/refs/tags/v${TALKSCRIPT_VERSION}.zip"
+[ -n "$SOURCE" ] || SOURCE="https://github.com/dodo-daiki/talkscript/releases/download/v${TALKSCRIPT_VERSION}/talkscript-${TALKSCRIPT_VERSION}-py3-none-any.whl"
 
 confirm() {
     if [ "$YES" = 1 ]; then
