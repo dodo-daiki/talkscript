@@ -164,6 +164,9 @@ class App:
                 e["timing"] = m["timing"]
                 e["text_anchors"] = m.get("text_anchors", {})
                 e["say"] = m.get("say")
+            qp = d / f"{lid}.query.json"
+            if qp.exists():   # 話速を変えた直後の仮の時刻（合成し直すまで）を、前の合成から縮めて出すため
+                e["speed"] = io.read_json(qp).get("speedScale")
             wp = d / f"{lid}.wav"
             if wp.exists():
                 e["envelope"] = envelope(wp.read_bytes())

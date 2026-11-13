@@ -2,6 +2,7 @@
 
 ブロックの始まりを 0 秒とする。行 i の音声の始まり S_i = 行 i−1 の音声の終わり + gap_ms（最初の行は lead_in_ms）。
 キーフレームの時刻: t_ms ÷ 1000、または S_line + 発話の位置の時刻 + offset_ms ÷ 1000。
+発話の位置は、句・モーラの始まりか終わり、文字の位置、または小数のモーラ番号（timing.mora_pos_time）。
 ブロックの長さ = max(最後の音声の終わり, 最後のキーフレーム) + tail_ms。
 """
 from __future__ import annotations

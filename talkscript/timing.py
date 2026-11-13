@@ -112,9 +112,13 @@ def anchor_time(marks: dict, at: dict) -> float:
         return ps[at["phrase"]][edge]
     if "mora" in at:
         ms = marks["timing"]["moras"]
-        if not 0 <= at["mora"] < len(ms):
-            raise KeyError(f"モーラ {at['mora']} がない（0〜{len(ms) - 1}）")
-        return ms[at["mora"]][edge]
+        x = at["mora"]
+        if isinstance(x, float) and not x.is_integer():
+            return mora_pos_time(ms, x, edge)
+        x = int(x)
+        if not 0 <= x < len(ms):
+            raise KeyError(f"モーラ {x} がない（0〜{len(ms) - 1}）")
+        return ms[x][edge]
     if "text" in at:
         key = text_key(at["text"], at.get("occurrence", 1))
         ta = marks.get("text_anchors", {}).get(key)
@@ -125,6 +129,21 @@ def anchor_time(marks: dict, at: dict) -> float:
         ms = marks["timing"]["moras"]
         return ms[ta["mora_start"]]["start"] if edge == "start" else ms[ta["mora_end"]]["end"]
     raise KeyError("at には phrase・mora・text のどれかが要る")
+
+
+def mora_pos_time(moras: list, u: float, edge: str = "start") -> float:
+    """小数のモーラ番号 u の時刻。モーラ i の枠は「i の始まり〜 i+1 の始まり」（最後のモーラは i の終わりまで）で、
+    枠の中は時刻を線形に割る。たとえば 3.4 は、モーラ 3 の枠の 40% の位置。
+    発話の長さが変わっても（話者・話速）、発話の中の同じ場所に付いていく。"""
+    if edge != "start":
+        raise KeyError(f"小数のモーラ位置（{u}）には edge を書かない")
+    n = len(moras)
+    if not n or not 0 <= u <= n:
+        raise KeyError(f"モーラの位置 {u} がない（0〜{n}）")
+    i = min(int(u), n - 1)
+    a = moras[i]["start"]
+    b = moras[i + 1]["start"] if i + 1 < n else moras[i]["end"]
+    return a + (u - i) * (b - a)
 
 
 def text_key(text: str, occurrence: int = 1) -> str:

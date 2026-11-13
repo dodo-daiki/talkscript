@@ -142,3 +142,47 @@ def test_gesture_insert_replaces(tmp_repo, vv):
     assert [kf["t_ms"] for kf in s["blocks"][1]["tracks"]["self7"]["neck_pitch"]] == [700, 1000, 1350, 1800]
     _, issues = compile_and_check(s, write=False)
     assert not [i for i in issues if i["level"] == "error"]
+
+
+def test_fractional_mora_follows_speed(tmp_repo, vv):
+    """小数のモーラ位置に置いたキーフレームは、話速を変えて合成し直しても、発話の中の同じ場所に付いていく。"""
+    s, _ = io.load_script("demo")
+    s["blocks"][0]["tracks"]["self7"]["neck_yaw"] = [
+        {"t_ms": 0, "deg": 0},
+        {"at": {"line": "L1", "mora": 3.5}, "deg": 5},
+        {"at": {"line": "L2", "mora": 2.25}, "deg": 0},
+    ]
+    io.validate_script(s)
+
+    def where():
+        build.synth(s, vv, log=lambda *_: None)
+        trajs, issues = compile_and_check(s, write=False)
+        assert not [i for i in issues if i["level"] == "error"], issues
+        b1 = trajs["self7"]["blocks"][0]
+        starts = {a["line"]: a["start_s"] for a in b1["audio"]}
+        out = []
+        for (t, _), (lid, u) in zip(b1["tracks"]["neck_yaw"][1:], [("L1", 3.5), ("L2", 2.25)]):
+            ms = build.load_marks("demo", lid)["timing"]["moras"]
+            i, f = int(u), u - int(u)
+            assert t == pytest.approx(starts[lid] + ms[i]["start"] + f * (ms[i + 1]["start"] - ms[i]["start"]), abs=1e-6)
+            out.append(t)
+        return out
+
+    slow = where()
+    s["voice"]["speed"] = 1.5
+    fast = where()
+    assert fast[0] < slow[0] and fast[1] < slow[1]        # 発話が速くなった分だけ前へ
+
+
+def test_fractional_mora_rules():
+    ms = [{"start": 0.1, "end": 0.25}, {"start": 0.25, "end": 0.4}, {"start": 0.7, "end": 0.85}]
+    assert timing.mora_pos_time(ms, 1.5) == pytest.approx(0.475)       # 間を含む枠（0.25〜0.7）の半分
+    assert timing.mora_pos_time(ms, 3.0) == pytest.approx(0.85)        # 最後のモーラの終わり
+    assert timing.anchor_time({"timing": {"moras": ms}}, {"mora": 2.0}) == pytest.approx(0.7)
+    with pytest.raises(KeyError):
+        timing.mora_pos_time(ms, 3.5)
+    bad = {"format": "talkscript/script@1", "id": "x", "voice": {}, "robots": ["self7"],
+           "blocks": [{"id": "B1", "lines": [{"id": "L1", "say": "あ"}],
+                       "tracks": {"self7": {"neck_yaw": [{"at": {"line": "L1", "mora": 0.5, "edge": "end"}, "deg": 0}]}}}]}
+    with pytest.raises(io.FormatError, match="edge を書かない"):
+        io.validate_script(bad)

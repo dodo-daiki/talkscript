@@ -66,9 +66,44 @@ v = await ev(`const lane = document.querySelector('#tl rect.lane-bg[data-lane="w
   return { before, after, insp, undone: document.querySelectorAll("#tl .kf").length };`);
 check("ダブルクリックで足して、元に戻す", v.after === v.before + 1 && v.insp && v.undone === v.before, v);
 
+// 発話の中（L1 の 3 モーラ目「に」の真ん中）に Alt つきで足し、話速を変えて合成し直しても同じモーラの真ん中にいるか
+v = await ev(`const wait = ms => new Promise(r => setTimeout(r, ms));
+  const mx = () => { const m = document.querySelectorAll("#tl text.mora")[2].getBoundingClientRect(); return m.left + m.width / 2; };
+  const kx = () => { const g = document.querySelector("#tl .kf.sel .gem").getBoundingClientRect(); return g.left + g.width / 2; };
+  const lane = document.querySelector('#tl rect.lane-bg[data-lane="neck_yaw"]'), r = lane.getBoundingClientRect();
+  const x0 = mx();
+  lane.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, altKey: true, clientX: x0, clientY: r.top + 20 }));
+  await wait(100);
+  const before = { mora: x0, key: kx(), label: ${q("#fAnchor")}.selectedOptions[0].textContent };
+  const sp = ${q("#v-speed")}; sp.value = "1.5"; sp.dispatchEvent(new Event("change"));
+  await wait(60);
+  const during = { mora: mx(), key: kx() };
+  await wait(1800);
+  const fast = { mora: mx(), key: kx(), chip: document.querySelector(".lcard .chip").textContent };
+  const sp2 = ${q("#v-speed")}; sp2.value = "1"; sp2.dispatchEvent(new Event("change"));
+  await wait(1800);
+  return { before, during, fast, back: { mora: mx(), key: kx() } };`);
+check("発話に固定: 話速を変えても同じモーラについていく",
+  Math.abs(v.before.key - v.before.mora) < 2 && v.before.label.includes("発話に合わせる") &&
+  v.fast.chip === "合成済み" && v.fast.mora < v.before.mora - 5 &&
+  Math.abs(v.during.key - v.during.mora) < 2 && Math.abs(v.fast.key - v.fast.mora) < 2 && Math.abs(v.back.key - v.before.key) < 2, v);
+
+// 文の頭に「はい、」を足すと、モーラの番号がずれる。同じ読みのモーラ「に」へ付け直されるか。元の文に戻すと元の位置か
+v = await ev(`const wait = ms => new Promise(r => setTimeout(r, ms));
+  const mora = i => { const m = document.querySelectorAll("#tl text.mora")[i]; const b = m.getBoundingClientRect(); return { k: m.textContent, x: b.left + b.width / 2 }; };
+  const kx = () => { const g = document.querySelector("#tl .kf.sel .gem").getBoundingClientRect(); return g.left + g.width / 2; };
+  const ta = document.querySelector("#say-L1"), orig = ta.value;
+  ta.value = "はい、" + orig; ta.dispatchEvent(new Event("change")); await wait(1800);
+  const edited = { mora: mora(4), key: kx() };
+  const ta2 = document.querySelector("#say-L1"); ta2.value = orig; ta2.dispatchEvent(new Event("change")); await wait(1800);
+  return { edited, back: { mora: mora(2), key: kx() } };`);
+check("発話に固定: 文を変えても同じ読みのモーラへ付け直す",
+  v.edited.mora.k === "に" && Math.abs(v.edited.key - v.edited.mora.x) < 2 && v.back.mora.k === "に" && Math.abs(v.back.key - v.back.mora.x) < 2, v);
+
 v = await ev(`${q("#saveBtn")}.click(); await new Promise(r => setTimeout(r, 1200)); return ${q("#saveState")}.textContent;`);
 const saved = fs.readFileSync(path.join(ws, "scripts", "demo.yaml"), "utf-8");
 check("保存（ファイルに L3 と nod が入る）", v === "保存済み" && saved.includes("テストの台詞です。") && saved.includes("group: nod-"), { state: v });
+check("保存（発話の中の位置は小数のモーラ番号）", /neck_yaw:[\s\S]*?at: \{line: L1, mora: 2\.\d+\}/.test(saved), saved.match(/neck_yaw:[^\n]*\n[^\n]*\n[^\n]*/)?.[0]);
 
 v = await ev(`document.querySelector('#blockSeg button[data-bi="1"]').click(); await new Promise(r => setTimeout(r, 200));
   return { title: ${q("#linesTitle")}.textContent, empty: !!document.querySelector("#lines .empty"), start: ${q("#bStart")}.value };`);
@@ -82,7 +117,7 @@ v = await ev(`${q("#runMode")}.value = "dry"; ${q("#runBtn")}.click();
   let sawPrompt = false;
   for (let i = 0; i < 80; i++) { await new Promise(r => setTimeout(r, 250));
     if (!${q("#opPrompt")}.hidden) { sawPrompt = true; ${q("#opGo")}.click(); }
-    if (${q("#runLog")}.textContent.includes("結果:")) break; }
+    if (/^結果:/m.test(${q("#runLog")}.textContent) && document.querySelectorAll("#recBody tr[data-run]").length) break; }   // 要約の「- 結果:」ではなく、終わったときの行を待つ
   return { sawPrompt, log: ${q("#runLog")}.textContent.split("\\n").filter(Boolean).slice(-3), rec: document.querySelectorAll("#recBody tr[data-run]").length };`);
 check("空運転（操作者の合図つき）", v.sawPrompt && v.log.some(l => l.includes("結果: ok")) && v.rec >= 1, v);
 

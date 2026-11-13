@@ -123,6 +123,12 @@ def _check_keyframe(kf, where: str, line_ids: set) -> list[str]:
                 errs.append(f"{where}: at には phrase・mora・text のどれか 1 つを書く")
             if at.get("edge", "start") not in ("start", "end"):
                 errs.append(f"{where}: at.edge は start か end")
+            if "mora" in at:
+                m = at["mora"]
+                if isinstance(m, bool) or not isinstance(m, (int, float)) or m < 0:
+                    errs.append(f"{where}: at.mora は 0 以上の数")
+                elif isinstance(m, float) and not m.is_integer() and at.get("edge", "start") != "start":
+                    errs.append(f"{where}: 小数の at.mora（発話の中の位置）には edge を書かない")
     if "offset_ms" in kf and not isinstance(kf["offset_ms"], (int, float)):
         errs.append(f"{where}: offset_ms が数でない")
     return errs
