@@ -1,4 +1,19 @@
-# talkscript
+# <img src="talkscript/assets/talkscript.png" width="40" height="40" alt=""> talkscript
+
+## ダウンロード
+
+| OS | 入れ方 |
+|---|---|
+| Windows | **[talkscript-setup.exe をダウンロード](https://github.com/dodo-daiki/talkscript/releases/latest/download/talkscript-setup.exe)** して、ダブルクリック |
+| Linux | 端末で `curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.sh \| sh` |
+
+Windows のインストーラーの URL（いつも最新の版を指します）:
+<https://github.com/dodo-daiki/talkscript/releases/latest/download/talkscript-setup.exe>
+
+これまでの版と変更点: <https://github.com/dodo-daiki/talkscript/releases>。
+入れ方の詳しい説明は、下の「[インストール](#インストール)」にあります。
+
+## talkscript とは
 
 台詞（[VOICEVOX](https://voicevox.hiroshiba.jp/) で合成）と、関節ごとのキーフレームで書いた動作を 1 つの台本（YAML）にまとめ、
 ロボットを発話に合わせて動かすための道具です。
