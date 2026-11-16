@@ -1781,7 +1781,7 @@ a { color: var(--navy); }
       catch (e) { toast(`取り込めません: ${e.message}`); return; }
       if (r.exists) {
         const what = r.kind === "script" ? "台本" : "ひな形";
-        if (confirm(`${what}「${r.id}」はもうあります。上書きしますか？\n（前の内容は ${r.id}.yaml.bak に残します。キャンセルで別の名前にします）`)) { body = { ...body, id: r.id, overwrite: true }; continue; }
+        if (confirm(`${what}「${r.id}」はもうあります。上書きしますか？\n（前の内容は ${r.id}.yaml.<時刻>.bak に残します。キャンセルで別の名前にします）`)) { body = { ...body, id: r.id, overwrite: true }; continue; }
         const id = prompt(`取り込む${what}の名前（英数字と - _）`, `${r.id}-2`);
         if (!id) return;
         body = { ...body, id, overwrite: false };

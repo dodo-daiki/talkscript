@@ -16,6 +16,7 @@ import json
 import math
 import pathlib
 import re
+import shutil
 
 import yaml
 
@@ -115,6 +116,24 @@ def check_id(x, what: str = "id") -> str:
     if not is_id(x):
         raise FormatError(f"{what}（{x!r}）は英数字と - _ だけで書く")
     return x
+
+
+BACKUP_KEEP = 10     # 控えを残す世代の数（古いものから消す）
+
+
+def backup(p: pathlib.Path) -> pathlib.Path:
+    """p を書き換える前の控え <名前>.<時刻>.bak を作り、同じファイルの控えは新しい BACKUP_KEEP 個だけ残す。
+    名前は時刻の順に並ぶ（マイクロ秒まで入れ、同じ秒に保存しても重ならない）。拡張子が .bak なので台本の一覧に混ざらない。"""
+    import datetime
+    while True:
+        dest = p.with_name(f"{p.name}.{datetime.datetime.now():%Y%m%d-%H%M%S-%f}.bak")
+        if not dest.exists():
+            break
+    shutil.copy2(p, dest)
+    olds = sorted(x for x in p.parent.glob(f"{p.name}.*.bak") if re.fullmatch(re.escape(p.name) + r"\.\d{8}-\d{6}-\d{6}\.bak", x.name))
+    for x in olds[:-BACKUP_KEEP]:
+        x.unlink(missing_ok=True)
+    return dest
 
 
 def is_num(x) -> bool:

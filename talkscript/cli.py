@@ -122,9 +122,9 @@ def cmd_insert(a, st):
     print(f"{rep['group']}: {rep['inserted']} 点を入れ、{rep['replaced']} 点を置き換えた。入れなかったロボット: {rep['skipped_robots']}")
     blk = next(b for b in s["blocks"] if b["id"] == a.block)
     if a.write:
-        shutil.copy(p, p.with_suffix(".yaml.bak"))
+        bak = io.backup(p)
         io.write_yaml(p, s)
-        print(f"{p.name} に書いた（元は {p.name}.bak。コメントは消える）")
+        print(f"{p.name} に書いた（元は {bak.name}。コメントは消える）")
     else:
         import yaml
         print("--- 挿入後のブロックの tracks（--write で台本に書く）---")
@@ -357,7 +357,7 @@ def cmd_import(a, st):
         print(f"取り込めない: {e}")
         return 1
     what = "台本" if r["kind"] == "script" else "ひな形"
-    print(f"{what} {r['id']} を取り込んだ: {r['path']}" + ("（前の内容は .bak に残した）" if r["replaced"] else ""))
+    print(f"{what} {r['id']} を取り込んだ: {r['path']}" + ("（前の内容は <名前>.yaml.<時刻>.bak に残した）" if r["replaced"] else ""))
     for w in r["warnings"]:
         print(f"注意: {w}")
     if r["kind"] == "script":

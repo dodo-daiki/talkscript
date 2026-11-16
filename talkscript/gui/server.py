@@ -249,7 +249,7 @@ class App:
             if base_sha and cur != base_sha and not force:
                 raise ApiError("台本のファイルが、画面で開いたあとに書き換わっている（別の画面かエディタで変更された）。"
                                "読み込み直すか、上書きを選ぶ", 409)
-            shutil.copy(p, p.with_suffix(".yaml.bak"))
+            io.backup(p)
         io.write_yaml(p, s)
         return io.sha256_file(p)
 

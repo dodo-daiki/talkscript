@@ -4,7 +4,7 @@
   talkscript/script@1   台本 → scripts/<id>.yaml
   talkscript/gesture@1  動作のひな形 → config/gestures/<id>.yaml
 ファイルの文はそのまま書く（コメントも残す）。名前（id）を変えたときだけ、先頭の id: の行を書き換える。
-同じ名前のものがあれば、上書きするか別の名前にするかを選ぶ（上書きの前の内容は <名前>.yaml.bak に残す）。
+同じ名前のものがあれば、上書きするか別の名前にするかを選ぶ（上書きの前の内容は <名前>.yaml.<時刻>.bak に残す）。
 取り込む前に形式を検査し、誤りがあれば取り込まない。作業フォルダにないロボット・ひな形を使っていれば注意を返す。
 """
 from __future__ import annotations
@@ -103,7 +103,7 @@ def import_text(text: str, filename: str = "", *, new_id: str | None = None, ove
             warnings.append("話者が未決定（TBD）。声の欄で選ぶ")
     replaced = dest.exists()
     if replaced:
-        dest.with_name(dest.name + ".bak").write_bytes(dest.read_bytes())
+        io.backup(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(text, encoding="utf-8", newline="\n")
     return {"kind": kind, "id": sid, "path": str(dest), "warnings": warnings, "replaced": replaced}

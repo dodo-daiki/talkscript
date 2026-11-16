@@ -108,7 +108,7 @@ def init_workspace(path, *, force: bool = False) -> list[str]:
     gi = root / ".gitignore"
     if not gi.exists():
         gi.write_text("# 合成した音声（sha256 は build/<台本>/manifest.json に残す）\nbuild/**/*.wav\nbuild/**/preview.png\n"
-                      "# 台本の insert --write の控え\nscripts/*.bak\n", encoding="utf-8")
+                      "# 台本・ひな形の上書きの前の控え（<名前>.yaml.<時刻>.bak）\nscripts/*.bak\nconfig/gestures/*.bak\n", encoding="utf-8")
         made.append(".gitignore")
     for d in ("build", "runs"):
         (root / d).mkdir(exist_ok=True)

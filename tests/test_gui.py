@@ -62,7 +62,7 @@ def test_state_and_script_roundtrip(gui):
     code, r = call("PUT", "script?id=demo", {"script": s, "base_sha": sc["sha"]})
     assert code == 200 and r["sha"] != sc["sha"]
     assert io.read_yaml(io.SCRIPTS / "demo.yaml")["blocks"][0]["lines"][0]["say"] == "こんにちは。"
-    assert (io.SCRIPTS / "demo.yaml.bak").exists()
+    assert len(list(io.SCRIPTS.glob("demo.yaml.*.bak"))) == 1          # 時刻つきの控え
     code, r2 = call("PUT", "script?id=demo", {"script": s, "base_sha": sc["sha"]})       # 古い sha → 競合
     assert code == 409
     assert call("PUT", "script?id=demo", {"script": s, "base_sha": sc["sha"], "force": True})[0] == 200
@@ -239,3 +239,16 @@ def test_every_cli_hint_has_gui_wording():
     assert hints and hints <= set(server.GUI_HINTS), hints - set(server.GUI_HINTS)
     for h in hints:
         assert "talkscript " not in server.gui_text(f"x{h}")
+
+
+def test_gui_save_keeps_generations(gui):
+    app, call, base = gui
+    r = call("GET", "script?id=demo")[1]
+    for say in ("一回目。", "二回目。"):
+        s = r["script"]
+        s["blocks"][0]["lines"][0]["say"] = say
+        st, r2 = call("PUT", "script?id=demo", {"script": s, "base_sha": r["sha"]})
+        assert st == 200, r2
+        r = call("GET", "script?id=demo")[1]
+    baks = sorted(io.SCRIPTS.glob("demo.yaml.*.bak"))
+    assert len(baks) == 2 and "一回目。" in baks[1].read_text(encoding="utf-8")

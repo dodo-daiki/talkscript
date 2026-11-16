@@ -184,7 +184,7 @@ check("検査の欄: 合成していない行の指摘は 1 つで、コマン�
   v.first.checks.some(t => t.includes("「合成」")) && !v.first.checks.some(t => t.includes("talkscript ")), v.first.checks);
 check("読み込む（台本の YAML を取り込んで開く。同じ名前は上書きを尋ねる）",
   v.first.sel === "imported" && v.first.lines === 1 && v.asked.includes("上書き") && v.sel === "imported" &&
-  imported.includes("# 取り込みの試験") && fs.existsSync(path.join(ws, "scripts", "imported.yaml.bak")), v);
+  imported.includes("# 取り込みの試験") && fs.readdirSync(path.join(ws, "scripts")).some(f => /^imported\.yaml\.\d{8}-\d{6}-\d{6}\.bak$/.test(f)), v);
 
 const shotRes = await cdp("Page.captureScreenshot", { format: "png", captureBeyondViewport: true });
 fs.writeFileSync(shot, Buffer.from(shotRes.result.data, "base64"));

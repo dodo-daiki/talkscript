@@ -51,7 +51,7 @@ def test_import_conflict_overwrite_and_rename(tmp_repo):
     with pytest.raises(importer.Exists):
         importer.import_text(SCRIPT, "trivia.yaml")
     r = importer.import_text(SCRIPT.replace("三つ", "3つ"), "trivia.yaml", overwrite=True)
-    assert r["replaced"] and (io.SCRIPTS / "trivia.yaml.bak").read_text(encoding="utf-8") == SCRIPT
+    assert r["replaced"] and next(io.SCRIPTS.glob("trivia.yaml.*.bak")).read_text(encoding="utf-8") == SCRIPT
     r = importer.import_text(SCRIPT, "trivia.yaml", new_id="trivia-2")
     text = (io.SCRIPTS / "trivia-2.yaml").read_text(encoding="utf-8")
     assert r["id"] == "trivia-2" and "id: trivia-2\n" in text and "# 取り込んでも残るコメント" in text
@@ -178,3 +178,27 @@ def test_page_has_csp_with_nonce_and_no_inline_handlers(tmp_repo):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+# --- 控え（上書きの前の内容）は時刻つきで数世代残す ----------------------------------------------------
+
+def test_backup_keeps_generations(tmp_repo):
+    p = io.SCRIPTS / "demo.yaml"
+    seen = []
+    for k in range(io.BACKUP_KEEP + 3):
+        p.write_text(f"# 版 {k}\n", encoding="utf-8")
+        seen.append(io.backup(p))
+    baks = sorted(io.SCRIPTS.glob("demo.yaml.*.bak"))
+    assert len(baks) == io.BACKUP_KEEP                                   # 古いものから消す
+    assert baks[-1] == seen[-1] and baks[-1].read_text(encoding="utf-8") == f"# 版 {io.BACKUP_KEEP + 2}\n"
+    assert len({b.name for b in seen}) == len(seen)                      # 名前が重ならない（同じ秒でも）
+    assert not any(x.suffix == ".yaml" for x in io.SCRIPTS.glob("demo.yaml.*"))   # 台本の一覧に混ざらない
+
+
+def test_import_overwrite_keeps_each_previous_version(tmp_repo):
+    importer.import_text(SCRIPT, "trivia.yaml")
+    importer.import_text(SCRIPT.replace("三つ", "3つ"), "trivia.yaml", overwrite=True)
+    importer.import_text(SCRIPT.replace("三つ", "みっつ"), "trivia.yaml", overwrite=True)
+    baks = sorted(io.SCRIPTS.glob("trivia.yaml.*.bak"))
+    assert [("三つ" in b.read_text(encoding="utf-8"), "3つ" in b.read_text(encoding="utf-8")) for b in baks] == [(True, False), (False, True)]
+
