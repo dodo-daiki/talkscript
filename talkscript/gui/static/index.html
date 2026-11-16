@@ -1620,6 +1620,16 @@ a { color: var(--navy); }
     } catch (e) { runLog(`状態を読めません: ${e.message}`); }
     runPoll = setTimeout(pollRun, 400);
   }
+  // 画面を開き直したとき、実機の実行が続いていれば、止めるボタンと合図の欄を戻し、状態の読み取りを再開する
+  async function resumeRun() {
+    try {
+      const r = await api("GET", "run?since=0");
+      if (r.state !== "running" && r.state !== "operator") return;
+      runSince = 0; $("runLog").textContent = "";
+      setRunUi(r.state); pollRun();
+      toast("実機の実行が続いています。止めるときは「止める」を押してください");
+    } catch (e) { /* 読めなければ何もしない（実行を始めたときと同じ表示のまま） */ }
+  }
   async function loadRuns() {
     try {
       const r = await api("GET", "runs");
@@ -1714,6 +1724,7 @@ a { color: var(--navy); }
   async function start() {
     if (!TOKEN) { document.body.innerHTML = "<p style='padding:20px'>talkscript のコマンドから開いてください（合言葉がありません）。</p>"; return; }
     await refreshState();
+    resumeRun();
     renderUpdate(); watchUpdate();
     setInterval(() => api("GET", "ping").catch(() => {}), 5000);
     api("GET", "ping").catch(() => {});

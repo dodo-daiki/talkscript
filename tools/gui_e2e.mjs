@@ -126,6 +126,19 @@ v = await ev(`${q("#runMode")}.value = "dry"; ${q("#runBtn")}.click();
   return { sawPrompt, log: ${q("#runLog")}.textContent.split("\\n").filter(Boolean).slice(-3), rec: document.querySelectorAll("#recBody tr[data-run]").length };`);
 check("空運転（操作者の合図つき）", v.sawPrompt && v.log.some(l => l.includes("結果: ok")) && v.rec >= 1, v);
 
+// 実行中（合図待ち）に画面を読み込み直しても、止めるボタンが押せて、合図の欄も出る
+v = await ev(`${q("#runMode")}.value = "dry"; ${q("#runBtn")}.click();
+  for (let i = 0; i < 80; i++) { await new Promise(r => setTimeout(r, 250)); if (!${q("#opPrompt")}.hidden) return true; }
+  return false;`);
+await cdp("Page.reload");
+await sleep(3000);
+v = await ev(`const before = { stop: !${q("#stopBtn")}.disabled, stopNow: !${q("#stopNowBtn")}.disabled, run: ${q("#runBtn")}.disabled,
+    prompt: !${q("#opPrompt")}.hidden, state: ${q("#runState")}.textContent };
+  ${q("#opGo")}.click();
+  for (let i = 0; i < 80; i++) { await new Promise(r => setTimeout(r, 250)); if (/^結果:/m.test(${q("#runLog")}.textContent)) break; }
+  return { before, done: /^結果: ok/m.test(${q("#runLog")}.textContent), stopAfter: ${q("#stopBtn")}.disabled };`);
+check("実行中に読み込み直しても、止めるボタンが有効", v.before.stop && v.before.stopNow && v.before.run && v.before.prompt && v.done && v.stopAfter, v);
+
 v = await ev(`document.querySelector('#blockSeg button[data-bi="0"]').click(); await new Promise(r => setTimeout(r, 200));
   ${q("#playBtn")}.click(); await new Promise(r => setTimeout(r, 1200)); const t = parseFloat(${q("#timeLbl")}.textContent);
   ${q("#playBtn")}.click(); return { t, btn: ${q("#playBtn")}.textContent };`);
