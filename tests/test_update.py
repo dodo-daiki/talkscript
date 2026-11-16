@@ -24,7 +24,7 @@ def user_dirs(tmp_path, monkeypatch):
     return tmp_path
 
 
-def release(version, assets=("talkscript-setup.exe",), sha=None):
+def release(version, assets=("talkscript-setup.exe",), sha="ab" * 32):
     names = list(assets) + [f"talkscript-{version}-py3-none-any.whl"]
     return {"version": version, "tag": f"v{version}", "page": f"https://example.invalid/v{version}", "notes": "変更点",
             "published": None, "assets": {n: {"url": f"https://example.invalid/{n}", "size": 1, "sha256": sha} for n in names}}
@@ -201,3 +201,17 @@ def test_update_check_can_be_disabled(tmp_repo, user_dirs):
     app = server.App(tmp_repo, log=lambda *_: None)
     app.start_update_check(lambda: pytest.fail("確かめないはず"))
     assert app.update is None
+
+
+def test_update_refuses_without_sha256(user_dirs, monkeypatch, tmp_path):
+    """Release に sha256 の記録がないファイルでは更新しない（照合を飛ばさない）。"""
+    monkeypatch.setattr(update, "installed_by_uv_tool", lambda: True)
+    r = update.check(force=True, fetch=lambda: release("9.0.0", sha=None))
+    assert r["newer"] and not r["can_update"] and "sha256" in r["reason"]
+    with pytest.raises(update.UpdateError):
+        update.start_update({**r, "can_update": True}, log=lambda *_: None)
+    src = tmp_path / "a.bin"
+    src.write_bytes(b"x")
+    with pytest.raises(update.UpdateError, match="sha256"):
+        update.download(src.as_uri(), tmp_path / "out" / "a.bin", None)
+    assert not (tmp_path / "out" / "a.bin").exists()

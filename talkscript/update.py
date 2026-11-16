@@ -102,12 +102,21 @@ def check(*, force: bool = False, fetch=None, current: str = __version__) -> dic
             out["reason"] = "開発用の環境で動いているので、ここからは更新しない（git pull で更新する）"
         elif needed_asset(info["version"]) not in info.get("assets", {}):
             out["reason"] = f"この版の Release に {needed_asset(info['version'])} がない"
+        elif not _sha_ok(info["assets"][needed_asset(info["version"])].get("sha256")):
+            out["reason"] = f"この版の Release に {needed_asset(info['version'])} の sha256 の記録がないので、照合できず更新しない"
         else:
             out["can_update"] = True
     return out
 
 
-def download(url: str, dest: pathlib.Path, sha256: str | None = None, *, timeout_s: float = 60.0) -> pathlib.Path:
+def _sha_ok(s) -> bool:
+    return isinstance(s, str) and bool(re.fullmatch(r"[0-9a-fA-F]{64}", s))
+
+
+def download(url: str, dest: pathlib.Path, sha256: str | None, *, timeout_s: float = 60.0) -> pathlib.Path:
+    """sha256 が一致したときだけ dest にする。sha256 がなければダウンロードしない（照合を飛ばさない）。"""
+    if not _sha_ok(sha256):
+        raise UpdateError(f"{dest.name} の sha256 の記録がないので、照合できずダウンロードしない")
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_name(dest.name + ".part")
     h = hashlib.sha256()
@@ -119,7 +128,7 @@ def download(url: str, dest: pathlib.Path, sha256: str | None = None, *, timeout
                 break
             h.update(b)
             f.write(b)
-    if sha256 and h.hexdigest() != sha256.lower():
+    if h.hexdigest() != sha256.lower():
         tmp.unlink(missing_ok=True)
         raise UpdateError(f"ダウンロードした {dest.name} の sha256 が Release の記録と違う")
     os.replace(tmp, dest)
@@ -141,6 +150,8 @@ def start_update(result: dict, *, wait_pids=(), log=print) -> str:
     info = result["info"]
     ver = info["version"]
     asset = info["assets"][needed_asset(ver)]
+    if not _sha_ok(asset.get("sha256")):
+        raise UpdateError(f"{needed_asset(ver)} の sha256 の記録がないので、照合できず更新しない")
     d = workspace.user_data_dir() / "updates"
     if sys.platform == "win32":
         exe = download(asset["url"], d / f"talkscript-setup-{ver}.exe", asset.get("sha256"))
