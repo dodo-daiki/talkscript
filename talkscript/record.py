@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime
 import json
 import pathlib
+import queue
 import subprocess
 import threading
 import time
@@ -41,25 +42,57 @@ class RunRecord:
                     "clock": "PC の time.perf_counter_ns()（単調時計）。壁時計は wall で添える"}
         self.counts = {"warn": 0, "fault": 0, "audio_status": 0}
         self.ref = (time.perf_counter_ns(), time.time_ns())
+        # event は音声のコールバックからも呼ばれる。コールバックの中でファイルに書いたり表示したりしないよう、
+        # キューに積むだけにし、書き込みと表示はこのスレッドで行う
+        self._q: queue.SimpleQueue = queue.SimpleQueue()
+        self._writer = threading.Thread(target=self._write_loop, name="talkscript-record", daemon=True)
+        self._writer.start()
 
     def wall(self, t_pc_ns: int) -> str:
         t = self.ref[1] + (t_pc_ns - self.ref[0])
         return datetime.datetime.fromtimestamp(t / 1e9).isoformat(timespec="milliseconds")
 
     def event(self, ev: dict) -> None:
+        """記録に 1 件足す。時刻だけをここで取り、書き込み・数え上げ・表示は記録のスレッドで行う（呼んだスレッドを待たせない）。"""
         ev = dict(ev)
         ev.setdefault("t_pc_ns", time.perf_counter_ns())
+        self._q.put(ev)
+
+    def _write_loop(self) -> None:
+        while True:
+            ev = self._q.get()
+            if ev is None:
+                return
+            if isinstance(ev, threading.Event):      # flush の合図
+                ev.set()
+                continue
+            try:
+                self._write_one(ev)
+            except Exception as e:  # noqa: BLE001  1 件の失敗で、あとの記録を止めない
+                try:
+                    self.echo(f"  [記録] 書けなかった: {type(e).__name__}: {e}")
+                except Exception:  # noqa: BLE001
+                    pass
+
+    def _write_one(self, ev: dict) -> None:
         ev["wall"] = self.wall(ev["t_pc_ns"])
         kind = ev.get("kind", "")
-        for k in self.counts:
-            if kind == k:
-                self.counts[k] += 1
+        if kind in self.counts:
+            self.counts[kind] += 1
         fp = self.audio_fp if kind.startswith("audio") else self.events_fp
         with self.lock:
             fp.write(json.dumps(ev, ensure_ascii=False) + "\n")
             fp.flush()
         if kind in ("warn", "fault", "heartbeat_lost", "disengaged", "audio_status"):
             self.echo(f"  [{ev.get('robot', '')}{'' if 'robot' not in ev else ' '}{kind}] {ev.get('detail') or ev.get('reason') or ''}")
+
+    def flush(self, timeout_s: float = 10.0) -> None:
+        """積んだ記録をすべて書き終えるまで待つ。"""
+        if not self._writer.is_alive():
+            return
+        done = threading.Event()
+        self._q.put(done)
+        done.wait(timeout_s)
 
     def write_run(self, **kw) -> None:
         self.run.update(kw)
@@ -69,6 +102,7 @@ class RunRecord:
         (self.dir / name).write_text(text, encoding="utf-8")
 
     def summarize(self) -> str:
+        self.flush()
         evs = [json.loads(x) for x in (self.dir / "events.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
         aus = [json.loads(x) for x in (self.dir / "audio.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
         lines = [f"# {self.run_id}", "", f"- 台本: {self.run.get('script')}、モード: {self.run.get('mode')}、"
@@ -96,6 +130,9 @@ class RunRecord:
         return text
 
     def close(self):
+        if self._writer.is_alive():
+            self._q.put(None)               # 積んだ分を書き終えてから閉じる
+            self._writer.join(10.0)
         for fp in (self.events_fp, self.audio_fp):
             try:
                 fp.close()

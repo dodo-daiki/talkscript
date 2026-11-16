@@ -182,3 +182,31 @@ def test_agent_client_send_wraps_oserror():
     c.sock = DeadSock()
     with pytest.raises(AdapterError, match="送れない"):
         c.send({"type": "ping"})
+
+
+# --- 記録の書き込みは呼んだスレッドで行わない（音声のコールバックから呼ばれるため） ---------------------------
+
+def test_record_event_writes_on_writer_thread(tmp_path):
+    import json
+    import threading
+    from talkscript.record import RunRecord
+    echoed = []
+    rec = RunRecord("demo", base=tmp_path, echo=lambda t: echoed.append((threading.get_ident(), t)))
+    caller = threading.get_ident()
+    writes = []
+    for name in ("events_fp", "audio_fp"):
+        fp = getattr(rec, name)
+        real = fp.write
+        fp.write = lambda s, real=real: (writes.append(threading.get_ident()), real(s))[1]
+    rec.event({"kind": "audio_status", "detail": "output underflow"})    # 音声のコールバックから来るもの
+    rec.event({"kind": "audio_start", "line": "L1", "late_ms": 0.1, "planned_pc_ns": 0})
+    rec.event({"kind": "warn", "robot": "self7", "detail": "試験"})
+    rec.event({"kind": "block_t0", "block": "B1", "t0_pc_ns": 1})
+    rec.close()
+    assert writes and caller not in writes                               # ファイルへの書き込みは別のスレッド
+    assert echoed and all(t != caller for t, _ in echoed)               # 画面・端末への表示も別のスレッド
+    ev = [json.loads(x) for x in (rec.dir / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+    au = [json.loads(x) for x in (rec.dir / "audio.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [e["kind"] for e in ev] == ["warn", "block_t0"] and [a["kind"] for a in au] == ["audio_status", "audio_start"]
+    assert all("wall" in e for e in ev + au)
+    assert rec.counts["warn"] == 1 and rec.counts["audio_status"] == 1
