@@ -18,7 +18,7 @@
 #   PC ごとの設定は尋ねてから消す。作業フォルダ（台本・実行の記録）、uv・Python・curl・PortAudio は残す。
 set -eu
 
-TALKSCRIPT_VERSION=0.2.4
+TALKSCRIPT_VERSION=0.2.5
 UV_VERSION=0.13.0
 PYTHON_VERSION=3.12
 YES=0

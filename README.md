@@ -84,6 +84,7 @@ curl -LsSf https://raw.githubusercontent.com/dodo-daiki/talkscript/main/install.
 - Linux: 新しい版を入れ直します。画面を閉じて開き直すと、新しい版になります。
 
 コマンドでは `talkscript update`（確かめるだけなら `--check`）です。ネットにつながらないときは何も出ません。
+Release に sha256 の記録がないファイルでは、照合できないので更新しません。
 確かめないようにするには、`settings.toml` に次のように書きます（実験の PC など）:
 
 ```toml
@@ -106,7 +107,8 @@ talkscript が入れた VOICEVOX と、PC ごとの設定は、尋ねてから�
 画面で実機の実行をしている間は、アンインストールしません。
 
 VOICEVOX をすでに入れている場合は、`%LOCALAPPDATA%\Programs\VOICEVOX`（公式のインストーラーの既定の場所）を自動で探します。
-ほかの場所にあるときは、`settings.toml` の `[voicevox] engine_path` に `vv-engine/run(.exe)` の場所を書いてください。
+ほかの場所にあるときは、PC ごとの `settings.toml` の `[voicevox] engine_path` に `vv-engine/run(.exe)` の場所を書いてください。
+起動するプログラムの場所なので、作業フォルダの `talkscript.toml`（ほかの人と共有するもの）に書いても使いません。
 合成のコマンドは、エンジンが止まっていれば自動で起動します（`talkscript engine start|stop|status`）。
 
 ## 作業フォルダ
@@ -161,11 +163,20 @@ PC の中だけで動く小さなサーバ（127.0.0.1）が立ち、Edge か Ch
 （台本は `scripts/`、ひな形は `config/gestures/`）。取り込んだ台本はそのまま開くので、「合成」を押して声を作ります。
 
 - 取り込む前に形式を検査し、誤りがあれば取り込みません。ファイルの文はそのまま書くので、コメントも残ります。
-- 同じ名前の台本があれば、上書きするか別の名前にするかを尋ねます（上書きの前の内容は `<名前>.yaml.bak` に残ります）。
+- 同じ名前の台本があれば、上書きするか別の名前にするかを尋ねます（上書きの前の内容は控えに残ります。下の「控え」）。
 - この作業フォルダにないロボットを使う台本や、話者が未決定（TBD）の台本は、取り込んだうえで注意を出します。
 - コマンドでは `talkscript import <ファイル> [--id 別の名前] [--force]` です。
 
-画面で保存すると、台本の YAML は書き直されます（コメントは消えます。直前の内容は `scripts/<台本>.yaml.bak` に残ります）。
+画面で保存すると、台本の YAML は書き直されます（コメントは消えます）。
+
+**控え**: 保存・取り込みの上書き・`insert --write` の前の内容は、`<名前>.yaml.<年月日-時分秒-マイクロ秒>.bak` に残します。
+同じ台本・ひな形の控えは、新しい 10 個だけを残します（古いものから消します）。
+
+**実行の記録の必須項目**: 作業フォルダの `talkscript.toml` の `[play] required_notes`（例 `["condition", "subject", "distance", "spl_db"]`）に
+書いた項目が空だと、画面からもコマンドからも実行しません（空運転は除きます）。
+
+**止まったとき**: 実行中にどんなエラーが起きても、全ロボットに停止を送り、実行の記録（`runs/<実行 ID>/run.json`）の
+`result` を `error: …` にします。実行中に画面を閉じて開き直しても、「止める」ボタンと合図の欄は戻ります。
 
 ### 台本でのキーフレームの書き方
 
@@ -178,6 +189,12 @@ neck_yaw:
 ```
 
 小数のモーラ番号は、モーラ i の始まりから i+1 の始まりまで（間を含む）を等分した位置です。話速を変えると、その分だけ縮みます。
+
+形式の決まり（読み込み・合成・検査・実行の前に確かめ、違えば止めます）:
+
+- 台本・ブロック・行・ロボット・ひな形の id（名前）は、英数字と `-` `_` だけで書きます（ファイルの名前に使うため）。
+- 角度・時刻・ずらし・モーラの位置・声の数の項目・`lead_in_ms`・`gap_ms`・`tail_ms` は、有限な数で書きます
+  （`.nan`・`.inf` や文字は受けません）。ロボットの側（talkscript-agent）も、受け取った軌道を同じように確かめます。
 
 ## 使い方（コマンド）
 
@@ -228,6 +245,10 @@ uv run pytest -q                 # 擬似 VOICEVOX・擬似 RobotController を�
 python tools/gui_serve_fake.py /tmp/ts-e2e 120 &     # 擬似 VOICEVOX で画面のサーバを立て、1 行目に URL を出す
 node tools/gui_e2e.mjs "<その URL>" /tmp/ts-e2e shot.png
 ```
+
+画面は Content-Security-Policy でスクリプトを読み込みごとの nonce に限っています。
+`index.html` にインラインのイベントハンドラ（`onclick=` など）や別のスクリプトを足しても動きません。`addEventListener` を使ってください。
+台本・設定から来る値を HTML に入れるときは、必ず `esc()` を通します。
 
 アイコンの元は `talkscript/assets/icon.svg`（16〜32 px 用は `icon-small.svg`）です。直したら、画像を作り直します:
 
