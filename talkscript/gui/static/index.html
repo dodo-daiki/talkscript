@@ -825,7 +825,7 @@ a { color: var(--navy); }
     $("bmeta").innerHTML = `<label for="bStart">開始</label>
       <select id="bStart"><option value="auto" ${b.start !== "operator" ? "selected" : ""}>前のブロックに続けて自動で</option>
         <option value="operator" ${b.start === "operator" ? "selected" : ""}>操作者の合図で</option></select>
-      <label for="bTail">最後の余白</label><input id="bTail" type="number" step="100" min="0" value="${b.tail_ms || 0}"> ms`;
+      <label for="bTail">最後の余白</label><input id="bTail" type="number" step="100" min="0" value="${esc(b.tail_ms || 0)}"> ms`;
     $("bStart").addEventListener("change", e => { pushHist(); b.start = e.target.value; });
     $("bTail").addEventListener("change", e => { pushHist(); b.tail_ms = Math.max(0, Math.round(+e.target.value || 0)); buildTM(); renderTimeline(); });
   }
@@ -841,7 +841,7 @@ a { color: var(--navy); }
         <textarea id="say-${esc(L.id)}" rows="1" aria-label="${esc(L.id)} の台詞">${esc(L.say)}</textarea>
         <div class="lmeta">
           <label for="gap-${esc(L.id)}">${i === 0 ? "ブロックの始まりから" : "前の台詞から"}</label>
-          <input id="gap-${esc(L.id)}" type="number" step="50" min="0" value="${i === 0 ? (b.lead_in_ms ?? META.lead_in_ms ?? 500) : (L.gap_ms ?? META.gap_ms ?? 300)}"> ms
+          <input id="gap-${esc(L.id)}" type="number" step="50" min="0" value="${esc(i === 0 ? (b.lead_in_ms ?? META.lead_in_ms ?? 500) : (L.gap_ms ?? META.gap_ms ?? 300))}"> ms
           <span class="chip ${dirty ? "warn" : "good"}">${st}</span>
           ${over ? `<span class="chip">声: 個別</span>` : ""}
           ${rd ? `<span class="rd">読み: ${esc(rd)}</span>` : ""}
@@ -919,7 +919,7 @@ a { color: var(--navy); }
         <select id="vPurpose"><option value="demo" ${META.purpose !== "experiment" ? "selected" : ""}>デモ</option><option value="experiment" ${META.purpose === "experiment" ? "selected" : ""}>実験（固定が必須・声は 1 つ）</option></select></div>
       <div class="vrow${over("speaker") ? " over" : ""}"><span class="name">話者</span>${spk}</div>
       ${VPARAMS.map(p => `<div class="vrow${over(p.key) ? " over" : ""}"><label class="name" for="v-${p.key}">${p.label}</label>
-        <input type="range" id="v-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${cur[p.key]}"><span class="val" id="vv-${p.key}">${p.fmt(+cur[p.key])}</span></div>`).join("")}
+        <input type="range" id="v-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${esc(cur[p.key])}"><span class="val" id="vv-${p.key}">${esc(p.fmt(+cur[p.key]))}</span></div>`).join("")}
       <p class="vnote">${L ? `● は ${esc(L.id)} だけ台本全体の設定と違う項目。` : ""}話速と前後の無音は発話の時刻を変えます。値を離すと合成し直します。
         VOICEVOX の<a href="${esc(ST.terms_url)}" target="_blank" rel="noopener">利用規約</a>と、使う声ごとの規約に従ってください（多くの声は「VOICEVOX:声の名前」のクレジットを求めます）。</p>`;
     $("vScope").addEventListener("change", e => { voiceScope = e.target.value; if (voiceScope !== "all") selLine = voiceScope; renderVoice(); markSelLine(); });
@@ -946,7 +946,7 @@ a { color: var(--navy); }
   const headH = () => H.ruler + H.text + H.speech + H.mora;
   const X = t => PADX + t * pps;
   const svg = $("tl"), scroller = $("scroller");
-  const partVar = p => `var(--${p})`;
+  const partVar = p => /^[a-z_]+$/.test(String(p)) ? `var(--${p})` : "var(--muted)";
   function laneGeom(i) { const top = headH() + i * LANE; return { top, y0: top + 9, y1: top + LANE - 9 }; }
   function yOf(L, i, v) { const g = laneGeom(i); return g.y0 + (L.max - v) / (L.max - L.min) * (g.y1 - g.y0); }
   function vOf(L, i, y) { const g = laneGeom(i); return L.max - (y - g.y0) / (g.y1 - g.y0) * (L.max - L.min); }
@@ -1043,7 +1043,7 @@ a { color: var(--navy); }
         const x = X(eff(k)), y = yOf(L, i, Math.max(L.min, Math.min(L.max, k.v))), isSel = sel && sel.id === k.id, r = isSel ? 7.5 : 6.2;
         const gem = `M${x},${y - r} L${x + r},${y} L${x},${y + r} L${x - r},${y} Z`;
         const at = k.a ? anchorTime(k.a) : null;
-        s += `<g class="kf${isSel ? " sel" : ""}" data-lane="${esc(L.key)}" data-id="${k.id}">`;
+        s += `<g class="kf${isSel ? " sel" : ""}" data-lane="${esc(L.key)}" data-id="${esc(k.id)}">`;
         if (at != null) s += `<line class="pin" x1="${X(at)}" x2="${x}" y1="${g.top + 3}" y2="${y}"/><circle cx="${X(at)}" cy="${g.top + 3}" r="2.4" fill="var(--speech)"/>`;
         s += `<circle class="hit" cx="${x}" cy="${y}" r="12"/><circle class="ring" cx="${x}" cy="${y}" r="11"/>`;
         s += `<path class="gem" d="${gem}" fill="${k.a ? col : "var(--kf-fill)"}" stroke="${unresolved(k) ? "var(--danger)" : col}"/></g>`;
@@ -1215,7 +1215,7 @@ a { color: var(--navy); }
       <label for="fAnchor">固定先</label><select id="fAnchor">${opts.join("")}</select>
       <label for="fTime">${byTime ? "時刻 [ms]" : "ずらし [ms]"}</label><input id="fTime" type="number" step="10" value="${Math.round((byTime ? eff(k) : k.off) * 1000)}">
       <label>実際の時刻</label><span class="ro">${(eff(k) * 1000).toFixed(0)} ms</span>
-      <label for="fVal">角度 [°]</label><input id="fVal" type="number" step="1" min="${L.min}" max="${L.max}" value="${k.v}">
+      <label for="fVal">角度 [°]</label><input id="fVal" type="number" step="1" min="${esc(L.min)}" max="${esc(L.max)}" value="${esc(k.v)}">
       <label>前の区間</label><span class="ro">${fmtV(pk.before, L)}</span>
       <label>後の区間</label><span class="ro">${fmtV(pk.after, L)}</span>
       ${k.group ? `<label>まとまり</label><span class="ro">${esc(k.group)}</span>` : ""}
@@ -1241,14 +1241,14 @@ a { color: var(--navy); }
     const items = [];
     const dirty = blk().lines.filter(isDirty).map(L => L.id);
     if (dirty.length) items.push(`<li class="warn">${esc(dirty.join("・"))} は合成していないか、文・声を変えたあと合成し直していません（時刻は仮）。</li>`);
-    for (const w of warnings) items.push(`<li class="warn">${esc(w.lines)} の固定先が見つからず、キーフレーム ${w.n} 個を置き直しました。位置を確かめてください。</li>`);
+    for (const w of warnings) items.push(`<li class="warn">${esc(w.lines)} の固定先が見つからず、キーフレーム ${esc(w.n)} 個を置き直しました。位置を確かめてください。</li>`);
     for (const r of META.robots || []) for (const [key, arr] of Object.entries(blk().kf[r] || {})) for (const k of arr)
-      if (unresolved(k)) items.push(`<li class="warn" data-id="${k.id}" data-robot="${esc(r)}">${esc(laneOf(r, key)?.label || key)}: ${esc(anchorLabel(k.a))} の位置がまだ決まっていません。</li>`);
+      if (unresolved(k)) items.push(`<li class="warn" data-id="${esc(k.id)}" data-robot="${esc(r)}">${esc(laneOf(r, key)?.label || key)}: ${esc(anchorLabel(k.a))} の位置がまだ決まっていません。</li>`);
     for (const v of viol) {
-      if (v.kind === "vel") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>最大 <span class="num">${v.pk.toFixed(0)}°/s</span>（上限 <span class="num">${v.lane.vmax}°/s</span>）。間を広げるか、角度の差を小さくします。</li>`);
-      else if (v.kind === "acc") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>角加速度 <span class="num">${v.pk.toFixed(0)}°/s²</span>（上限 <span class="num">${v.lane.amax}</span>）。</li>`);
-      else if (v.kind === "same") items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>同じ時刻に違う角度のキーフレームがあります。</li>`);
-      else items.push(`<li data-id="${v.id}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>角度 <span class="num">${v.v}°</span> が範囲 <span class="num">${v.lane.min}〜${v.lane.max}°</span> の外です。</li>`);
+      if (v.kind === "vel") items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>最大 <span class="num">${v.pk.toFixed(0)}°/s</span>（上限 <span class="num">${esc(v.lane.vmax)}°/s</span>）。間を広げるか、角度の差を小さくします。</li>`);
+      else if (v.kind === "acc") items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>角加速度 <span class="num">${v.pk.toFixed(0)}°/s²</span>（上限 <span class="num">${esc(v.lane.amax)}</span>）。</li>`);
+      else if (v.kind === "same") items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>同じ時刻に違う角度のキーフレームがあります。</li>`);
+      else items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)} s</span><br>角度 <span class="num">${esc(v.v)}°</span> が範囲 <span class="num">${esc(v.lane.min)}〜${esc(v.lane.max)}°</span> の外です。</li>`);
     }
     const shown = new Set();
     for (const i of serverIssues) {

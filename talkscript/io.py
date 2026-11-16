@@ -127,6 +127,35 @@ def check_gesture_points(g: dict) -> list[str]:
     return errs
 
 
+VOICE_NUMS = {"speed": 0.0, "pitch": None, "intonation": None, "volume": None, "pre_silence_s": None, "post_silence_s": None}
+VOICE_POSITIVE = {"speed"}
+
+
+def _check_voice(v, where: str) -> list[str]:
+    """voice の項目の型（数の項目は有限な数、話者は {name: 文字, style: 文字}、サンプリング周波数は正の整数）。"""
+    if not isinstance(v, dict) or set(v) - VOICE_KEYS:
+        return [f"{where}: voice の項目が違う（使える項目: {sorted(VOICE_KEYS)}）"]
+    errs = []
+    for k in VOICE_NUMS:
+        if k in v and (not is_num(v[k]) or (k in VOICE_POSITIVE and v[k] <= 0)
+                       or (k in ("volume", "pre_silence_s", "post_silence_s") and v[k] < 0)):
+            errs.append(f"{where}.{k} が{'正の' if k in VOICE_POSITIVE else ''}有限な数でない（{v[k]!r}）")
+    if "sampling_rate" in v:
+        sr = v["sampling_rate"]
+        if isinstance(sr, bool) or not isinstance(sr, int) or sr <= 0:
+            errs.append(f"{where}.sampling_rate が正の整数でない（{sr!r}）")
+    if "speaker" in v:
+        sp = v["speaker"]
+        if not isinstance(sp, dict) or set(sp) - {"name", "style"} or not isinstance(sp.get("name", ""), str) \
+                or not isinstance(sp.get("style", ""), str):
+            errs.append(f"{where}.speaker は {{name: 話者の名前, style: スタイルの名前}}（{sp!r}）")
+    return errs
+
+
+def _check_ms(d: dict, keys, where: str) -> list[str]:
+    return [f"{where}.{k} が 0 以上の有限な数でない（{d[k]!r}）" for k in keys if k in d and (not is_num(d[k]) or d[k] < 0)]
+
+
 def _check_keyframe(kf, where: str, line_ids: set) -> list[str]:
     errs = []
     if not isinstance(kf, dict):
@@ -169,9 +198,8 @@ def validate_script(s: dict, stem: str | None = None) -> None:
         errs.append(str(e))
     if stem and s.get("id") != stem:
         errs.append(f"id（{s.get('id')}）がファイル名（{stem}）と違う")
-    v = s.get("voice", {})
-    if not isinstance(v, dict) or set(v) - VOICE_KEYS:
-        errs.append(f"voice の項目が違う（使える項目: {sorted(VOICE_KEYS)}）")
+    errs += _check_voice(s.get("voice", {}), "voice")
+    errs += _check_ms(s, ("lead_in_ms", "gap_ms"), "台本")
     if not isinstance(s.get("robots"), list) or not s["robots"]:
         errs.append("robots（使うロボットの一覧）がない")
     if s.get("purpose", "demo") not in ("demo", "experiment"):
@@ -188,6 +216,7 @@ def validate_script(s: dict, stem: str | None = None) -> None:
         seen_b.add(bid)
         if b.get("start", "auto") not in ("auto", "operator"):
             errs.append(f"{bid}: start は auto か operator")
+        errs += _check_ms(b, ("lead_in_ms", "tail_ms"), str(bid))
         lines = b.get("lines", []) or []
         ids = set()
         for ln in lines:
@@ -198,10 +227,12 @@ def validate_script(s: dict, stem: str | None = None) -> None:
             ids.add(lid)
             if not isinstance(ln.get("say"), str) or not ln["say"].strip():
                 errs.append(f"{bid}.{lid}: say（発話の文）がない")
-            if "voice" in ln and (not isinstance(ln["voice"], dict) or set(ln["voice"]) - VOICE_KEYS):
-                errs.append(f"{bid}.{lid}: voice の項目が違う")
+            if "voice" in ln:
+                errs += _check_voice(ln["voice"], f"{bid}.{lid}.voice")
+            errs += _check_ms(ln, ("gap_ms",), f"{bid}.{lid}")
             for r in ln.get("reading", []) or []:
-                if not isinstance(r, dict) or not r.get("text") or not r.get("kana"):
+                if not isinstance(r, dict) or not isinstance(r.get("text"), str) or not isinstance(r.get("kana"), str) \
+                        or not r["text"] or not r["kana"]:
                     errs.append(f"{bid}.{lid}: reading は {{text: 文字, kana: 読み}} の列")
         tracks = b.get("tracks", {}) or {}
         if not isinstance(tracks, dict):

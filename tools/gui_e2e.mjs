@@ -144,6 +144,13 @@ v = await ev(`document.querySelector('#blockSeg button[data-bi="0"]').click(); a
   ${q("#playBtn")}.click(); return { t, btn: ${q("#playBtn")}.textContent };`);
 check("再生（再生位置が進む）", v.t > 0.5 && v.btn.includes("再生"), v);
 
+// CSP: 画面に紛れ込んだインラインのイベントハンドラは動かない（画面自身のスクリプトは動いている）
+v = await ev(`window.__inj = 0; const d = document.createElement("div");
+  d.innerHTML = '<img src="data:," onerror="window.__inj = 1"><img src="x-missing.png" onerror="window.__inj = 2">';
+  document.body.append(d); await new Promise(r => setTimeout(r, 800)); d.remove();
+  return { inj: window.__inj, app: typeof ${q("#saveBtn")}.onclick };`);
+check("CSP: 紛れ込んだインラインのハンドラは動かない", v.inj === 0, v);
+
 // 「読み込む」: YAML のファイルを選んだのと同じ操作で台本を取り込み、開く。同じ名前なら上書きを尋ねる
 const IMPORT_YAML = `format: talkscript/script@1
 id: imported

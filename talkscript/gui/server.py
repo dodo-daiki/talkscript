@@ -13,6 +13,7 @@ import io as _io
 import json
 import os
 import pathlib
+import secrets
 import shutil
 import threading
 import time
@@ -27,6 +28,9 @@ from ..check import compile_and_check
 from ..voicevox import VoicevoxClient
 
 STATIC = pathlib.Path(__file__).resolve().parent / "static"
+CSP = ("default-src 'self'; script-src 'nonce-{nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+       "media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; "
+       "frame-ancestors 'none'; form-action 'none'")
 ENV_DT = 0.01                     # 波形の概形の刻み [s]
 JOINT_LABELS = {"waist_yaw": "腰ヨー", "neck_yaw": "首ヨー", "neck_pitch": "首ピッチ", "l_shoulder": "左肩", "l_elbow": "左肘",
                 "r_shoulder": "右肩", "r_elbow": "右肘"}
@@ -346,9 +350,11 @@ def make_handler(app: App):
             pass
 
         # --- 応答 ---
-        def _send(self, code, body: bytes, ctype: str):
+        def _send(self, code, body: bytes, ctype: str, headers: dict | None = None):
             self.send_response(code)
             self.send_header("Content-Type", ctype)
+            for k, v in (headers or {}).items():
+                self.send_header(k, v)
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
@@ -369,7 +375,12 @@ def make_handler(app: App):
                 if method != "GET":
                     return self._json({"error": "not found"}, 404)
                 if u.path in ("/", "/index.html"):
-                    return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
+                    # 読み込むたびに nonce を変え、画面自身のスクリプトだけを動かす（取り込んだ台本の文字が HTML に
+                    # 紛れ込んでも、インラインのイベントハンドラや別のスクリプトは動かない）
+                    nonce = secrets.token_urlsafe(18)
+                    html = (STATIC / "index.html").read_text(encoding="utf-8").replace("<script>", f'<script nonce="{nonce}">', 1)
+                    return self._send(200, html.encode("utf-8"), "text/html; charset=utf-8", {
+                        "Content-Security-Policy": CSP.format(nonce=nonce), "Referrer-Policy": "no-referrer"})
                 if u.path == "/icon.svg":   # タブと、アプリ用の窓のアイコン
                     return self._send(200, (STATIC.parent.parent / "assets" / "icon.svg").read_bytes(), "image/svg+xml")
                 return self._json({"error": "not found"}, 404)

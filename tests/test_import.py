@@ -121,3 +121,60 @@ def test_gui_import_api(tmp_repo):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+# --- 数の項目に文字を入れた台本（画面に値をそのまま入れる箇所があったため） ------------------------------
+
+INJECT = '"><img src=x onerror=alert(1)>'
+
+
+@pytest.mark.parametrize("where", ["voice.speed", "gap_ms", "lead_in_ms", "tail_ms", "voice.pitch", "line.voice.volume",
+                                   "script.gap_ms", "voice.speaker.name", "voice.sampling_rate"])
+def test_import_rejects_non_numbers(tmp_repo, where):
+    import yaml
+    d = yaml.safe_load(SCRIPT)
+    b, ln = d["blocks"][0], d["blocks"][0]["lines"][0]
+    if where == "voice.speed":
+        d["voice"]["speed"] = INJECT
+    elif where == "voice.pitch":
+        d["voice"]["pitch"] = float("nan")
+    elif where == "gap_ms":
+        ln["gap_ms"] = INJECT
+    elif where == "lead_in_ms":
+        b["lead_in_ms"] = INJECT
+    elif where == "tail_ms":
+        b["tail_ms"] = INJECT
+    elif where == "line.voice.volume":
+        ln["voice"] = {"volume": INJECT}
+    elif where == "script.gap_ms":
+        d["gap_ms"] = INJECT
+    elif where == "voice.speaker.name":
+        d["voice"]["speaker"] = {"name": ["x"], "style": "ノーマル"}
+    elif where == "voice.sampling_rate":
+        d["voice"]["sampling_rate"] = 24000.5
+    with pytest.raises(importer.ImportError_):
+        importer.import_text(yaml.safe_dump(d, allow_unicode=True), "trivia.yaml")
+    assert not (io.SCRIPTS / "trivia.yaml").exists()
+
+
+def test_page_has_csp_with_nonce_and_no_inline_handlers(tmp_repo):
+    import re
+    from talkscript.gui import server
+    app = server.App(tmp_repo, log=lambda *_: None)
+    srv = server.serve(app)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        url = f"http://127.0.0.1:{srv.server_address[1]}/"
+        with urllib.request.urlopen(url, timeout=10) as r:
+            csp, html = r.headers.get("Content-Security-Policy", ""), r.read().decode("utf-8")
+        with urllib.request.urlopen(url, timeout=10) as r:
+            csp2 = r.headers.get("Content-Security-Policy", "")
+        m = re.search(r"script-src 'nonce-([A-Za-z0-9_-]+)'", csp)
+        assert m and f'<script nonce="{m.group(1)}">' in html                      # スクリプトは nonce で許す
+        assert csp != csp2                                                           # 読み込むたびに変わる
+        assert "'unsafe-inline'" not in csp.split("script-src")[1].split(";")[0]     # インラインのハンドラは動かない
+        assert "object-src 'none'" in csp and "base-uri 'none'" in csp
+        assert not re.search(r"<[^>]+\son[a-z]+\s*=", html)                          # 画面自身もインラインのハンドラを使わない
+    finally:
+        srv.shutdown()
+        srv.server_close()
