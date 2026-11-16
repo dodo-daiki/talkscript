@@ -32,6 +32,29 @@ def _log_file() -> pathlib.Path:
     return workspace.user_data_dir() / "gui.log"
 
 
+def _open_private(p: pathlib.Path, flags: int):
+    """本人だけが読み書きできる権限（0600）でファイルを開く（gui.json は画面の合言葉を含むため）。"""
+    p.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(p, flags | getattr(os, "O_BINARY", 0), 0o600)
+    try:
+        os.chmod(p, 0o600)          # 前からあったファイルも本人だけにする（Windows では読み取り専用の印だけ）
+    except OSError:
+        pass
+    return fd
+
+
+def _write_state(info: dict) -> None:
+    fd = _open_private(_state_file(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC)
+    with os.fdopen(fd, "wb") as f:
+        f.write(json.dumps(info).encode("utf-8"))
+
+
+def _append_log(line: str) -> None:
+    fd = _open_private(_log_file(), os.O_WRONLY | os.O_CREAT | os.O_APPEND)
+    with os.fdopen(fd, "ab") as f:
+        f.write((line + "\n").encode("utf-8"))
+
+
 def _alive(info: dict) -> bool:
     try:
         req = urllib.request.Request(f"http://127.0.0.1:{info['port']}/api/ping", headers={"X-Token": info["token"]})
@@ -80,9 +103,7 @@ def main(argv=None) -> int:
         except (OSError, ValueError):
             pass
         try:
-            _log_file().parent.mkdir(parents=True, exist_ok=True)
-            with open(_log_file(), "a", encoding="utf-8") as f:
-                f.write(line + "\n")
+            _append_log(line)
         except OSError:
             pass
 
@@ -107,8 +128,7 @@ def main(argv=None) -> int:
     srv = server.serve(app, a.port)
     port = srv.server_address[1]
     url = f"http://127.0.0.1:{port}/#{app.token}"
-    sf.parent.mkdir(parents=True, exist_ok=True)
-    sf.write_text(json.dumps({"port": port, "token": app.token, "pid": os.getpid()}), encoding="utf-8")
+    _write_state({"port": port, "token": app.token, "pid": os.getpid()})
     log(f"talkscript の画面: {url}（作業フォルダ {ws}）")
     if not a.no_window:
         log(f"窓を開く: {open_window(url)}")

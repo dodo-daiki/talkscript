@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import pathlib
 import threading
 import time
 import urllib.error
@@ -183,3 +184,25 @@ def test_play_requires_notes(gui, tmp_repo, monkeypatch):
     st, r = call("POST", "play", {"id": "demo", "mode": "motion", "robots": ["self7"],
                                   "notes": {"condition": "A", "subject": "S01"}})
     assert st == 200
+
+
+def test_gui_state_and_log_are_private(tmp_path, monkeypatch):
+    """gui.json（合言葉を含む）と gui.log は、本人だけが読める権限（0600）で作る。"""
+    import os
+    import stat
+    import sys
+    import talkscript.gui as g
+    monkeypatch.setattr(g, "_state_file", lambda: tmp_path / "d" / "gui.json")
+    monkeypatch.setattr(g, "_log_file", lambda: tmp_path / "d" / "gui.log")
+    modes = []
+    real_open = os.open
+    monkeypatch.setattr(g.os, "open", lambda p, flags, mode=0o777, *a, **k: modes.append((pathlib.Path(p).name, mode)) or real_open(p, flags, mode, *a, **k))
+    g._write_state({"port": 1, "token": "t", "pid": 2})
+    g._append_log("一行目")
+    g._append_log("二行目")
+    assert json.loads((tmp_path / "d" / "gui.json").read_text(encoding="utf-8"))["token"] == "t"
+    assert (tmp_path / "d" / "gui.log").read_text(encoding="utf-8") == "一行目\n二行目\n"
+    assert ("gui.json", 0o600) in modes and ("gui.log", 0o600) in modes
+    if sys.platform != "win32":
+        for name in ("gui.json", "gui.log"):
+            assert stat.S_IMODE((tmp_path / "d" / name).stat().st_mode) == 0o600
