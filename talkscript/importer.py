@@ -43,23 +43,7 @@ def _set_id(text: str, sid: str) -> str:
 
 
 def _check_gesture(g: dict) -> list[str]:
-    errs = []
-    robots = g.get("robots")
-    if not isinstance(robots, dict) or not robots:
-        return ["robots（ロボットごとの関節の [ms, 度] の列）がない"]
-    for r, joints in robots.items():
-        if not isinstance(joints, dict):
-            errs.append(f"robots.{r} が関節の辞書でない")
-            continue
-        for j, pts in joints.items():
-            ok = isinstance(pts, list) and pts and all(
-                isinstance(p, list) and len(p) == 2 and isinstance(p[0], (int, float)) and (isinstance(p[1], (int, float)) or io.is_tbd(p[1]))
-                for p in pts)
-            if not ok:
-                errs.append(f"robots.{r}.{j} は [[ms, 度], …] の列")
-            elif any(b[0] < a[0] for a, b in zip(pts, pts[1:])):
-                errs.append(f"robots.{r}.{j} の時刻が増えていない")
-    return errs
+    return io.check_gesture_points(g)
 
 
 def inspect(text: str, filename: str = "") -> dict:

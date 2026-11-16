@@ -186,3 +186,42 @@ def test_fractional_mora_rules():
                        "tracks": {"self7": {"neck_yaw": [{"at": {"line": "L1", "mora": 0.5, "edge": "end"}, "deg": 0}]}}}]}
     with pytest.raises(io.FormatError, match="edge を書かない"):
         io.validate_script(bad)
+
+
+# --- 有限でない数（NaN・無限大） ---------------------------------------------------------------
+
+@pytest.mark.parametrize("key,val", [("deg", float("nan")), ("deg", float("inf")), ("t_ms", float("nan")),
+                                     ("t_ms", float("-inf"))])
+def test_nonfinite_keyframe_rejected(tmp_repo, vv, key, val):
+    """NaN との比較は常に偽になるので、範囲・速度の検査をすり抜ける。形式の検査で止める。"""
+    s, _ = io.load_script("demo")
+    build.synth(s, vv, log=lambda *_: None)
+    s["blocks"][1]["tracks"]["self7"]["waist_yaw"][1][key] = val
+    with pytest.raises(io.FormatError, match="有限"):
+        io.validate_script(s, "demo")
+    _, issues = compile_and_check(s, write=False)
+    assert any(i["code"] == "K1" and i["level"] == "error" for i in issues), issues
+
+
+def test_nonfinite_offset_and_mora_rejected(tmp_repo):
+    s, _ = io.load_script("demo")
+    s["blocks"][0]["tracks"]["self7"]["neck_pitch"][0]["offset_ms"] = float("nan")
+    with pytest.raises(io.FormatError, match="offset_ms"):
+        io.validate_script(s, "demo")
+    s, _ = io.load_script("demo")
+    s["blocks"][0]["tracks"]["self7"]["neck_pitch"][0]["at"] = {"line": "L1", "mora": float("inf")}
+    with pytest.raises(io.FormatError, match="mora"):
+        io.validate_script(s, "demo")
+
+
+def test_limit_violations_flags_nonfinite():
+    bad = interp.limit_violations([[0, 0], [1.5, float("nan")], [2.5, 0]], lo=-60, hi=60, vmax=128)
+    assert bad and bad[0]["kind"] == "nonfinite"
+    assert interp.limit_violations([[0, 0], [float("inf"), 0]], vmax=128)[0]["kind"] == "nonfinite"
+
+
+def test_nonfinite_gesture_rejected(tmp_repo):
+    p = io.CONFIG / "gestures" / "nod.yaml"
+    p.write_text(p.read_text(encoding="utf-8").replace("[300, 6]", "[300, .nan]"), encoding="utf-8")
+    with pytest.raises(io.FormatError, match="有限"):
+        io.load_gesture("nod")

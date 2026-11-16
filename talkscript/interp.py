@@ -82,7 +82,10 @@ def track_peaks(track) -> tuple[float, float]:
 
 def limit_violations(track, *, lo=None, hi=None, vmax=None, amax=None):
     """上限を超えた箇所の一覧（文字列でなく dict）。smooth は区間の中で両端の角度を超えないので、範囲は点だけ見ればよい。"""
-    bad = []
+    bad = [{"kind": "nonfinite", "t": t, "value": d, "limit": "有限な数"}
+           for t, d in track if not (math.isfinite(t) and math.isfinite(d))]
+    if bad:     # NaN との比較は常に偽で、下の検査をすり抜けるので、ここで止める
+        return bad
     for t, d in track:
         if (lo is not None and d < lo) or (hi is not None and d > hi):
             bad.append({"kind": "range", "t": t, "value": d, "limit": [lo, hi]})

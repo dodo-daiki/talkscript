@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import pathlib
 
 import yaml
@@ -101,6 +102,31 @@ def load_script(name_or_path: str) -> tuple[dict, pathlib.Path]:
     return s, p
 
 
+def is_num(x) -> bool:
+    """有限な数（NaN・無限大・真偽値は数とみなさない。NaN との比較は常に偽になり、範囲や速度の検査をすり抜けるため）。"""
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+
+
+def check_gesture_points(g: dict) -> list[str]:
+    """ひな形の robots.<ロボット>.<関節> が [[ms, 度], …]（有限な数か TBD、時刻は増えていく）か。"""
+    errs = []
+    robots = g.get("robots")
+    if not isinstance(robots, dict) or not robots:
+        return ["robots（ロボットごとの関節の [ms, 度] の列）がない"]
+    for r, joints in robots.items():
+        if not isinstance(joints, dict):
+            errs.append(f"robots.{r} が関節の辞書でない")
+            continue
+        for j, pts in joints.items():
+            ok = isinstance(pts, list) and pts and all(
+                isinstance(p, list) and len(p) == 2 and is_num(p[0]) and (is_num(p[1]) or is_tbd(p[1])) for p in pts)
+            if not ok:
+                errs.append(f"robots.{r}.{j} は [[ms, 度], …] の列（有限な数か TBD）")
+            elif any(b[0] < a[0] for a, b in zip(pts, pts[1:])):
+                errs.append(f"robots.{r}.{j} の時刻が増えていない")
+    return errs
+
+
 def _check_keyframe(kf, where: str, line_ids: set) -> list[str]:
     errs = []
     if not isinstance(kf, dict):
@@ -108,10 +134,10 @@ def _check_keyframe(kf, where: str, line_ids: set) -> list[str]:
     has_t, has_at = "t_ms" in kf, "at" in kf
     if has_t == has_at:
         errs.append(f"{where}: t_ms と at のどちらか 1 つを書く")
-    if not isinstance(kf.get("deg"), (int, float)):
-        errs.append(f"{where}: deg（体の向きの角度、度）が数でない（{kf.get('deg')!r}）")
-    if has_t and not isinstance(kf["t_ms"], (int, float)):
-        errs.append(f"{where}: t_ms が数でない")
+    if not is_num(kf.get("deg")):
+        errs.append(f"{where}: deg（体の向きの角度、度）が有限な数でない（{kf.get('deg')!r}）")
+    if has_t and not is_num(kf["t_ms"]):
+        errs.append(f"{where}: t_ms が有限な数でない（{kf['t_ms']!r}）")
     if has_at:
         at = kf["at"]
         if not isinstance(at, dict) or "line" not in at:
@@ -125,12 +151,12 @@ def _check_keyframe(kf, where: str, line_ids: set) -> list[str]:
                 errs.append(f"{where}: at.edge は start か end")
             if "mora" in at:
                 m = at["mora"]
-                if isinstance(m, bool) or not isinstance(m, (int, float)) or m < 0:
-                    errs.append(f"{where}: at.mora は 0 以上の数")
+                if not is_num(m) or m < 0:
+                    errs.append(f"{where}: at.mora は 0 以上の有限な数")
                 elif isinstance(m, float) and not m.is_integer() and at.get("edge", "start") != "start":
                     errs.append(f"{where}: 小数の at.mora（発話の中の位置）には edge を書かない")
-    if "offset_ms" in kf and not isinstance(kf["offset_ms"], (int, float)):
-        errs.append(f"{where}: offset_ms が数でない")
+    if "offset_ms" in kf and not is_num(kf["offset_ms"]):
+        errs.append(f"{where}: offset_ms が有限な数でない（{kf['offset_ms']!r}）")
     return errs
 
 
@@ -242,6 +268,9 @@ def load_gesture(name: str) -> dict:
     _fmt(g, "gesture", p.name)
     if g.get("id") != name:
         raise FormatError(f"{p.name}: id が {name} でない")
+    errs = check_gesture_points(g)
+    if errs:
+        raise FormatError(f"{p.name}: " + "; ".join(errs))
     return g
 
 

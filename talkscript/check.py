@@ -115,6 +115,10 @@ def compile_and_check(script: dict, *, write: bool = True, sota_dt_ms: int = 100
     """組み立てと検査。write なら build/<id>/<ロボット>.traj.json に書く。戻り値: (軌道, 検査の結果)。"""
     issues: list = []
     try:
+        io.validate_script(script)
+    except io.FormatError as e:
+        return {}, [Issue("error", "K1", str(e))]
+    try:
         robot_cfgs = load_robot_cfgs(script)
     except io.FormatError as e:
         return {}, [Issue("error", "K1", str(e))]
