@@ -52,7 +52,7 @@ def resolve_block(script: dict, block: dict, robot_cfgs: dict, issues: list) -> 
     try:
         tl = block_timeline(script, block)
     except build.BuildError as e:
-        issues.append(Issue("error", "K3", str(e), block=bid))
+        issues.append(Issue("error", "K3", str(e), block=bid, **({"line": e.line} if getattr(e, "line", None) else {})))
         return None
     tracks_out, last = {}, tl["audio_end"]
     for robot in script["robots"]:

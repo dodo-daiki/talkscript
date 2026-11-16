@@ -36,7 +36,7 @@ def check_audio(script: dict, issues: list) -> dict:
            "wav_missing": "WAV がない（talkscript synth）", "wav_changed": "WAV の sha256 が manifest と違う"}
     for lid, s in st.items():
         if s != "ok":
-            issues.append(Issue("error", "K3", f"{lid}: {msg[s]}"))
+            issues.append(Issue("error", "K3", f"{lid}: {msg[s]}", line=lid))
     if not man.get("frozen"):
         level = "error" if script.get("purpose", "demo") == "experiment" else "warn"
         issues.append(Issue(level, "K2", "音声を固定していない（talkscript freeze）" +
@@ -127,6 +127,15 @@ def compile_and_check(script: dict, *, write: bool = True, sota_dt_ms: int = 100
     trajs = compile_script(script, robot_cfgs, issues, sota_dt_ms=sota_dt_ms)
     peaks = check_limits(script, robot_cfgs, trajs, issues)
     check_info(script, trajs, issues)
+    seen_k3 = set()           # 合成していない行は、音声の検査と組み立ての両方で見つかる。1 つにする
+    kept = []
+    for i in issues:
+        if i["code"] == "K3" and i.get("line"):
+            if i["line"] in seen_k3:
+                continue
+            seen_k3.add(i["line"])
+        kept.append(i)
+    issues[:] = kept
     ok = not any(i["level"] == "error" for i in issues)
     if write:
         out = io.build_dir(script["id"])

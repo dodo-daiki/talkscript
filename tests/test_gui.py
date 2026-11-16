@@ -206,3 +206,36 @@ def test_gui_state_and_log_are_private(tmp_path, monkeypatch):
     if sys.platform != "win32":
         for name in ("gui.json", "gui.log"):
             assert stat.S_IMODE((tmp_path / "d" / name).stat().st_mode) == 0o600
+
+
+def test_check_messages_point_to_buttons(gui):
+    """画面に出す検査の文は、コマンド（talkscript synth など）ではなく画面のボタン（「合成」など）を指す。"""
+    app, call, base = gui
+    s = call("GET", "script?id=demo")[1]["script"]
+    r = call("POST", "check", {"script": s})[1]
+    k3 = [i for i in r["issues"] if i["code"] == "K3"]
+    assert k3 and all("「合成」" in i["msg"] and i.get("line") for i in k3), k3
+    assert sorted(i["line"] for i in k3) == ["L1", "L2"]                 # 同じ行の指摘を 2 回並べない
+    assert sorted(i["line"] for i in k3) == ["L1", "L2"]                 # 同じ行の指摘を 2 回並べない
+    assert not any("talkscript " in i["msg"] for i in r["issues"]), r["issues"]
+
+
+def test_every_cli_hint_has_gui_wording():
+    """メッセージに書いたコマンドの案内（（talkscript …））は、すべて画面向けの言い換えを持つ。"""
+    import ast
+    import re
+    from talkscript.gui import server
+    pkg = pathlib.Path(server.__file__).parents[1]
+    hints = set()
+    # 検査・組み立て・合成・実行・取り込みの文（画面に出るもの）。説明の文字列（docstring）とコメントは除く
+    for name in ("check", "compile", "build", "timing", "run", "io", "importer", "gestures", "engine"):
+        tree = ast.parse((pkg / f"{name}.py").read_text(encoding="utf-8"))
+        docs = {id(n.body[0].value) for n in ast.walk(tree)
+                if isinstance(n, (ast.Module, ast.FunctionDef, ast.ClassDef)) and n.body
+                and isinstance(n.body[0], ast.Expr) and isinstance(n.body[0].value, ast.Constant)}
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs:
+                hints |= set(re.findall(r"（talkscript [^）]*）", n.value))
+    assert hints and hints <= set(server.GUI_HINTS), hints - set(server.GUI_HINTS)
+    for h in hints:
+        assert "talkscript " not in server.gui_text(f"x{h}")

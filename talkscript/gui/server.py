@@ -28,6 +28,26 @@ from ..check import compile_and_check
 from ..voicevox import VoicevoxClient
 
 STATIC = pathlib.Path(__file__).resolve().parent / "static"
+
+#: メッセージの中のコマンドの案内 → 画面での操作（CLI と画面で同じ検査の文を使い、画面に出すときだけ言い換える）
+GUI_HINTS = {
+    "（talkscript synth）": "（「合成」を押す）",
+    "（talkscript freeze）": "（「固定」を押す）",
+    "（talkscript freeze --undo）": "（「固定」を押して解く）",
+    "（talkscript marks で番号が分かる）": "（タイムラインの句・モーラで分かる）",
+    "（talkscript marks で求める）": "（「合成」を押すと求める）",
+    "（talkscript compile で詳しく見る）": "（「検査」の欄で詳しく見る）",
+    "（talkscript init <フォルダ> で作るか、--workspace で指定する）": "（「環境」→ 作業フォルダで決める）",
+}
+
+
+def gui_text(s):
+    """画面に出す文の、コマンドの案内を画面での操作に言い換える。"""
+    if not isinstance(s, str):
+        return s
+    for k, v in GUI_HINTS.items():
+        s = s.replace(k, v)
+    return s
 CSP = ("default-src 'self'; script-src 'nonce-{nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
        "media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; "
        "frame-ancestors 'none'; form-action 'none'")
@@ -262,7 +282,7 @@ class App:
         sid = body["id"]
 
         def log(text):
-            r.log.append({"t": time.time(), "text": str(text)})
+            r.log.append({"t": time.time(), "text": gui_text(str(text))})
 
         def operator(prompt):
             r.prompt, r.state = prompt, "operator"
@@ -395,9 +415,9 @@ def make_handler(app: App):
                     return self._send(200, res[0], res[1])
                 return self._json(res if res is not None else {})
             except ApiError as e:
-                return self._json({"error": str(e)}, e.status)
+                return self._json({"error": gui_text(str(e))}, e.status)
             except (io.FormatError, build.BuildError) as e:
-                return self._json({"error": str(e)}, 400)
+                return self._json({"error": gui_text(str(e))}, 400)
             except Exception as e:  # noqa: BLE001
                 app.log(traceback.format_exc())
                 return self._json({"error": f"{type(e).__name__}: {e}"}, 500)
@@ -504,7 +524,7 @@ def make_handler(app: App):
                 except io.FormatError as e:
                     return {"issues": [{"level": "error", "code": "K1", "msg": str(e)}], "peaks": {}, "yaml": _dump(s)}
                 trajs, issues = compile_and_check(s, write=False)
-                return {"issues": [dict(i) for i in issues],
+                return {"issues": [{**i, "msg": gui_text(i["msg"])} for i in issues],
                         "durations": {r: [b2["duration_s"] for b2 in t["blocks"]] for r, t in trajs.items()},
                         "yaml": _dump(s)}
             if path == "audio":

@@ -173,11 +173,15 @@ v = await ev(`const wait = ms => new Promise(r => setTimeout(r, ms));
   const pick = () => { const dt = new DataTransfer(); dt.items.add(new File([${JSON.stringify(IMPORT_YAML)}], "imported.yaml", { type: "text/yaml" }));
     const inp = ${q("#importFile")}; inp.files = dt.files; inp.dispatchEvent(new Event("change")); };
   pick(); await wait(1500);
-  const first = { sel: ${q("#scriptSel")}.value, lines: document.querySelectorAll(".lcard").length, toast: ${q("#toast")}.textContent };
+  const first = { sel: ${q("#scriptSel")}.value, lines: document.querySelectorAll(".lcard").length, toast: ${q("#toast")}.textContent,
+    checks: [...document.querySelectorAll("#checkList li")].map(li => li.textContent) };
   let asked = ""; window.confirm = m => { asked = m; return true; };
   pick(); await wait(1500);
   return { first, asked, sel: ${q("#scriptSel")}.value };`);
 const imported = fs.existsSync(path.join(ws, "scripts", "imported.yaml")) ? fs.readFileSync(path.join(ws, "scripts", "imported.yaml"), "utf-8") : "";
+check("検査の欄: 合成していない行の指摘は 1 つで、コマンドではなくボタンを指す",
+  v.first.checks.filter(t => t.includes("合成していない")).length === 1 && new Set(v.first.checks).size === v.first.checks.length &&
+  v.first.checks.some(t => t.includes("「合成」")) && !v.first.checks.some(t => t.includes("talkscript ")), v.first.checks);
 check("読み込む（台本の YAML を取り込んで開く。同じ名前は上書きを尋ねる）",
   v.first.sel === "imported" && v.first.lines === 1 && v.asked.includes("上書き") && v.sel === "imported" &&
   imported.includes("# 取り込みの試験") && fs.existsSync(path.join(ws, "scripts", "imported.yaml.bak")), v);

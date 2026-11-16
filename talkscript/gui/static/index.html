@@ -1240,10 +1240,16 @@ a { color: var(--navy); }
     const chip = $("checkChip"), box = $("checkList");
     const items = [];
     const dirty = blk().lines.filter(isDirty).map(L => L.id);
-    if (dirty.length) items.push(`<li class="warn">${esc(dirty.join("・"))} は合成していないか、文・声を変えたあと合成し直していません（時刻は仮）。</li>`);
+    if (dirty.length) items.push(`<li class="warn">${esc(dirty.join("・"))} は合成していないか、文・声を変えたあと合成し直していません（時刻は仮）。「合成」を押してください。</li>`);
     for (const w of warnings) items.push(`<li class="warn">${esc(w.lines)} の固定先が見つからず、キーフレーム ${esc(w.n)} 個を置き直しました。位置を確かめてください。</li>`);
-    for (const r of META.robots || []) for (const [key, arr] of Object.entries(blk().kf[r] || {})) for (const k of arr)
-      if (unresolved(k)) items.push(`<li class="warn" data-id="${esc(k.id)}" data-robot="${esc(r)}">${esc(laneOf(r, key)?.label || key)}: ${esc(anchorLabel(k.a))} の位置がまだ決まっていません。</li>`);
+    const unres = new Map();     // 同じ関節・同じ固定先のキーフレームは 1 つにまとめる（同じ文を並べない）
+    for (const r of META.robots || []) for (const [key, arr] of Object.entries(blk().kf[r] || {})) for (const k of arr) {
+      if (!unresolved(k)) continue;
+      const text = `${laneOf(r, key)?.label || key}: ${anchorLabel(k.a)}`, u = unres.get(r + "\u0000" + text);
+      if (u) u.n++; else unres.set(r + "\u0000" + text, { r, k, text, n: 1 });
+    }
+    for (const u of unres.values())
+      items.push(`<li class="warn" data-id="${esc(u.k.id)}" data-robot="${esc(u.r)}">${esc(u.text)} の位置がまだ決まっていません${u.n > 1 ? `（キーフレーム ${u.n} 個）` : ""}。</li>`);
     for (const v of viol) {
       if (v.kind === "vel") items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>最大 <span class="num">${v.pk.toFixed(0)}°/s</span>（上限 <span class="num">${esc(v.lane.vmax)}°/s</span>）。間を広げるか、角度の差を小さくします。</li>`);
       else if (v.kind === "acc") items.push(`<li data-id="${esc(v.id)}" tabindex="0"><span class="what">${esc(v.lane.label)}</span> <span class="num">${v.t0.toFixed(2)}–${v.t1.toFixed(2)} s</span><br>角加速度 <span class="num">${v.pk.toFixed(0)}°/s²</span>（上限 <span class="num">${esc(v.lane.amax)}</span>）。</li>`);
@@ -1254,6 +1260,7 @@ a { color: var(--navy); }
     for (const i of serverIssues) {
       if (i.level === "info") continue;
       if ((i.code === "K7" || i.code === "K5") && i.robot === robot) continue;   // 上の表示と重なる
+      if (i.code === "K3" && i.line && dirty.includes(i.line)) continue;           // 「合成していない」は上で出している
       const key = i.code + i.msg + (i.robot || "") + (i.joint || "") + (i.block || "");
       if (shown.has(key)) continue; shown.add(key);
       const where = [i.robot, i.block, i.joint].filter(Boolean).join(" ");

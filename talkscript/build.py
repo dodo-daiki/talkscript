@@ -228,7 +228,9 @@ def line_status(script: dict, man: dict) -> dict:
 def load_marks(script_id: str, line_id: str) -> dict:
     p = io.BUILD / script_id / f"{line_id}.marks.json"
     if not p.exists():
-        raise BuildError(f"{line_id}: 合成していない（talkscript synth）")
+        e = BuildError(f"{line_id}: 合成していない（talkscript synth）")
+        e.line = line_id
+        raise e
     return io.read_json(p)
 
 
