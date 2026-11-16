@@ -160,3 +160,26 @@ def test_api_rejects_unsafe_ids(gui):
     s = call("GET", "script?id=demo")[1]["script"]
     st, r = call("PUT", "script?id=..%2Fx", {"script": s})
     assert st == 400
+
+
+def test_play_requires_notes(gui, tmp_repo, monkeypatch):
+    """talkscript.toml の play.required_notes は、画面からの実行でも検査する（CLI と同じ。空運転は除く）。"""
+    from talkscript import run as run_mod
+    p = tmp_repo / "talkscript.toml"
+    p.write_text(p.read_text(encoding="utf-8").replace("required_notes = []", 'required_notes = ["condition", "subject"]'),
+                 encoding="utf-8")
+    started = []
+    monkeypatch.setattr(run_mod, "play", lambda *a, **k: started.append(k) or (_ for _ in ()).throw(run_mod.PlayError("試験")))
+    app, call, base = gui
+    st, r = call("POST", "play", {"id": "demo", "mode": "motion", "robots": ["self7"], "notes": {"condition": "A", "subject": " "}})
+    assert st == 400 and "subject" in r["error"] and "condition" not in r["error"].split("足りない")[1], r
+    assert not started and app.run.state != "running"
+    st, r = call("POST", "play", {"id": "demo", "mode": "dry", "notes": {}})
+    assert st == 200                                                   # 空運転は記録の項目を問わない
+    for _ in range(50):
+        if app.run.state == "done":
+            break
+        time.sleep(0.05)
+    st, r = call("POST", "play", {"id": "demo", "mode": "motion", "robots": ["self7"],
+                                  "notes": {"condition": "A", "subject": "S01"}})
+    assert st == 200

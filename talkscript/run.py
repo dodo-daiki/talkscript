@@ -51,6 +51,14 @@ def _parallel(fns):
         raise errs[0]
 
 
+def missing_notes(settings: dict | None, notes: dict | None, mode: str) -> list[str]:
+    """talkscript.toml の play.required_notes のうち、記録の手入力で空のもの（空運転は問わない）。CLI と画面で同じ規則にする。"""
+    if mode == "dry":
+        return []
+    required = ((settings or {}).get("play") or {}).get("required_notes") or []
+    return [k for k in required if not str((notes or {}).get(k) or "").strip()]
+
+
 def play(script_name: str, *, mode: str = "speech_motion", robots: list[str] | None = None, settings: dict | None = None,
          notes: dict | None = None, adapters: dict | None = None, audio=None, operator_input=input, log=print,
          runs_base=None, ctx: dict | None = None) -> RunRecord:

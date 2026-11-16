@@ -134,9 +134,9 @@ def cmd_insert(a, st):
 def cmd_play(a, st):
     from .run import PlayError, play
     notes = {"note": a.note, "condition": a.condition, "subject": a.subject, "distance": a.distance, "spl_db": a.spl}
-    required = st.get("play", {}).get("required_notes", [])
-    missing = [k for k in required if not notes.get(k)]
-    if missing and a.mode != "dry":
+    from .run import missing_notes
+    missing = missing_notes(st, notes, a.mode)
+    if missing:
         print(f"記録の手入力の項目が足りない: {missing}（talkscript.toml の play.required_notes）")
         return 2
     try:

@@ -252,6 +252,9 @@ class App:
     # --- 実行 ---------------------------------------------------------------------------------
     def start_play(self, body: dict) -> dict:
         from .. import run as run_mod
+        missing = run_mod.missing_notes(self.settings(), body.get("notes"), body.get("mode", "speech_motion"))
+        if missing:
+            raise ApiError(f"記録の手入力の項目が足りない: {', '.join(missing)}（talkscript.toml の play.required_notes）")
         with self.lock:
             if self.run.state in ("running", "operator"):
                 raise ApiError("実行中", 409)
