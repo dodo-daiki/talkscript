@@ -157,26 +157,43 @@ def play(script_name: str, *, mode: str = "speech_motion", robots: list[str] | N
         result = f"error: {e}"
         log(f"エラー: {e}。全ロボットを止める")
         stopping["n"] = 1
+    except Exception as e:      # 想定外（ソケットの切断・音声の失敗など）: 記録を error にし、止めてから上げ直す
+        result = f"error: {type(e).__name__}: {e}"
+        log(f"想定外のエラー: {type(e).__name__}: {e}。全ロボットを止める")
+        rec.event({"kind": "error", "detail": f"{type(e).__name__}: {e}"})
+        stopping["n"] = 1
+        raise
     finally:
+        def each(op, what):     # 1 台の失敗で、ほかのロボットの後始末を飛ばさない
+            for r, a in adapters.items():
+                try:
+                    op(r, a)
+                except KeyboardInterrupt:
+                    raise
+                except Exception as e:  # noqa: BLE001
+                    rec.event({"kind": "warn", "robot": r, "detail": f"{what}: {type(e).__name__}: {e}"})
         if audio is not None:
-            audio.stop_all()
+            try:
+                audio.stop_all()
+            except Exception as e:  # noqa: BLE001
+                rec.event({"kind": "warn", "detail": f"audio.stop_all: {type(e).__name__}: {e}"})
         if stopping["n"]:
             try:
-                for a in adapters.values():
-                    a.stop("graceful")
+                each(lambda r, a: a.stop("graceful"), "stop")
                 time.sleep(2.5)
             except KeyboardInterrupt:
-                for a in adapters.values():
-                    a.stop("now")
-        for r, a in adapters.items():
+                each(lambda r, a: a.stop("now"), "stop now")
+
+        def logs(r, a):
             for name, text in a.collect_logs(rec.run_id).items():
                 rec.write_file(name, text)
-            try:
-                a.close()
-            except Exception as e:  # noqa: BLE001
-                rec.event({"kind": "warn", "robot": r, "detail": f"close: {e}"})
+        each(logs, "collect_logs")
+        each(lambda r, a: a.close(), "close")
         if audio is not None:
-            audio.close()
+            try:
+                audio.close()
+            except Exception as e:  # noqa: BLE001
+                rec.event({"kind": "warn", "detail": f"audio.close: {type(e).__name__}: {e}"})
         rec.write_run(result=result, finished_at=time.strftime("%Y-%m-%dT%H:%M:%S"))
         rec.close()
         log(rec.summarize())

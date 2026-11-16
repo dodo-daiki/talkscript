@@ -57,8 +57,11 @@ class AgentClient:
 
     def send(self, msg: dict):
         data = (json.dumps(msg, ensure_ascii=False) + "\n").encode("utf-8")
-        with self._lock:
-            self.sock.sendall(data)
+        try:
+            with self._lock:
+                self.sock.sendall(data)
+        except OSError as e:
+            raise AdapterError(f"talkscript-agent（{self.host}:{self.port}）に送れない: {e}") from e
 
     def request(self, type_: str, timeout_s: float | None = None, **kw) -> dict:
         with self._lock:

@@ -144,3 +144,41 @@ def test_audio_callback_places_clip(monkeypatch):
     st = [e for e in evs if e["kind"] == "audio_start"][0]
     assert abs(st["late_ms"]) < 1.5
     assert any(e["kind"] == "audio_done" for e in evs)
+
+
+# --- 想定外の例外（ソケットの切断など） -----------------------------------------------------------
+
+class _BrokenAtStart(FakeAdapter):
+    def start_at(self, block_id, t0_ns):
+        super().start_at(block_id, t0_ns)
+        raise ConnectionResetError("接続が切れた（試験）")
+
+
+def test_unexpected_error_records_error_and_stops_robots(tmp_repo, vv, monkeypatch):
+    """AdapterError・PlayError 以外の例外でも、記録を error にし、全ロボットに停止を送ってから上げ直す。"""
+    import json
+    from talkscript import run as run_mod
+    monkeypatch.setattr(run_mod.time, "sleep", lambda s: None)          # 停止後の待ちを省く
+    s, _ = io.load_script("demo")
+    build.synth(s, vv, log=lambda *_: None)
+    a = _BrokenAtStart(io.load_robot("self7"), {}, lambda e: None)
+    ctx = {}
+    with pytest.raises(ConnectionResetError):
+        play("demo", mode="motion", adapters={"self7": a}, settings={"play": {"lead_s": 0.1, "rest_s": 0.1}},
+             log=lambda *_: None, ctx=ctx)
+    rj = json.loads((ctx["record"].dir / "run.json").read_text(encoding="utf-8"))
+    assert rj["result"].startswith("error"), rj["result"]
+    assert ("stop", "graceful") in a.calls and ("close",) in a.calls
+
+
+def test_agent_client_send_wraps_oserror():
+    """agent への送信の失敗（OSError）は AdapterError にする（実行の後始末が受けられるように）。"""
+    from talkscript.robots.self7 import AgentClient
+
+    class DeadSock:
+        def sendall(self, data):
+            raise ConnectionResetError("切れた")
+    c = AgentClient("127.0.0.1", 1, lambda e: None)
+    c.sock = DeadSock()
+    with pytest.raises(AdapterError, match="送れない"):
+        c.send({"type": "ping"})
