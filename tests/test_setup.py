@@ -190,3 +190,22 @@ def test_desktop_folder_from_windows(monkeypatch):
                         "[Console]::OutputEncoding = [Text.Encoding]::UTF8; [Environment]::GetFolderPath('Desktop')"],
                        capture_output=True, encoding="utf-8", timeout=30)
     assert p is not None and p.is_dir() and str(p) == r.stdout.strip()
+
+
+def test_engine_path_only_from_pc_settings(user_dirs):
+    """作業フォルダ（共有するもの）の talkscript.toml の engine_path は使わない。PC ごとの settings.toml の値だけを使う。"""
+    ws = user_dirs / "work"
+    workspace.init_workspace(ws)
+    planted = user_dirs / "planted" / engine.run_name()
+    planted.parent.mkdir()
+    planted.write_bytes(b"x")
+    (ws / "talkscript.toml").write_text(f'[voicevox]\nengine_path = "{planted.as_posix()}"\n', encoding="utf-8")
+    st = workspace.load_settings(ws)
+    assert "engine_path" not in st.get("voicevox", {})
+    assert engine.find_engine(st) != planted
+    assert planted not in engine.candidates({"voicevox": {"engine_path": str(planted)}})   # 呼び出し側の値も見ない
+    mine = user_dirs / "mine" / engine.run_name()
+    mine.parent.mkdir()
+    mine.write_bytes(b"x")
+    workspace.write_user_settings({"voicevox": {"engine_path": str(mine)}})
+    assert engine.find_engine(workspace.load_settings(ws)) == mine

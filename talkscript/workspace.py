@@ -73,10 +73,18 @@ def merge(a: dict, b: dict) -> dict:
     return out
 
 
+#: PC ごとの settings.toml にだけ書ける項目（作業フォルダは共有されるので、そこに書かれた値は使わない）
+PC_ONLY = {"voicevox": ("engine_path",)}
+
+
 def load_settings(ws: pathlib.Path | None) -> dict:
     st = _read_toml(io.DEFAULTS / "talkscript.toml")
     if ws is not None:
-        st = merge(st, _read_toml(ws / "talkscript.toml"))
+        shared = _read_toml(ws / "talkscript.toml")
+        for sec, keys in PC_ONLY.items():   # 例: engine_path は起動するプログラムの場所なので、共有するファイルからは受けない
+            for k in keys:
+                (shared.get(sec) or {}).pop(k, None)
+        st = merge(st, shared)
     user = load_user_settings()
     user.pop("workspace", None)
     return merge(st, user)

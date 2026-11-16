@@ -57,8 +57,10 @@ def install_dir() -> pathlib.Path:
 
 
 def candidates(st: dict) -> list[pathlib.Path]:
+    """エンジンを探す場所。engine_path は PC ごとの settings.toml の値だけを使う（st に入っていても見ない。
+    作業フォルダの talkscript.toml は共有されるので、そこから起動するプログラムを決めない）。"""
     out = []
-    p = st.get("voicevox", {}).get("engine_path")
+    p = (workspace.load_user_settings().get("voicevox") or {}).get("engine_path")
     if p:
         out.append(pathlib.Path(p).expanduser())
     out.append(install_dir() / "VOICEVOX" / "vv-engine" / run_name())
