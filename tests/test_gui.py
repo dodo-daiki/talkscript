@@ -149,3 +149,14 @@ def test_voices_and_doctor(gui):
     assert code == 200 and v["speakers"][0]["name"] == "テスト"
     code, d = call("GET", "doctor")
     assert code == 200 and any(c["what"] == "作業フォルダ" for c in d["checks"])
+
+
+def test_api_rejects_unsafe_ids(gui):
+    app, call, base = gui
+    for path in ("script?id=..%2F..%2Fx", "audio?id=demo&line=..%2F..%2Fx", "audio?id=..%2Fdemo&line=L1",
+                 "runs/summary?run_id=..%2F..%2Fx"):
+        st, r = call("GET", path)
+        assert st == 400 and "英数字" in r["error"], (path, st, r)
+    s = call("GET", "script?id=demo")[1]["script"]
+    st, r = call("PUT", "script?id=..%2Fx", {"script": s})
+    assert st == 400

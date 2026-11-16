@@ -462,6 +462,9 @@ def make_handler(app: App):
                 return {"version": c.version(), "speakers": [{"name": s["name"], "styles": [x["name"] for x in s["styles"]]}
                                                              for s in c.speakers()]}
             app.need_ws()
+            for k in ("id", "line", "run_id"):     # ファイルの場所になる値は、英数字と - _ だけを受ける
+                if k in q and not io.is_id(q[k]):
+                    raise ApiError(f"{k}（{q[k]!r}）は英数字と - _ だけで書く")
             if path == "script" and method == "GET":
                 return app.script_payload(q["id"])
             if path == "script" and method == "PUT":

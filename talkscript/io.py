@@ -15,6 +15,7 @@ import hashlib
 import json
 import math
 import pathlib
+import re
 
 import yaml
 
@@ -100,6 +101,20 @@ def load_script(name_or_path: str) -> tuple[dict, pathlib.Path]:
     s = read_yaml(p)
     validate_script(s, p.stem)
     return s, p
+
+
+ID_RE = re.compile(r"[A-Za-z0-9_-]+")
+
+
+def is_id(x) -> bool:
+    """台本・ブロック・行・ロボット・ひな形・実行の id か（ファイル名に使うので、英数字と - _ だけ）。"""
+    return isinstance(x, str) and bool(ID_RE.fullmatch(x))
+
+
+def check_id(x, what: str = "id") -> str:
+    if not is_id(x):
+        raise FormatError(f"{what}（{x!r}）は英数字と - _ だけで書く")
+    return x
 
 
 def is_num(x) -> bool:
@@ -196,12 +211,16 @@ def validate_script(s: dict, stem: str | None = None) -> None:
         _fmt(s, "script", "台本")
     except FormatError as e:
         errs.append(str(e))
+    if not is_id(s.get("id")):
+        errs.append(f"台本の id（{s.get('id')!r}）は英数字と - _ だけで書く")
     if stem and s.get("id") != stem:
         errs.append(f"id（{s.get('id')}）がファイル名（{stem}）と違う")
     errs += _check_voice(s.get("voice", {}), "voice")
     errs += _check_ms(s, ("lead_in_ms", "gap_ms"), "台本")
     if not isinstance(s.get("robots"), list) or not s["robots"]:
         errs.append("robots（使うロボットの一覧）がない")
+    else:
+        errs += [f"robots のロボットの名前（{r!r}）は英数字と - _ だけで書く" for r in s["robots"] if not is_id(r)]
     if s.get("purpose", "demo") not in ("demo", "experiment"):
         errs.append("purpose は demo か experiment")
     blocks = s.get("blocks")
@@ -213,6 +232,8 @@ def validate_script(s: dict, stem: str | None = None) -> None:
         bid = b.get("id")
         if not bid or bid in seen_b:
             errs.append(f"ブロックの id がないか重複（{bid}）")
+        elif not is_id(bid):
+            errs.append(f"ブロックの id（{bid!r}）は英数字と - _ だけで書く")
         seen_b.add(bid)
         if b.get("start", "auto") not in ("auto", "operator"):
             errs.append(f"{bid}: start は auto か operator")
@@ -223,6 +244,8 @@ def validate_script(s: dict, stem: str | None = None) -> None:
             lid = ln.get("id")
             if not lid or lid in seen_l:
                 errs.append(f"{bid}: 行の id がないか重複（{lid}）。行の id は台本全体で一意にする")
+            elif not is_id(lid):
+                errs.append(f"{bid}: 行の id（{lid!r}）は英数字と - _ だけで書く")
             seen_l.add(lid)
             ids.add(lid)
             if not isinstance(ln.get("say"), str) or not ln["say"].strip():
@@ -274,7 +297,7 @@ def is_tbd(x) -> bool:
 
 
 def load_robot(name: str) -> dict:
-    p = CONFIG / "robots" / f"{name}.yaml"
+    p = CONFIG / "robots" / f"{check_id(name, 'ロボットの名前')}.yaml"
     if not p.exists():
         raise FormatError(f"ロボットの設定 {p} がない")
     r = read_yaml(p)
@@ -291,7 +314,7 @@ def load_robot(name: str) -> dict:
 
 
 def load_gesture(name: str) -> dict:
-    p = CONFIG / "gestures" / f"{name}.yaml"
+    p = CONFIG / "gestures" / f"{check_id(name, 'ひな形の名前')}.yaml"
     if not p.exists():
         have = sorted(x.stem for x in (CONFIG / "gestures").glob("*.yaml"))
         raise FormatError(f"ひな形 {name} がない（あるもの: {have}）")

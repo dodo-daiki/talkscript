@@ -225,3 +225,33 @@ def test_nonfinite_gesture_rejected(tmp_repo):
     p.write_text(p.read_text(encoding="utf-8").replace("[300, 6]", "[300, .nan]"), encoding="utf-8")
     with pytest.raises(io.FormatError, match="有限"):
         io.load_gesture("nod")
+
+
+# --- id で決まるファイルの場所（台本・ブロック・行・ロボット・ひな形） ------------------------------------
+
+@pytest.mark.parametrize("where", ["line", "block", "robot"])
+def test_ids_limited_to_safe_chars(tmp_repo, vv, where):
+    """id はファイル名に使うので [A-Za-z0-9_-] だけにする（フォルダの外に書けないように）。"""
+    s, _ = io.load_script("demo")
+    if where == "line":
+        s["blocks"][0]["lines"][0]["id"] = "../../../escaped"
+        for kfs in s["blocks"][0]["tracks"]["self7"].values():
+            for kf in kfs:
+                if "at" in kf:
+                    kf["at"]["line"] = "../../../escaped"
+    elif where == "block":
+        s["blocks"][0]["id"] = "../b"
+    else:
+        s["robots"] = ["../self7"]
+        s["blocks"][0]["tracks"] = {"../self7": s["blocks"][0]["tracks"]["self7"]}
+        s["blocks"][1]["tracks"] = {}
+    with pytest.raises(io.FormatError, match="id|英数字"):
+        io.validate_script(s, "demo")
+    with pytest.raises(io.FormatError):
+        build.synth(s, vv, log=lambda *_: None)                  # 合成も書く前に止まる
+    assert not any(tmp_repo.parent.rglob("escaped*"))
+
+
+def test_gesture_name_limited(tmp_repo):
+    with pytest.raises(io.FormatError, match="英数字"):
+        io.load_gesture("../../talkscript")

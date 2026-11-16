@@ -128,6 +128,7 @@ def load_manifest(script_id: str) -> dict:
 
 def synth(script: dict, client: VoicevoxClient, *, force: bool = False, lines: list[str] | None = None, log=print) -> dict:
     """台本の全行（lines を渡せばその行だけ）を合成する。合成済みで鍵が同じ行は飛ばす（文字の位置だけ求め直す）。"""
+    io.validate_script(script)            # id はファイル名になるので、書く前に検査する
     sid = script["id"]
     out = io.build_dir(sid)
     man = load_manifest(sid)
