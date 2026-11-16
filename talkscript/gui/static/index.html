@@ -268,6 +268,8 @@ a { color: var(--navy); }
     <span class="lbl">台本</span>
     <select id="scriptSel" aria-label="台本"></select>
     <button type="button" id="newScriptBtn" class="small">＋ 新しい台本</button>
+    <button type="button" id="importBtn" class="small" title="ほかで作った台本・動作のひな形（YAML）を取り込む。窓にファイルを落としても取り込める">読み込む</button>
+    <input type="file" id="importFile" accept=".yaml,.yml,text/yaml" hidden>
     <span class="blocks"><span class="lbl">ブロック</span><span class="seg" id="blockSeg" role="group" aria-label="ブロック"></span>
       <button type="button" id="addBlockBtn" class="small" aria-label="ブロックを追加">＋</button></span>
     <span class="spacer"></span>
@@ -1748,6 +1750,47 @@ a { color: var(--navy); }
     const tpl = SID && confirm(`今の台本（${SID}）を写して作りますか？\n（キャンセルで空の台本）`) ? SID : "";
     try { await api("POST", "script/new", { id, template: tpl }); await refreshState(); await loadScript(id); toast(`${id} を作りました`); }
     catch (e) { toast(`作れません: ${e.message}`); }
+  });
+  // ---------- 読み込む（台本・ひな形の YAML を作業フォルダに取り込む） ----------
+  async function importFile(file) {
+    if (!ST.workspace) { toast("先に作業フォルダを決めてください"); return; }
+    if (!/\.ya?ml$/i.test(file.name)) { toast(`${file.name} は YAML ではありません（.yaml / .yml）`); return; }
+    const text = await file.text();
+    let body = { name: file.name, text };
+    for (;;) {
+      let r;
+      try { r = await api("POST", "script/import", body); }
+      catch (e) { toast(`取り込めません: ${e.message}`); return; }
+      if (r.exists) {
+        const what = r.kind === "script" ? "台本" : "ひな形";
+        if (confirm(`${what}「${r.id}」はもうあります。上書きしますか？\n（前の内容は ${r.id}.yaml.bak に残します。キャンセルで別の名前にします）`)) { body = { ...body, id: r.id, overwrite: true }; continue; }
+        const id = prompt(`取り込む${what}の名前（英数字と - _）`, `${r.id}-2`);
+        if (!id) return;
+        body = { ...body, id, overwrite: false };
+        continue;
+      }
+      await refreshState();
+      if (r.kind === "script") {
+        if (unsaved && SID && SID !== r.id && !confirm(`いまの台本（${SID}）に保存していない変更があります。保存せずに「${r.id}」を開きますか？`)) {
+          toast(`台本 ${r.id} を取り込みました（台本の一覧から開けます）`); return;
+        }
+        if (r.id === SID) unsaved = false;
+        await loadScript(r.id);
+        toast(`台本 ${r.id} を取り込みました。「合成」で声を作ってください${r.warnings.length ? "。注意: " + r.warnings.join(" / ") : ""}`);
+      } else {
+        if (SID) renderRobots();
+        toast(`ひな形 ${r.id} を取り込みました（動作のひな形の一覧に出ます）${r.warnings.length ? "。注意: " + r.warnings.join(" / ") : ""}`);
+      }
+      return;
+    }
+  }
+  $("importBtn").addEventListener("click", () => { $("importFile").value = ""; $("importFile").click(); });
+  $("importFile").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) importFile(f); });
+  document.addEventListener("dragover", e => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+  document.addEventListener("drop", e => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    e.preventDefault(); importFile(f);
   });
   $("addBlockBtn").addEventListener("click", () => {
     if (!SID) return;

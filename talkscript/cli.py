@@ -343,6 +343,28 @@ def cmd_doctor(a, st):
     return 0 if bad == 0 else 1
 
 
+def cmd_import(a, st):
+    """台本・ひな形の YAML を作業フォルダに取り込む。"""
+    import pathlib
+    from . import importer
+    p = pathlib.Path(a.file)
+    try:
+        r = importer.import_text(p.read_text(encoding="utf-8-sig"), p.name, new_id=a.id, overwrite=a.force)
+    except importer.Exists as e:
+        print(f"{e}。上書きするなら --force、別の名前にするなら --id <名前>")
+        return 1
+    except (importer.ImportError_, OSError) as e:
+        print(f"取り込めない: {e}")
+        return 1
+    what = "台本" if r["kind"] == "script" else "ひな形"
+    print(f"{what} {r['id']} を取り込んだ: {r['path']}" + ("（前の内容は .bak に残した）" if r["replaced"] else ""))
+    for w in r["warnings"]:
+        print(f"注意: {w}")
+    if r["kind"] == "script":
+        print(f"次に: talkscript synth {r['id']}（合成） → talkscript compile {r['id']}（検査）")
+    return 0
+
+
 def cmd_update(a, st):
     """新しい版を確かめ、あれば（確認してから）更新する。"""
     from . import update
@@ -467,6 +489,8 @@ def main(argv=None):
     p.add_argument("--refresh", action="store_true", help="スタートメニューと、すでにあるデスクトップのものだけ作り直す（更新のあと）")
     p = sub.add_parser("setup"); p.add_argument("--yes", action="store_true", help="確認をすべて「はい」にする")
     p.add_argument("--no-voicevox", action="store_true"); p.add_argument("--workspace-dir")
+    p = sub.add_parser("import", help="台本・動作のひな形の YAML を作業フォルダに取り込む")
+    p.add_argument("file"); p.add_argument("--id", help="別の名前で取り込む"); p.add_argument("--force", action="store_true", help="同じ名前があれば上書きする")
     p = sub.add_parser("update", help="新しい版を確かめ、あれば更新する")
     p.add_argument("--check", action="store_true", help="確かめるだけ"); p.add_argument("--yes", action="store_true")
     p = sub.add_parser("uninstall", help="talkscript が PC に置いたもの（ショートカット・VOICEVOX・設定）を消す。"

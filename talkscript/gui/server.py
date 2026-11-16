@@ -457,6 +457,17 @@ def make_handler(app: App):
                 b = self._body()
                 sha = app.save_script(q["id"], b["script"], b.get("base_sha"), bool(b.get("force")))
                 return {"sha": sha, **app.build_payload(b["script"])}
+            if path == "script/import" and method == "POST":
+                from .. import importer
+                app.need_ws()
+                b = self._body()
+                try:
+                    return importer.import_text(b.get("text", ""), b.get("name", ""), new_id=b.get("id") or None,
+                                                overwrite=bool(b.get("overwrite")))
+                except importer.Exists as e:
+                    return {"exists": True, "kind": e.kind, "id": e.id, "error": str(e)}
+                except importer.ImportError_ as e:
+                    raise ApiError(str(e))
             if path == "script/new" and method == "POST":
                 b = self._body()
                 app.new_script(b["id"], b.get("template", ""))

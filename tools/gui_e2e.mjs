@@ -1,13 +1,13 @@
 // 画面の操作の試験: Edge / Chrome（画面なし）を DevTools プロトコルで動かす（Node 22 以上）。
 //   python tools/gui_serve_fake.py <作業フォルダ> 120   # 1 行目の URL を使う
 //   node tools/gui_e2e.mjs <URL> <作業フォルダ> <スクリーンショット.png>
-// ブラウザの場所は環境変数 BROWSER で変えられる（既定: Windows は Edge、ほかは chromium）。
+// ブラウザの場所は環境変数 TALKSCRIPT_BROWSER で変えられる（既定: Windows は Edge、ほかは chromium）。
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
 const [url, ws, shot] = process.argv.slice(2);
-const EDGE = process.env.BROWSER || (process.platform === "win32" ? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" : "chromium");
+const EDGE = process.env.TALKSCRIPT_BROWSER || (process.platform === "win32" ? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" : "chromium");
 const port = 9333;
 const prof = path.join(path.dirname(shot), "edgeprof-e2e");
 const edge = spawn(EDGE, ["--headless=new", "--disable-gpu", `--remote-debugging-port=${port}`, `--user-data-dir=${prof}`,
@@ -130,6 +130,37 @@ v = await ev(`document.querySelector('#blockSeg button[data-bi="0"]').click(); a
   ${q("#playBtn")}.click(); await new Promise(r => setTimeout(r, 1200)); const t = parseFloat(${q("#timeLbl")}.textContent);
   ${q("#playBtn")}.click(); return { t, btn: ${q("#playBtn")}.textContent };`);
 check("再生（再生位置が進む）", v.t > 0.5 && v.btn.includes("再生"), v);
+
+// 「読み込む」: YAML のファイルを選んだのと同じ操作で台本を取り込み、開く。同じ名前なら上書きを尋ねる
+const IMPORT_YAML = `format: talkscript/script@1
+id: imported
+purpose: demo
+# 取り込みの試験
+voice:
+  speaker: {name: テスト, style: ノーマル}
+robots: [self7]
+blocks:
+  - id: B1
+    lines:
+      - {id: L1, say: タコには心臓が三つあります。}
+    tracks:
+      self7:
+        neck_pitch:
+          - {at: {line: L1, text: 三つ, edge: end}, deg: 8}
+          - {at: {line: L1, text: 三つ, edge: end}, offset_ms: 400, deg: 0}
+`;
+v = await ev(`const wait = ms => new Promise(r => setTimeout(r, ms));
+  const pick = () => { const dt = new DataTransfer(); dt.items.add(new File([${JSON.stringify(IMPORT_YAML)}], "imported.yaml", { type: "text/yaml" }));
+    const inp = ${q("#importFile")}; inp.files = dt.files; inp.dispatchEvent(new Event("change")); };
+  pick(); await wait(1500);
+  const first = { sel: ${q("#scriptSel")}.value, lines: document.querySelectorAll(".lcard").length, toast: ${q("#toast")}.textContent };
+  let asked = ""; window.confirm = m => { asked = m; return true; };
+  pick(); await wait(1500);
+  return { first, asked, sel: ${q("#scriptSel")}.value };`);
+const imported = fs.existsSync(path.join(ws, "scripts", "imported.yaml")) ? fs.readFileSync(path.join(ws, "scripts", "imported.yaml"), "utf-8") : "";
+check("読み込む（台本の YAML を取り込んで開く。同じ名前は上書きを尋ねる）",
+  v.first.sel === "imported" && v.first.lines === 1 && v.asked.includes("上書き") && v.sel === "imported" &&
+  imported.includes("# 取り込みの試験") && fs.existsSync(path.join(ws, "scripts", "imported.yaml.bak")), v);
 
 const shotRes = await cdp("Page.captureScreenshot", { format: "png", captureBeyondViewport: true });
 fs.writeFileSync(shot, Buffer.from(shotRes.result.data, "base64"));

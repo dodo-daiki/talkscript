@@ -6,7 +6,7 @@
 作るもの（talkscript/assets/）:
   talkscript.ico  Windows のショートカットとインストーラー（16〜256 px。32 px 以下は icon-small.svg から）
   talkscript.png  Linux のアプリ一覧（256 px）
-SVG を画像にするのに、Edge / Chrome を画面なしで使う（環境変数 BROWSER で場所を変えられる）。
+SVG を画像にするのに、Edge / Chrome を画面なしで使う（環境変数 TALKSCRIPT_BROWSER で場所を変えられる）。
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "talkscript" / "assets"
-BROWSER = os.environ.get("BROWSER") or (r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+BROWSER = os.environ.get("TALKSCRIPT_BROWSER") or (r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
                                          if sys.platform == "win32" else "chromium")
 SIZES = [16, 20, 24, 32, 40, 48, 64, 128, 256]
 SMALL_MAX = 32
