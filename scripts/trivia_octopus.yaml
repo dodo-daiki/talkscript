@@ -1,0 +1,193 @@
+format: talkscript/script@1
+id: trivia_octopus
+purpose: demo
+description: "雑学「タコの心臓は三つ」を話しながら、身ぶりをつける（自作機 self7）。声: VOICEVOX:白上虎太郎"
+voice:
+  speaker: {name: 白上虎太郎, style: ふつう}
+  speed: 1.0
+  pitch: 0.0
+  intonation: 1.0
+  volume: 1.0
+  pre_silence_s: 0.1
+  post_silence_s: 0.1
+  sampling_rate: 24000
+robots: [self7]
+blocks:
+  - id: B1
+    lead_in_ms: 800
+    tail_ms: 600
+    lines:
+      - id: L1
+        say: こんにちは。今日は、タコのちょっと不思議な話をします。
+      - id: L2
+        gap_ms: 500
+        say: 実は、タコには心臓が三つあります。
+      - id: L3
+        gap_ms: 400
+        say: そのうち二つは、エラに血を送るための心臓で、残りの一つが、全身に血を送る心臓です。
+      - id: L4
+        gap_ms: 500
+        say: しかも、タコの血は青い色をしています。
+      - id: L5
+        gap_ms: 300
+        say: 血の中で酸素を運ぶたんぱく質に、銅が含まれているからです。
+      - id: L6
+        gap_ms: 500
+        say: さらに、泳いでいるあいだは、全身に血を送る心臓が止まってしまうそうです。
+      - id: L7
+        gap_ms: 400
+        say: だからタコは、泳ぐよりも、海の底を這って移動することが多いと言われています。
+      - id: L8
+        gap_ms: 600
+        say: 今度水族館に行ったら、ぜひタコを観察してみてください。
+    # 動きはすべて台詞の文字の位置（at.text）に固定する。話者・話速を変えて合成し直しても、発話についていく。
+    # 角度は体の向きの角度（度）: 肩 + = 前に上げる、肘 + = 曲げる、腰・首ヨー + = ロボットから見て左、首ピッチ + = うつむく。
+    # 上限（config/robots/self7.yaml）: 角速度 128 °/s（区間の最大 = 1.5 × 角度差 ÷ 時間）、肩の角加速度 1856 °/s²。
+    tracks:
+      self7:
+        r_shoulder:
+          # L1「こんにちは」: 右手を上げて振り、「今日は」で下ろす
+          - {at: {line: L1, text: こんにちは, edge: start}, offset_ms: -500, deg: 0}
+          - {at: {line: L1, text: こんにちは, edge: start}, offset_ms: 200, deg: 45}
+          - {at: {line: L1, text: こんにちは, edge: end}, offset_ms: 150, deg: 45}
+          - {at: {line: L1, text: 今日は, edge: end}, deg: 0}
+          # L2「三つ」: 右手を前に差し出し、言い終えたら下ろす
+          - {at: {line: L2, text: 三つ, edge: start}, offset_ms: -800, deg: 0}
+          - {at: {line: L2, text: 三つ, edge: start}, deg: 60}
+          - {at: {line: L2, text: あります, edge: end}, offset_ms: 200, deg: 60}
+          - {at: {line: L2, text: あります, edge: end}, offset_ms: 1000, deg: 0}
+          # L3「残りの一つが」: 右手で「一つ」を示す
+          - {at: {line: L3, text: 一つが, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L3, text: 一つが, edge: start}, offset_ms: 100, deg: 50}
+          - {at: {line: L3, text: 心臓です, edge: end}, deg: 50}
+          - {at: {line: L3, text: 心臓です, edge: end}, offset_ms: 700, deg: 0}
+          # L5「酸素を運ぶ…銅が」: 右手で説明する
+          - {at: {line: L5, text: 酸素, edge: start}, offset_ms: -800, deg: 0}
+          - {at: {line: L5, text: 酸素, edge: start}, deg: 30}
+          - {at: {line: L5, text: からです, edge: end}, deg: 30}
+          - {at: {line: L5, text: からです, edge: end}, offset_ms: 700, deg: 0}
+          # L6「泳いでいるあいだは」: 両腕を交互に動かして泳ぐ
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: -450, deg: 0}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 100, deg: 25}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 550, deg: 5}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 1000, deg: 25}
+          - {at: {line: L6, text: あいだは, edge: end}, offset_ms: 400, deg: 0}
+          # L8「ぜひ」: 両手を前に開いて勧め、言い終えたら下ろす
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: 100, deg: 40}
+          - {at: {line: L8, text: ください, edge: end}, deg: 40}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 900, deg: 0}
+        r_elbow:
+          - {at: {line: L1, text: こんにちは, edge: start}, offset_ms: -500, deg: 0}
+          - {at: {line: L1, text: こんにちは, edge: start}, offset_ms: 200, deg: 55}
+          - {at: {line: L1, text: こんにちは, edge: start}, offset_ms: 450, deg: 40}
+          - {at: {line: L1, text: こんにちは, edge: end}, offset_ms: -50, deg: 55}
+          - {at: {line: L1, text: 今日は, edge: end}, deg: 0}
+          - {at: {line: L2, text: 三つ, edge: start}, offset_ms: -800, deg: 0}
+          - {at: {line: L2, text: 三つ, edge: start}, deg: 30}
+          - {at: {line: L2, text: あります, edge: end}, offset_ms: 200, deg: 30}
+          - {at: {line: L2, text: あります, edge: end}, offset_ms: 1000, deg: 0}
+          - {at: {line: L3, text: 一つが, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L3, text: 一つが, edge: start}, offset_ms: 100, deg: 30}
+          - {at: {line: L3, text: 心臓です, edge: end}, deg: 30}
+          - {at: {line: L3, text: 心臓です, edge: end}, offset_ms: 700, deg: 0}
+          - {at: {line: L5, text: 酸素, edge: start}, offset_ms: -800, deg: 0}
+          - {at: {line: L5, text: 酸素, edge: start}, deg: 60}
+          - {at: {line: L5, text: 銅が, edge: start}, offset_ms: -200, deg: 60}
+          - {at: {line: L5, text: 銅が, edge: start}, offset_ms: 100, deg: 45}
+          - {at: {line: L5, text: 銅が, edge: end}, offset_ms: 100, deg: 60}
+          - {at: {line: L5, text: からです, edge: end}, deg: 60}
+          - {at: {line: L5, text: からです, edge: end}, offset_ms: 800, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: 100, deg: 20}
+          - {at: {line: L8, text: ください, edge: end}, deg: 20}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 900, deg: 0}
+        l_shoulder:
+          # L3「二つは」: 左手で「二つ」を示す
+          - {at: {line: L3, text: 二つは, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L3, text: 二つは, edge: start}, offset_ms: 100, deg: 50}
+          - {at: {line: L3, text: 心臓で, edge: end}, deg: 50}
+          - {at: {line: L3, text: 心臓で, edge: end}, offset_ms: 700, deg: 0}
+          # L6「泳いで」: 右腕と半周期ずらす
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: -200, deg: 0}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 350, deg: 25}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 800, deg: 5}
+          - {at: {line: L6, text: 泳いで, edge: start}, offset_ms: 1250, deg: 25}
+          - {at: {line: L6, text: あいだは, edge: end}, offset_ms: 650, deg: 0}
+          # L8「ぜひ」
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: 100, deg: 40}
+          - {at: {line: L8, text: ください, edge: end}, deg: 40}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 900, deg: 0}
+        l_elbow:
+          - {at: {line: L3, text: 二つは, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L3, text: 二つは, edge: start}, offset_ms: 100, deg: 30}
+          - {at: {line: L3, text: 心臓で, edge: end}, deg: 30}
+          - {at: {line: L3, text: 心臓で, edge: end}, offset_ms: 700, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: -700, deg: 0}
+          - {at: {line: L8, text: ぜひ, edge: start}, offset_ms: 100, deg: 20}
+          - {at: {line: L8, text: ください, edge: end}, deg: 20}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 900, deg: 0}
+        waist_yaw:
+          # L4「しかも」: 少し向きを変えて話を足す
+          - {at: {line: L4, text: しかも, edge: start}, offset_ms: -300, deg: 0}
+          - {at: {line: L4, text: しかも, edge: end}, deg: 10}
+          - {at: {line: L4, text: 青い, edge: start}, deg: 10}
+          - {at: {line: L4, text: います, edge: end}, deg: 0}
+          # L7「這って移動する」: 体をゆっくり左右に振る
+          - {at: {line: L7, text: 這って, edge: start}, offset_ms: -300, deg: 0}
+          - {at: {line: L7, text: 這って, edge: start}, offset_ms: 300, deg: 8}
+          - {at: {line: L7, text: 移動する, edge: end}, deg: -8}
+          - {at: {line: L7, text: 移動する, edge: end}, offset_ms: 500, deg: 0}
+        neck_yaw:
+          # L1「不思議な」: 少し横を見る
+          - {at: {line: L1, text: 不思議な, edge: start}, offset_ms: -400, deg: 0}
+          - {at: {line: L1, text: 不思議な, edge: end}, deg: 10}
+          - {at: {line: L1, text: 話をします, edge: end}, deg: 10}
+          - {at: {line: L1, text: 話をします, edge: end}, offset_ms: 500, deg: 0}
+          # L3「二つは」で左手の側、「一つが」で右手の側を見る
+          - {at: {line: L3, text: 二つは, edge: start}, offset_ms: -300, deg: 0}
+          - {at: {line: L3, text: 二つは, edge: end}, deg: 15}
+          - {at: {line: L3, text: 心臓で, edge: end}, deg: 15}
+          - {at: {line: L3, text: 一つが, edge: start}, deg: -15}
+          - {at: {line: L3, text: 心臓です, edge: end}, deg: -15}
+          - {at: {line: L3, text: 心臓です, edge: end}, offset_ms: 500, deg: 0}
+          # L7「泳ぐよりも」: 首を横に振る
+          - {at: {line: L7, text: 泳ぐよりも, edge: start}, offset_ms: -200, deg: 0}
+          - {at: {line: L7, text: 泳ぐよりも, edge: start}, offset_ms: 200, deg: 12}
+          - {at: {line: L7, text: 泳ぐよりも, edge: start}, offset_ms: 550, deg: -12}
+          - {at: {line: L7, text: 泳ぐよりも, edge: end}, offset_ms: 100, deg: 0}
+        neck_pitch:
+          # L1「こんにちは」の終わりでうなずく
+          - {at: {line: L1, text: こんにちは, edge: end}, offset_ms: -300, deg: 0}
+          - {at: {line: L1, text: こんにちは, edge: end}, deg: 10}
+          - {at: {line: L1, text: こんにちは, edge: end}, offset_ms: 350, deg: 0}
+          # L2「実は」で少し前に乗り出し、「三つ」で強くうなずく
+          - {at: {line: L2, text: 実は, edge: start}, offset_ms: -300, deg: 0}
+          - {at: {line: L2, text: 実は, edge: end}, deg: 6}
+          - {at: {line: L2, text: タコには, edge: end}, deg: 0}
+          - {at: {line: L2, text: 三つ, edge: start}, deg: 0}
+          - {at: {line: L2, text: 三つ, edge: end}, deg: 8}
+          - {at: {line: L2, text: 三つ, edge: end}, offset_ms: 350, deg: 0}
+          # L4「青い」: うなずいて強める
+          - {at: {line: L4, text: 青い, edge: start}, offset_ms: -250, deg: 0}
+          - {at: {line: L4, text: 青い, edge: start}, offset_ms: 100, deg: 8}
+          - {at: {line: L4, text: 青い, edge: end}, offset_ms: 250, deg: 0}
+          # L5「銅が」: うなずく
+          - {at: {line: L5, text: 銅が, edge: start}, deg: 0}
+          - {at: {line: L5, text: 銅が, edge: end}, deg: 7}
+          - {at: {line: L5, text: 銅が, edge: end}, offset_ms: 350, deg: 0}
+          # L6「止まってしまう」: うつむいて止まる
+          - {at: {line: L6, text: 止まって, edge: start}, offset_ms: -300, deg: 0}
+          - {at: {line: L6, text: 止まって, edge: start}, deg: 10}
+          - {at: {line: L6, text: しまう, edge: end}, deg: 10}
+          - {at: {line: L6, text: そうです, edge: end}, deg: 0}
+          # L7「海の底を」: 下を見る
+          - {at: {line: L7, text: 海の, edge: start}, offset_ms: -400, deg: 0}
+          - {at: {line: L7, text: 海の, edge: start}, deg: 12}
+          - {at: {line: L7, text: 移動する, edge: end}, deg: 12}
+          - {at: {line: L7, text: 移動する, edge: end}, offset_ms: 400, deg: 0}
+          # L8 最後におじぎ
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: -200, deg: 0}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 300, deg: 15}
+          - {at: {line: L8, text: ください, edge: end}, offset_ms: 900, deg: 0}

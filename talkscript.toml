@@ -1,0 +1,29 @@
+# talkscript の作業フォルダの設定（このフォルダを使う全員で共有する値）。パスワードなどの秘密は書かない。
+#
+# 設定は次の順に重ねる（後のものが優先）:
+#   1. talkscript に同梱の既定値
+#   2. この talkscript.toml（作業フォルダ。共有する値: ロボットのアドレス、時間）
+#   3. PC ごとの設定 settings.toml（Windows: %APPDATA%\talkscript\settings.toml、Linux: ~/.config/talkscript/settings.toml。
+#      音声の出力機器、VOICEVOX の場所など。インストーラーが作る）
+
+[voicevox]
+url = "http://127.0.0.1:50021"
+
+[self7]
+host = "TBD"           # 自作機の Pi で動かす talkscript-agent のアドレス。PC ごとの settings.toml の [self7] host に書く（公開しないため）
+port = 50110
+
+[sota]
+host = "TBD"           # Sota（RobotController）のアドレス。PC ごとの settings.toml の [sota] host に書く（公開しないため）
+port = 22222
+# latency_s = 0.25     # 実測した遅れ（talkscript latency-sota）。未設定なら config/robots/sota.yaml の値
+
+[audio]
+# device = "スピーカー (…)"   # 未設定なら OS の既定の出力機器。PC ごとに違うなら settings.toml に書く
+
+[play]
+lead_s = 0.8           # t0 = 今 + lead_s（2.0 から縮めた。Sota の lead は latency_s + 0.3 = 0.49 s）
+rest_s = 3.0           # ブロックの前に休止姿勢へ移る時間（提案）
+margin_s = 1.0         # 終わりの予定時刻からの余裕（提案）
+sota_dt_ms = 100       # Sota の姿勢の間隔（提案）
+required_notes = []    # 実験のときは ["condition", "subject", "distance", "spl_db"] など

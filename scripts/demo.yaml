@@ -1,0 +1,66 @@
+format: talkscript/script@1
+id: demo
+purpose: demo                        # demo / experiment（experiment は固定が必須・行ごとの声の上書き禁止）
+voice:
+  speaker: {name: ずんだもん, style: ノーマル}   # talkscript voices で一覧を見て決める（作品で使うときはクレジット「VOICEVOX:ずんだもん」）
+  speed: 1.0
+  pitch: 0.0
+  intonation: 1.0
+  volume: 1.0
+  pre_silence_s: 0.1
+  post_silence_s: 0.1
+  sampling_rate: 24000
+robots: [self7, sota]                # 片方だけで再生するときは talkscript play demo --robots sota
+blocks:
+  - id: B1
+    lines:
+      - id: L1
+        say: こんにちは。今日はカカオの実について紹介します。
+      - id: L2
+        gap_ms: 400
+        say: こちらを見てください。
+    tracks:
+      self7:
+        neck_pitch:                  # 「紹介します」の終わりでうなずく（ひな形 nod を挿入したのと同じ形）
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: -300, deg: 0, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, deg: 6, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: 350, deg: 0, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: 800, deg: 0, group: nod-1}
+        r_shoulder:                  # L2 の始まりで指し示し終える（ひな形 point_right）
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: -1400, deg: 0, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, deg: 40, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 1000, deg: 40, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 2400, deg: 0, group: point_right-1}
+        r_elbow:
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: -1400, deg: 0, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, deg: 30, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 1000, deg: 30, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 2400, deg: 0, group: point_right-1}
+      sota:
+        HEAD_P:                      # うなずき。Sota の首は下へ 5° まで
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: -300, deg: 0, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, deg: 5, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: 350, deg: 0, group: nod-1}
+          - {at: {line: L1, text: 紹介します, edge: end}, offset_ms: 800, deg: 0, group: nod-1}
+        R_SHOU:
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: -1400, deg: 0, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, deg: 40, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 1000, deg: 40, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 2400, deg: 0, group: point_right-1}
+        R_ELBO:
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: -1400, deg: 0, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, deg: 30, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 1000, deg: 30, group: point_right-1}
+          - {at: {line: L2, phrase: 0, edge: start}, offset_ms: 2400, deg: 0, group: point_right-1}
+    groups:
+      nod-1: {gesture: nod}
+      point_right-1: {gesture: point_right}
+  - id: B2
+    start: operator                  # 操作者の Enter で開始
+    tracks:                          # 発話のないブロック = 動作だけ（腰と首で左を向いて戻る）
+      self7:
+        waist_yaw:  [{t_ms: 0, deg: 0}, {t_ms: 1500, deg: 15}, {t_ms: 2500, deg: 15}, {t_ms: 4000, deg: 0}]
+        neck_yaw:   [{t_ms: 0, deg: 0}, {t_ms: 1500, deg: 10}, {t_ms: 2500, deg: 10}, {t_ms: 4000, deg: 0}]
+      sota:
+        BODY_Y:     [{t_ms: 0, deg: 0}, {t_ms: 1500, deg: 15}, {t_ms: 2500, deg: 15}, {t_ms: 4000, deg: 0}]
+        HEAD_Y:     [{t_ms: 0, deg: 0}, {t_ms: 1500, deg: 10}, {t_ms: 2500, deg: 10}, {t_ms: 4000, deg: 0}]

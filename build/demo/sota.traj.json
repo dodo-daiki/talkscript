@@ -1,0 +1,1834 @@
+{
+ "format": "talkscript/traj@1",
+ "robot": "sota",
+ "script": "demo",
+ "interp": "smooth",
+ "unit": "deg_body",
+ "blocks": [
+  {
+   "id": "B1",
+   "start": "auto",
+   "duration_s": 7.524,
+   "tracks": {
+    "BODY_Y": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "L_SHOU": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "L_ELBO": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "R_SHOU": [
+     [
+      3.724,
+      0.0
+     ],
+     [
+      5.124,
+      40.0
+     ],
+     [
+      6.124,
+      40.0
+     ],
+     [
+      7.524,
+      0.0
+     ]
+    ],
+    "R_ELBO": [
+     [
+      3.724,
+      0.0
+     ],
+     [
+      5.124,
+      30.0
+     ],
+     [
+      6.124,
+      30.0
+     ],
+     [
+      7.524,
+      0.0
+     ]
+    ],
+    "HEAD_Y": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "HEAD_P": [
+     [
+      4.232,
+      0.0
+     ],
+     [
+      4.532,
+      5.0
+     ],
+     [
+      4.882,
+      0.0
+     ],
+     [
+      5.332,
+      0.0
+     ]
+    ],
+    "HEAD_R": [
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   },
+   "groups": [
+    {
+     "id": "nod-1",
+     "gesture": "nod"
+    },
+    {
+     "id": "point_right-1",
+     "gesture": "point_right"
+    }
+   ],
+   "audio": [
+    {
+     "line": "L1",
+     "start_s": 0.5,
+     "duration_s": 4.128,
+     "wav_sha256": "6236d8a6c8b32956924b62a697bfc38cc99398c6eaba8283d189a08cd3164954"
+    },
+    {
+     "line": "L2",
+     "start_s": 5.028,
+     "duration_s": 1.664,
+     "wav_sha256": "5f4d443cbb552dfeff2f4abee955fd2c4bac64a69810dd796d4cd61cb4f1f581"
+    }
+   ],
+   "pose_dt_ms": 100,
+   "poses": [
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 88,
+      "R_ELBO": -1,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 86,
+      "R_ELBO": -3,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 83,
+      "R_ELBO": -5,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 79,
+      "R_ELBO": -8,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 75,
+      "R_ELBO": -11,
+      "HEAD_Y": 0,
+      "HEAD_P": 1,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 71,
+      "R_ELBO": -14,
+      "HEAD_Y": 0,
+      "HEAD_P": 3,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 67,
+      "R_ELBO": -17,
+      "HEAD_Y": 0,
+      "HEAD_P": 5,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 63,
+      "R_ELBO": -21,
+      "HEAD_Y": 0,
+      "HEAD_P": 5,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 59,
+      "R_ELBO": -23,
+      "HEAD_Y": 0,
+      "HEAD_P": 3,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 55,
+      "R_ELBO": -26,
+      "HEAD_Y": 0,
+      "HEAD_P": 1,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 53,
+      "R_ELBO": -28,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 51,
+      "R_ELBO": -29,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 50,
+      "R_ELBO": -30,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 52,
+      "R_ELBO": -29,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 54,
+      "R_ELBO": -27,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 57,
+      "R_ELBO": -25,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 61,
+      "R_ELBO": -22,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 65,
+      "R_ELBO": -19,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 69,
+      "R_ELBO": -16,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 73,
+      "R_ELBO": -13,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 77,
+      "R_ELBO": -9,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 81,
+      "R_ELBO": -7,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 85,
+      "R_ELBO": -4,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 87,
+      "R_ELBO": -2,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 89,
+      "R_ELBO": -1,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    }
+   ],
+   "rest_native": {
+    "BODY_Y": 0,
+    "L_SHOU": -90,
+    "L_ELBO": 0,
+    "R_SHOU": 90,
+    "R_ELBO": 0,
+    "HEAD_Y": 0,
+    "HEAD_P": 0,
+    "HEAD_R": 0
+   }
+  },
+  {
+   "id": "B2",
+   "start": "operator",
+   "duration_s": 4.0,
+   "tracks": {
+    "BODY_Y": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      1.5,
+      15.0
+     ],
+     [
+      2.5,
+      15.0
+     ],
+     [
+      4.0,
+      0.0
+     ]
+    ],
+    "L_SHOU": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "L_ELBO": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "R_SHOU": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "R_ELBO": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "HEAD_Y": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      1.5,
+      10.0
+     ],
+     [
+      2.5,
+      10.0
+     ],
+     [
+      4.0,
+      0.0
+     ]
+    ],
+    "HEAD_P": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "HEAD_R": [
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   },
+   "groups": [],
+   "audio": [],
+   "pose_dt_ms": 100,
+   "poses": [
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 1,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 2,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 1,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 3,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 2,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 4,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 3,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 5,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 4,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 7,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 5,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 8,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 5,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 10,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 6,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 11,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 7,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 12,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 8,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 13,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 9,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 14,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 15,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 14,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 10,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 13,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 9,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 12,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 8,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 11,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 7,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 10,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 6,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 8,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 5,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 7,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 5,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 5,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 4,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 4,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 3,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 3,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 2,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 2,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 1,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 1,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    },
+    {
+     "Msec": 100,
+     "ServoMap": {
+      "BODY_Y": 0,
+      "L_SHOU": -90,
+      "L_ELBO": 0,
+      "R_SHOU": 90,
+      "R_ELBO": 0,
+      "HEAD_Y": 0,
+      "HEAD_P": 0,
+      "HEAD_R": 0
+     }
+    }
+   ],
+   "rest_native": {
+    "BODY_Y": 0,
+    "L_SHOU": -90,
+    "L_ELBO": 0,
+    "R_SHOU": 90,
+    "R_ELBO": 0,
+    "HEAD_Y": 0,
+    "HEAD_P": 0,
+    "HEAD_R": 0
+   }
+  }
+ ],
+ "script_sha256": "b27afe5c262b30fce144db323406596f6104f1761f3b2a9b08283f28b167e31a",
+ "manifest_sha256": "584c9a0683ea767723824e63e1b4c6857e95375b1b5fecc9643658dec9ec852c",
+ "check": {
+  "ok": true,
+  "peaks": {
+   "BODY_Y": {
+    "v_deg_s": 15.0,
+    "a_deg_s2": 40.0
+   },
+   "L_SHOU": {
+    "v_deg_s": 0.0,
+    "a_deg_s2": 0.0
+   },
+   "L_ELBO": {
+    "v_deg_s": 0.0,
+    "a_deg_s2": 0.0
+   },
+   "R_SHOU": {
+    "v_deg_s": 42.86,
+    "a_deg_s2": 122.45
+   },
+   "R_ELBO": {
+    "v_deg_s": 32.14,
+    "a_deg_s2": 91.84
+   },
+   "HEAD_Y": {
+    "v_deg_s": 10.0,
+    "a_deg_s2": 26.67
+   },
+   "HEAD_P": {
+    "v_deg_s": 25.0,
+    "a_deg_s2": 333.33
+   },
+   "HEAD_R": {
+    "v_deg_s": 0.0,
+    "a_deg_s2": 0.0
+   }
+  },
+  "issues": [
+   {
+    "level": "warn",
+    "code": "K2",
+    "msg": "音声を固定していない（talkscript freeze）。デモとして続ける"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "sota",
+    "joint": "BODY_Y"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "sota",
+    "joint": "HEAD_P"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "sota",
+    "joint": "HEAD_Y"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "sota",
+    "joint": "R_ELBO"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "sota",
+    "joint": "R_SHOU"
+   },
+   {
+    "level": "info",
+    "code": "K10",
+    "msg": "長さ 7.52 s、音声 5.79 s、行 2",
+    "robot": "sota",
+    "block": "B1"
+   },
+   {
+    "level": "info",
+    "code": "K10",
+    "msg": "長さ 4.00 s、音声 0.00 s、行 0",
+    "robot": "sota",
+    "block": "B2"
+   }
+  ]
+ }
+}

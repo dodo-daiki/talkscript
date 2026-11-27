@@ -1,0 +1,277 @@
+{
+ "format": "talkscript/traj@1",
+ "robot": "self7",
+ "script": "demo",
+ "interp": "smooth",
+ "unit": "deg_body",
+ "blocks": [
+  {
+   "id": "B1",
+   "start": "auto",
+   "duration_s": 7.524,
+   "tracks": {
+    "r_shoulder": [
+     [
+      3.724,
+      0.0
+     ],
+     [
+      5.124,
+      40.0
+     ],
+     [
+      6.124,
+      40.0
+     ],
+     [
+      7.524,
+      0.0
+     ]
+    ],
+    "r_elbow": [
+     [
+      3.724,
+      0.0
+     ],
+     [
+      5.124,
+      30.0
+     ],
+     [
+      6.124,
+      30.0
+     ],
+     [
+      7.524,
+      0.0
+     ]
+    ],
+    "l_shoulder": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "l_elbow": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "waist_yaw": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "neck_yaw": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "neck_pitch": [
+     [
+      4.232,
+      0.0
+     ],
+     [
+      4.532,
+      6.0
+     ],
+     [
+      4.882,
+      0.0
+     ],
+     [
+      5.332,
+      0.0
+     ]
+    ]
+   },
+   "groups": [
+    {
+     "id": "nod-1",
+     "gesture": "nod"
+    },
+    {
+     "id": "point_right-1",
+     "gesture": "point_right"
+    }
+   ],
+   "audio": [
+    {
+     "line": "L1",
+     "start_s": 0.5,
+     "duration_s": 4.128,
+     "wav_sha256": "6236d8a6c8b32956924b62a697bfc38cc99398c6eaba8283d189a08cd3164954"
+    },
+    {
+     "line": "L2",
+     "start_s": 5.028,
+     "duration_s": 1.664,
+     "wav_sha256": "5f4d443cbb552dfeff2f4abee955fd2c4bac64a69810dd796d4cd61cb4f1f581"
+    }
+   ]
+  },
+  {
+   "id": "B2",
+   "start": "operator",
+   "duration_s": 4.0,
+   "tracks": {
+    "r_shoulder": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "r_elbow": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "l_shoulder": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "l_elbow": [
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "waist_yaw": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      1.5,
+      15.0
+     ],
+     [
+      2.5,
+      15.0
+     ],
+     [
+      4.0,
+      0.0
+     ]
+    ],
+    "neck_yaw": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      1.5,
+      10.0
+     ],
+     [
+      2.5,
+      10.0
+     ],
+     [
+      4.0,
+      0.0
+     ]
+    ],
+    "neck_pitch": [
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   },
+   "groups": [],
+   "audio": []
+  }
+ ],
+ "script_sha256": "b27afe5c262b30fce144db323406596f6104f1761f3b2a9b08283f28b167e31a",
+ "manifest_sha256": "584c9a0683ea767723824e63e1b4c6857e95375b1b5fecc9643658dec9ec852c",
+ "check": {
+  "ok": true,
+  "peaks": {
+   "r_shoulder": {
+    "v_deg_s": 42.86,
+    "a_deg_s2": 122.45
+   },
+   "r_elbow": {
+    "v_deg_s": 32.14,
+    "a_deg_s2": 91.84
+   },
+   "l_shoulder": {
+    "v_deg_s": 0.0,
+    "a_deg_s2": 0.0
+   },
+   "l_elbow": {
+    "v_deg_s": 0.0,
+    "a_deg_s2": 0.0
+   },
+   "waist_yaw": {
+    "v_deg_s": 15.0,
+    "a_deg_s2": 40.0
+   },
+   "neck_yaw": {
+    "v_deg_s": 10.0,
+    "a_deg_s2": 26.67
+   },
+   "neck_pitch": {
+    "v_deg_s": 30.0,
+    "a_deg_s2": 400.0
+   }
+  },
+  "issues": [
+   {
+    "level": "warn",
+    "code": "K2",
+    "msg": "音声を固定していない（talkscript freeze）。デモとして続ける"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "self7",
+    "joint": "neck_pitch"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "self7",
+    "joint": "neck_yaw"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "self7",
+    "joint": "r_elbow"
+   },
+   {
+    "level": "info",
+    "code": "K7",
+    "msg": "角加速度の上限がない（検査しない）",
+    "robot": "self7",
+    "joint": "waist_yaw"
+   },
+   {
+    "level": "info",
+    "code": "K10",
+    "msg": "長さ 7.52 s、音声 5.79 s、行 2",
+    "robot": "self7",
+    "block": "B1"
+   },
+   {
+    "level": "info",
+    "code": "K10",
+    "msg": "長さ 4.00 s、音声 0.00 s、行 0",
+    "robot": "self7",
+    "block": "B2"
+   }
+  ]
+ }
+}

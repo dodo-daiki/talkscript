@@ -1,0 +1,5 @@
+{"kind": "audio_open", "device": "Speaker (Realtek(R) Audio)", "hostapi": "MME", "samplerate": 24000, "latency_s": 0.09333333333333334, "clock_method": "dac_time", "offset_samples": 35, "t_pc_ns": 341993635063800, "wall": "2026-11-27T16:32:59.797"}
+{"kind": "audio_start", "line": "L1", "planned_pc_ns": 341999493583600, "t_pc_ns": 341999493590433, "late_ms": 0.01, "method": "dac_time", "wall": "2026-11-27T16:33:05.656"}
+{"kind": "audio_done", "line": "L1", "t_pc_ns": 342003621417216, "wall": "2026-11-27T16:33:09.783"}
+{"kind": "audio_start", "line": "L2", "planned_pc_ns": 342004021583600, "t_pc_ns": 342004021588850, "late_ms": 0.01, "method": "dac_time", "wall": "2026-11-27T16:33:10.184"}
+{"kind": "audio_done", "line": "L2", "t_pc_ns": 342005685589366, "wall": "2026-11-27T16:33:11.848"}

@@ -1,0 +1,5 @@
+{"kind": "audio_open", "device": "スピーカー (JBL Flip 5)", "hostapi": "MME", "samplerate": 24000, "latency_s": 0.09333333333333334, "clock_method": null, "offset_samples": 0, "t_pc_ns": 343679761225900, "wall": "2026-11-27T17:01:05.958"}
+{"kind": "audio_start", "line": "L1", "planned_pc_ns": 343685924348200, "t_pc_ns": 343685924363799, "late_ms": 0.02, "method": "dac_time", "wall": "2026-11-27T17:01:12.121"}
+{"kind": "audio_done", "line": "L1", "t_pc_ns": 343690052372616, "wall": "2026-11-27T17:01:16.249"}
+{"kind": "audio_start", "line": "L2", "planned_pc_ns": 343690452348200, "t_pc_ns": 343690452368883, "late_ms": 0.02, "method": "dac_time", "wall": "2026-11-27T17:01:16.649"}
+{"kind": "audio_done", "line": "L2", "t_pc_ns": 343692116340082, "wall": "2026-11-27T17:01:18.313"}

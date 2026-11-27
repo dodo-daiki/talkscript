@@ -1,0 +1,17 @@
+{"kind": "audio_open", "device": "スピーカー (JBL Flip 5)", "hostapi": "MME", "samplerate": 24000, "latency_s": 0.09333333333333334, "clock_method": "dac_time", "offset_samples": 36, "t_pc_ns": 343442948246000, "wall": "2026-11-27T16:57:09.140"}
+{"kind": "audio_start", "line": "L1", "planned_pc_ns": 343448227460100, "t_pc_ns": 343448227480583, "late_ms": 0.02, "method": "dac_time", "wall": "2026-11-27T16:57:14.420"}
+{"kind": "audio_done", "line": "L1", "t_pc_ns": 343452568834265, "wall": "2026-11-27T16:57:18.761"}
+{"kind": "audio_start", "line": "L2", "planned_pc_ns": 343453068793100, "t_pc_ns": 343453068776016, "late_ms": -0.02, "method": "dac_time", "wall": "2026-11-27T16:57:19.261"}
+{"kind": "audio_done", "line": "L2", "t_pc_ns": 343456183395799, "wall": "2026-11-27T16:57:22.376"}
+{"kind": "audio_start", "line": "L3", "planned_pc_ns": 343456583460100, "t_pc_ns": 343456583474767, "late_ms": 0.01, "method": "dac_time", "wall": "2026-11-27T16:57:22.776"}
+{"kind": "audio_done", "line": "L3", "t_pc_ns": 343464103441766, "wall": "2026-11-27T16:57:30.296"}
+{"kind": "audio_start", "line": "L4", "planned_pc_ns": 343464603460099, "t_pc_ns": 343464603445416, "late_ms": -0.01, "method": "dac_time", "wall": "2026-11-27T16:57:30.796"}
+{"kind": "audio_done", "line": "L4", "t_pc_ns": 343467664813815, "wall": "2026-11-27T16:57:33.857"}
+{"kind": "audio_start", "line": "L5", "planned_pc_ns": 343467964793100, "t_pc_ns": 343467964800733, "late_ms": 0.01, "method": "dac_time", "wall": "2026-11-27T16:57:34.157"}
+{"kind": "audio_done", "line": "L5", "t_pc_ns": 343472711419166, "wall": "2026-11-27T16:57:38.904"}
+{"kind": "audio_start", "line": "L6", "planned_pc_ns": 343473211460100, "t_pc_ns": 343473211446516, "late_ms": -0.01, "method": "dac_time", "wall": "2026-11-27T16:57:39.404"}
+{"kind": "audio_done", "line": "L6", "t_pc_ns": 343479078109699, "wall": "2026-11-27T16:57:45.270"}
+{"kind": "audio_start", "line": "L7", "planned_pc_ns": 343479478127099, "t_pc_ns": 343479478144432, "late_ms": 0.02, "method": "dac_time", "wall": "2026-11-27T16:57:45.670"}
+{"kind": "audio_done", "line": "L7", "t_pc_ns": 343485451463216, "wall": "2026-11-27T16:57:51.644"}
+{"kind": "audio_start", "line": "L8", "planned_pc_ns": 343486051460100, "t_pc_ns": 343486051457315, "late_ms": -0.0, "method": "dac_time", "wall": "2026-11-27T16:57:52.244"}
+{"kind": "audio_done", "line": "L8", "t_pc_ns": 343490318099432, "wall": "2026-11-27T16:57:56.510"}

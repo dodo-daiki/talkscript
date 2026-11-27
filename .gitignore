@@ -1,0 +1,7 @@
+# 合成した音声（sha256 は build/<台本>/manifest.json に残す）
+build/**/*.wav
+build/**/preview.png
+# 台本の insert --write の控え
+scripts/*.bak
+# ツール本体（別のリポジトリ。main ブランチ）
+talkscript/

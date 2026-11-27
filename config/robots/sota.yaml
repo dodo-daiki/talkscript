@@ -1,0 +1,35 @@
+format: talkscript/robot@1
+id: sota
+adapter: sota
+# Sota の上で動かす RobotController（TCP 22222）。起動は人が行う（パスワードはここに書かない）
+connection: {host: TBD, port: 22222}   # Sota のアドレス。talkscript.toml の [sota] host で上書きできる
+latency_s: 0.19       # 指令から動き出しまでの遅れ。2026-11-27、研究室の Sota（Edison 版）・研究室の Wi-Fi で測った。
+                      # PC が play_pose を送ってから read_axes の HEAD_Y が 1° 以上変わるまで（±20°・200 ms、15 回）:
+                      # 中央値 196 ms・平均 193 ms・標準偏差 48 ms・範囲 132〜311 ms。ばらつきの大半は Wi-Fi。
+                      # 動画で数える方法（talkscript latency-sota）では確かめていない
+preconnect: false     # true: t0 の前に接続してコマンド名だけ送っておく（効くかは未確認）
+axes_hz: 0            # 再生中に read_axes を読む頻度（0 = 読まない。Sota の負荷で動作が乱れないか確かめてから）
+#
+# native = sign × body + offset（native は RobotController の角度、body は体の向きの角度。どちらも度）。
+# body の向き（self7 と同じ決まり）: 肩 0° = 腕が真下・+ = 前へ上げる、腰・首ヨー + = ロボットから見て左、
+#   首ピッチ + = うつむく、首ロール + = ロボットから見て左へかしげる、
+#   肘 0° = まっすぐ・+ = 体から離れる向き（Sota の肘は前後でなく、体に寄る・離れる向きに曲がる）。
+# sign: 2026-11-27 に研究室の Sota（Edison 版）で 1 関節ずつ動かして目で確かめた（native を + または − に 15〜30° 動かした）。
+#   BODY_Y +20 → 左、HEAD_Y +20 → 左、HEAD_P −15 → 上を向く、HEAD_R +15 → 左へかしげる、
+#   L_SHOU −89→−59 → 前へ上がる、R_SHOU 90→60 → 前へ上がる、L_ELBO +30 → 体から離れる、R_ELBO +30 → 体に寄る。
+# offset: 肩は腕が真下のとき L_SHOU −90・R_SHOU 90（sotalib の CSotaMotion.getInitPose と read_axes で確認）。
+# range: RobotController（ServoConverter_Sota.java）が切り詰める範囲を body に直したもの。端までは動かして確かめていない。
+#   ネイティブ: BODY_Y −61〜61、L_SHOU −180〜60、L_ELBO −90〜65、R_SHOU −60〜180、R_ELBO −65〜90、
+#   HEAD_Y −85〜85、HEAD_P −27〜5、HEAD_R −30〜30。範囲の中でも部位どうしがぶつかることがある（forbidden は未確認）。
+# vmax: 測っていない（提案）。90 °/s。確かめた動きは 30° を 1 秒（30 °/s）まで。
+joints:
+  BODY_Y: {part: waist,     sign: 1,  offset: 0,   range: [-61, 61],  vmax: 90}
+  L_SHOU: {part: left_arm,  sign: 1,  offset: -90, range: [-90, 150], vmax: 90}
+  L_ELBO: {part: left_arm,  sign: 1,  offset: 0,   range: [-90, 65],  vmax: 90}
+  R_SHOU: {part: right_arm, sign: -1, offset: 90,  range: [-90, 150], vmax: 90}
+  R_ELBO: {part: right_arm, sign: -1, offset: 0,   range: [-90, 65],  vmax: 90}
+  HEAD_Y: {part: head,      sign: 1,  offset: 0,   range: [-85, 85],  vmax: 90}
+  HEAD_P: {part: head,      sign: 1,  offset: 0,   range: [-27, 5],   vmax: 90}
+  HEAD_R: {part: head,      sign: 1,  offset: 0,   range: [-30, 30],  vmax: 90}
+rest: {BODY_Y: 0, L_SHOU: 0, L_ELBO: 0, R_SHOU: 0, R_ELBO: 0, HEAD_Y: 0, HEAD_P: 0, HEAD_R: 0}
+forbidden: []         # ぶつかる組み合わせ（実機で確かめて決める）

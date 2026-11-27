@@ -1,0 +1,271 @@
+{
+ "accent_phrases": [
+  {
+   "moras": [
+    {
+     "text": "コ",
+     "consonant": "k",
+     "consonant_length": 0.09125996381044388,
+     "vowel": "o",
+     "vowel_length": 0.1464204490184784,
+     "pitch": 5.716468811035156
+    },
+    {
+     "text": "ン",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "N",
+     "vowel_length": 0.07110699266195297,
+     "pitch": 5.871558666229248
+    },
+    {
+     "text": "ニ",
+     "consonant": "n",
+     "consonant_length": 0.032809846103191376,
+     "vowel": "i",
+     "vowel_length": 0.10044007003307343,
+     "pitch": 5.966665267944336
+    },
+    {
+     "text": "チ",
+     "consonant": "ch",
+     "consonant_length": 0.08435840159654617,
+     "vowel": "i",
+     "vowel_length": 0.06578706204891205,
+     "pitch": 5.964999198913574
+    },
+    {
+     "text": "ワ",
+     "consonant": "w",
+     "consonant_length": 0.06990999728441238,
+     "vowel": "a",
+     "vowel_length": 0.15922856330871582,
+     "pitch": 5.946715354919434
+    }
+   ],
+   "accent": 5,
+   "pause_mora": {
+    "text": "、",
+    "consonant": null,
+    "consonant_length": null,
+    "vowel": "pau",
+    "vowel_length": 0.30763736367225647,
+    "pitch": 0.0
+   },
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "キョ",
+     "consonant": "ky",
+     "consonant_length": 0.13238142430782318,
+     "vowel": "o",
+     "vowel_length": 0.09054847806692123,
+     "pitch": 6.002363681793213
+    },
+    {
+     "text": "オ",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "o",
+     "vowel_length": 0.08291418105363846,
+     "pitch": 6.085434913635254
+    },
+    {
+     "text": "ワ",
+     "consonant": "w",
+     "consonant_length": 0.04441215842962265,
+     "vowel": "a",
+     "vowel_length": 0.09161562472581863,
+     "pitch": 5.752590179443359
+    }
+   ],
+   "accent": 1,
+   "pause_mora": null,
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "カ",
+     "consonant": "k",
+     "consonant_length": 0.062239713966846466,
+     "vowel": "a",
+     "vowel_length": 0.08957444876432419,
+     "pitch": 5.865777969360352
+    },
+    {
+     "text": "カ",
+     "consonant": "k",
+     "consonant_length": 0.07189702242612839,
+     "vowel": "a",
+     "vowel_length": 0.08668678253889084,
+     "pitch": 6.188321113586426
+    },
+    {
+     "text": "オ",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "o",
+     "vowel_length": 0.09728394448757172,
+     "pitch": 6.1350417137146
+    },
+    {
+     "text": "ノ",
+     "consonant": "n",
+     "consonant_length": 0.05854345113039017,
+     "vowel": "o",
+     "vowel_length": 0.08658046275377274,
+     "pitch": 5.783930778503418
+    }
+   ],
+   "accent": 1,
+   "pause_mora": null,
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "ジ",
+     "consonant": "j",
+     "consonant_length": 0.057157374918460846,
+     "vowel": "i",
+     "vowel_length": 0.07521894574165344,
+     "pitch": 5.5040459632873535
+    },
+    {
+     "text": "ツ",
+     "consonant": "ts",
+     "consonant_length": 0.08720304816961288,
+     "vowel": "u",
+     "vowel_length": 0.053392522037029266,
+     "pitch": 5.860660552978516
+    },
+    {
+     "text": "ニ",
+     "consonant": "n",
+     "consonant_length": 0.04789777845144272,
+     "vowel": "i",
+     "vowel_length": 0.10244467109441757,
+     "pitch": 5.866707801818848
+    }
+   ],
+   "accent": 2,
+   "pause_mora": null,
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "ツ",
+     "consonant": "ts",
+     "consonant_length": 0.10610541701316833,
+     "vowel": "u",
+     "vowel_length": 0.0736575797200203,
+     "pitch": 6.028393268585205
+    },
+    {
+     "text": "イ",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "i",
+     "vowel_length": 0.08447254449129105,
+     "pitch": 5.996178150177002
+    },
+    {
+     "text": "テ",
+     "consonant": "t",
+     "consonant_length": 0.05909191071987152,
+     "vowel": "e",
+     "vowel_length": 0.07897505909204483,
+     "pitch": 5.739448547363281
+    }
+   ],
+   "accent": 1,
+   "pause_mora": null,
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "ショ",
+     "consonant": "sh",
+     "consonant_length": 0.09934871643781662,
+     "vowel": "o",
+     "vowel_length": 0.07834456861019135,
+     "pitch": 5.542240619659424
+    },
+    {
+     "text": "オ",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "o",
+     "vowel_length": 0.10367312282323837,
+     "pitch": 5.635007858276367
+    },
+    {
+     "text": "カ",
+     "consonant": "k",
+     "consonant_length": 0.06405434757471085,
+     "vowel": "a",
+     "vowel_length": 0.1119493842124939,
+     "pitch": 5.848883152008057
+    },
+    {
+     "text": "イ",
+     "consonant": null,
+     "consonant_length": null,
+     "vowel": "i",
+     "vowel_length": 0.06779944151639938,
+     "pitch": 5.869011878967285
+    }
+   ],
+   "accent": 4,
+   "pause_mora": null,
+   "is_interrogative": false
+  },
+  {
+   "moras": [
+    {
+     "text": "シ",
+     "consonant": "sh",
+     "consonant_length": 0.0627020001411438,
+     "vowel": "i",
+     "vowel_length": 0.06624852120876312,
+     "pitch": 5.918641090393066
+    },
+    {
+     "text": "マ",
+     "consonant": "m",
+     "consonant_length": 0.061046309769153595,
+     "vowel": "a",
+     "vowel_length": 0.12035221606492996,
+     "pitch": 5.962319850921631
+    },
+    {
+     "text": "ス",
+     "consonant": "s",
+     "consonant_length": 0.07282424718141556,
+     "vowel": "U",
+     "vowel_length": 0.10112223774194717,
+     "pitch": 0.0
+    }
+   ],
+   "accent": 2,
+   "pause_mora": null,
+   "is_interrogative": false
+  }
+ ],
+ "speedScale": 1.0,
+ "pitchScale": 0.0,
+ "intonationScale": 1.0,
+ "volumeScale": 1.0,
+ "prePhonemeLength": 0.1,
+ "postPhonemeLength": 0.1,
+ "pauseLength": null,
+ "pauseLengthScale": 1.0,
+ "outputSamplingRate": 24000,
+ "outputStereo": false,
+ "kana": "コンニチワ'、キョ'オワ/カ'カオノ/ジツ'ニ/ツ'イテ/ショオカイ'/シマ'_ス"
+}

@@ -1,0 +1,20 @@
+format: talkscript/robot@1
+id: self7
+adapter: self7
+# Pi 5 の talkscript-agent（agent/server.py）。アドレスは talkscript.toml の [self7] host で上書きする
+connection: {host: TBD, port: 50110}
+# 角度は体の向きの角度（度）。肩 0° = 腕が真下・+ = 前、肘 0° = まっすぐ・+ = 曲げる、
+# 腰・首ヨー + = ロボットから見て左、首ピッチ + = うつむく。モータの ID・向きは Pi 側の agent が持つ。
+#
+# range: 試しの動作で使っている範囲（機械的な範囲より狭い）。
+# vmax: agent の速度指令の上限 2.5 rad/s の 9 割（128.9 °/s）を切り下げた値。
+# amax: 肩だけ 32.4 rad/s²（= 1856 °/s²。提案値）。null は検査しない。
+joints:
+  r_shoulder: {part: right_arm, range: [-20, 95], vmax: 128, amax: 1856}
+  r_elbow:    {part: right_arm, range: [-10, 95], vmax: 128, amax: null}
+  l_shoulder: {part: left_arm,  range: [-20, 95], vmax: 128, amax: 1856}
+  l_elbow:    {part: left_arm,  range: [-10, 95], vmax: 128, amax: null}
+  waist_yaw:  {part: waist,     range: [-60, 60], vmax: 128, amax: null}
+  neck_yaw:   {part: head,      range: [-60, 60], vmax: 128, amax: null}
+  neck_pitch: {part: head,      range: [-30, 30], vmax: 128, amax: null}
+rest: {r_shoulder: 0, r_elbow: 0, l_shoulder: 0, l_elbow: 0, waist_yaw: 0, neck_yaw: 0, neck_pitch: 0}

@@ -1,0 +1,39 @@
+{
+ "format": "talkscript/manifest@1",
+ "script": "demo",
+ "frozen": false,
+ "lines": {
+  "L1": {
+   "key": "45591a42c00b55358a46b5cc579ac04c1f4c4c05b85ee4ff16890eafedb3439c",
+   "block": "B1",
+   "speaker": "ずんだもん/ノーマル",
+   "speaker_id": 3,
+   "wav_sha256": "6236d8a6c8b32956924b62a697bfc38cc99398c6eaba8283d189a08cd3164954",
+   "samples": 99072,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 4.128,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:24:02"
+  },
+  "L2": {
+   "key": "06fc99a34a205c0371800ef7a13db351379277e593c437f0f8f6ae512381b09a",
+   "block": "B1",
+   "speaker": "ずんだもん/ノーマル",
+   "speaker_id": 3,
+   "wav_sha256": "5f4d443cbb552dfeff2f4abee955fd2c4bac64a69810dd796d4cd61cb4f1f581",
+   "samples": 39936,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 1.664,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:24:03"
+  }
+ },
+ "speakers": {
+  "ずんだもん/ノーマル": 3
+ },
+ "engine_version": "0.23.0"
+}

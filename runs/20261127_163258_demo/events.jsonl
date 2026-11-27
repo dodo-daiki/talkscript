@@ -1,0 +1,12 @@
+{"robot": "sota", "kind": "at_rest", "t_pc_ns": 341996993055600, "axes": {"HEAD_R": 0, "BODY_Y": 0, "R_SHOU": 89, "HEAD_P": 0, "R_ELBO": 0, "L_ELBO": 0, "HEAD_Y": 0, "L_SHOU": -89}, "wall": "2026-11-27T16:33:03.155"}
+{"kind": "block_t0", "block": "B1", "t0_pc_ns": 341998993583600, "duration_s": 7.524, "t_pc_ns": 341996993593900, "wall": "2026-11-27T16:33:03.156"}
+{"robot": "sota", "kind": "scheduled", "t_pc_ns": 341996995047400, "block": "B1", "t0_pc_ns": 341998993583600, "send_pc_ns": 341998803583600, "wall": "2026-11-27T16:33:03.157"}
+{"robot": "sota", "kind": "sent", "t_pc_ns": 341998803589600, "block": "B1", "command": "play_motion", "poses": 76, "send_late_ms": 0.01, "done_pc_ns": 341998817453300, "wall": "2026-11-27T16:33:04.966"}
+{"robot": "sota", "kind": "finished_estimated", "t_pc_ns": 342007568943000, "block": "B1", "total_ms": 7600, "wall": "2026-11-27T16:33:13.731"}
+{"kind": "block_end", "block": "B1", "t_pc_ns": 342007569096500, "wall": "2026-11-27T16:33:13.731"}
+{"robot": "sota", "kind": "at_rest", "t_pc_ns": 342011931281900, "axes": {"HEAD_R": 0, "BODY_Y": 0, "R_SHOU": 89, "HEAD_P": 0, "R_ELBO": 0, "L_ELBO": 0, "HEAD_Y": 0, "L_SHOU": -89}, "wall": "2026-11-27T16:33:18.093"}
+{"kind": "block_t0", "block": "B2", "t0_pc_ns": 342013931596100, "duration_s": 4.0, "t_pc_ns": 342011931602200, "wall": "2026-11-27T16:33:18.094"}
+{"robot": "sota", "kind": "scheduled", "t_pc_ns": 342011932452500, "block": "B2", "t0_pc_ns": 342013931596100, "send_pc_ns": 342013741596100, "wall": "2026-11-27T16:33:18.094"}
+{"robot": "sota", "kind": "sent", "t_pc_ns": 342013741600000, "block": "B2", "command": "play_motion", "poses": 40, "send_late_ms": 0.0, "done_pc_ns": 342013755695100, "wall": "2026-11-27T16:33:19.904"}
+{"robot": "sota", "kind": "finished_estimated", "t_pc_ns": 342018945972200, "block": "B2", "total_ms": 4000, "wall": "2026-11-27T16:33:25.108"}
+{"kind": "block_end", "block": "B2", "t_pc_ns": 342018946104200, "wall": "2026-11-27T16:33:25.108"}

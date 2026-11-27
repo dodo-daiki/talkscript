@@ -1,0 +1,9 @@
+{"robot": "self7", "kind": "clock", "t_pc_ns": 343442311118100, "offset_ns": -342885530530775, "rtt_ns": 11706264, "n": 10, "offset_spread_ns": 6900119, "rtt_max_ns": 22470553, "wall": "2026-11-27T16:57:08.503"}
+{"robot": "self7", "kind": "at_rest", "t_pc_ns": 343446613304580, "t_mono_ns": 561082773805, "wall": "2026-11-27T16:57:12.806"}
+{"kind": "block_t0", "block": "B1", "t0_pc_ns": 343447427460100, "duration_s": 44.294667, "t_pc_ns": 343446627471700, "wall": "2026-11-27T16:57:12.820"}
+{"robot": "self7", "kind": "clock", "t_pc_ns": 343446806347800, "offset_ns": -342885530036607, "rtt_ns": 10880771, "n": 10, "offset_spread_ns": 16008948, "rtt_max_ns": 44838619, "wall": "2026-11-27T16:57:12.999"}
+{"robot": "self7", "kind": "scheduled", "t_pc_ns": 343446821031000, "block": "B1", "t0_pc_ns": 343447427460100, "t0_pi_ns": 561897423493, "wall": "2026-11-27T16:57:13.013"}
+{"robot": "self7", "kind": "started", "t_pc_ns": 343447432808664, "t_mono_ns": 561902772057, "block": "B1", "run_id": "20261127_165706_trivia_octopus", "late_ms": 5.35, "wall": "2026-11-27T16:57:13.625"}
+{"robot": "self7", "kind": "finished", "t_pc_ns": 343491732810598, "t_mono_ns": 606202773991, "block": "B1", "run_id": "20261127_165706_trivia_octopus", "wall": "2026-11-27T16:57:57.925"}
+{"kind": "block_end", "block": "B1", "t_pc_ns": 343491735372200, "wall": "2026-11-27T16:57:57.928"}
+{"robot": "self7", "kind": "disengaged", "t_pc_ns": 343492202622035, "t_mono_ns": 606672585428, "reason": "requested", "wall": "2026-11-27T16:57:58.395"}

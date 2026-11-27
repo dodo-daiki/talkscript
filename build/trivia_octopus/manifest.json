@@ -1,0 +1,123 @@
+{
+ "format": "talkscript/manifest@1",
+ "script": "trivia_octopus",
+ "frozen": false,
+ "lines": {
+  "L1": {
+   "key": "dcb82b3dd8132b359a1bb40cbe346051204fd83eb95946be7b9f1365f768600b",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "f7d2fffaf0a1f2782e2040a3a62fba2a71d00872cb612b6dcd7cd5908c0c9948",
+   "samples": 104192,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 4.341333333333333,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:49:47"
+  },
+  "L2": {
+   "key": "7dd433c44478b54c4a67d6af2e950bc63add2a5d295a5ac2e289f99d800d5525",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "701973765678be091b6a048103a262b403ca560b63fba1e6e5408bdc0973daa1",
+   "samples": 74752,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 3.1146666666666665,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:49:50"
+  },
+  "L3": {
+   "key": "a076b6f458fc8af10f4c8570f36001f7dfab32e1b59e830ef44d2cbeb137c2c4",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "c0e4cde9c2082ca10b03dbece1c4bfe1f31c16fd28ac3ce76749a76600c0ce26",
+   "samples": 180480,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 7.52,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:49:55"
+  },
+  "L4": {
+   "key": "754cce340bcec15f8cea2665cecb17118945ce65a81d3a1fd9ae2bfae4018c65",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "cebfd4581ce2ca66addf2bf37e1d4b7e862e3a0d28c898a0191f059a86de4fa5",
+   "samples": 73472,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 3.0613333333333332,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:49:58"
+  },
+  "L5": {
+   "key": "31e394c0103bcb3b7f5e660c881217ec2ab5558bc72566e6b0606b0d3f8b81e9",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "d4dc67842f93a48f44d28eacd604bd7fe0e5b9ed8684f826b9abafb77f84e066",
+   "samples": 113920,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 4.746666666666667,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:50:01"
+  },
+  "L6": {
+   "key": "b89f43dc6a12c0dc2c885ace84a4c000244eacf8a7dc888fd94357e2d6cd8785",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "2d3ea4f817679b6ceffb461bf57296429534c377e3e5d68fab54f3e52342ff73",
+   "samples": 140800,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 5.866666666666666,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:50:06"
+  },
+  "L7": {
+   "key": "7965b3a534dc8d2e3dac02f4b12a1e46ae29b9aece43c3cb735baa2a7b497344",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "d555f8cbcfb4e91e1a4a80d9cb195ce5287e41eb3d786e3747d441fab71116b6",
+   "samples": 143360,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 5.973333333333334,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:50:10"
+  },
+  "L8": {
+   "key": "42dd5c632b45aa7e2212f5ff9d566ec30066ce3f55e6ee257e3ae21a641a4640",
+   "block": "B1",
+   "speaker": "白上虎太郎/ふつう",
+   "speaker_id": 12,
+   "wav_sha256": "7fa7ed5588c39a3667e31c9032381a2167aa76e59f8c472017ec85d984d32c90",
+   "samples": 102400,
+   "sampling_rate": 24000,
+   "channels": 1,
+   "sample_width": 2,
+   "duration_s": 4.266666666666667,
+   "timing_model": "frames_scaled_prepost",
+   "synthesized_at": "2026-11-27T16:50:13"
+  }
+ },
+ "speakers": {
+  "白上虎太郎/ふつう": 12
+ },
+ "engine_version": "0.23.0"
+}
